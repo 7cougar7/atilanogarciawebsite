@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b9befb21-3d27-466c-a993-86ebf3ef212d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mainwebsite/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atilanogarciawebsite/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/atilanogarciawebsite/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainwebsite/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwebsite/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,12 +74,15 @@
       <option name="presentableId" value="Default" />
       <updated>1585284841279</updated>
       <workItem from="1585284843212" duration="750000" />
-      <workItem from="1585288849187" duration="1823000" />
+      <workItem from="1585288849187" duration="2556000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="requirements.txt" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="55" key="SettingsEditor" timestamp="1585290996730">
