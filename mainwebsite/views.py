@@ -1,7 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-
-def index(request):
-    return HttpResponse("Hello world. You're at the main landing page 123 Test :)")
 
 
+def homepage(request):
+    context = {'test': 'homepage'}
+    return render(request, 'base.html', context)
+
+
+def resume(request):
+    context = {'test': 'resume'}
+    return render(request, 'base.html', context)
