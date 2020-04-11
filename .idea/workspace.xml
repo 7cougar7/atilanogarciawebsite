@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b9befb21-3d27-466c-a993-86ebf3ef212d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mainwebsite/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/atilanogarciawebsite.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/atilanogarciawebsite.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mainwebsite/templates/dnd_roll.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atilanogarciawebsite/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/atilanogarciawebsite/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainwebsite/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainwebsite/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwebsite/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwebsite/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwebsite/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwebsite/views.py" afterDir="false" />
     </list>
@@ -42,16 +39,17 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="JSON5" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/mainwebsite/templates" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\7cougar7\Desktop\atilanogarciawebsite\mainwebsite\templates" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\7cougar7\Desktop\atilanogarciawebsite\mainwebsite\templates" />
       <recent name="C:\Users\7cougar7\Desktop\atilanogarciawebsite\mainwebsite\templates\mainwebsite" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\7cougar7\Desktop\atilanogarciawebsite\mainwebsite\templates" />
     </key>
   </component>
   <component name="RunManager">
@@ -90,7 +88,10 @@
       <option name="presentableId" value="Default" />
       <updated>1585284841279</updated>
       <workItem from="1585284843212" duration="750000" />
-      <workItem from="1585288849187" duration="12036000" />
+      <workItem from="1585288849187" duration="14116000" />
+      <workItem from="1585544650659" duration="2441000" />
+      <workItem from="1586635205953" duration="76000" />
+      <workItem from="1586635366335" duration="5379000" />
     </task>
     <servers />
   </component>

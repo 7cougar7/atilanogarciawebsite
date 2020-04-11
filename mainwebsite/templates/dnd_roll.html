@@ -23,7 +23,43 @@
           </div>
         </nav>
 
-        <span style="color: aliceblue"> {{ content }} </span>
+        <span style="color: white">
+            Max: {{ max_roll }}, Row Number: {{ row_number }}
+            <table style="color: white;width:100%">
+              <thead>
+                <tr>
+                  <th scope="col">Trial Number</th>
+                  <th scope="col">D4</th>
+                  <th scope="col">D6</th>
+                  <th scope="col">D8</th>
+                  <th scope="col">D10</th>
+                  <th scope="col">D10</th>
+                  <th scope="col">D20</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for roll in rolls %}
+                  {% if roll.total == 70 %}
+                      <span style="color: green">
+                  {% endif %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{roll.d4}}</td>
+                      <td>{{roll.d6}}</td>
+                      <td>{{roll.d8}}</td>
+                      <td>{{roll.oned10}}</td>
+                      <td>{{roll.twod10}}</td>
+                      <td>{{roll.d20}}</td>
+                      <td>{{roll.total}}</td>
+                    </tr>
+                  {% if roll.total == 70 %}
+                      </span>>
+                  {% endif %}
+              {% endfor %}
+              </tbody>
+            </table>
+        </span>
 
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
                 integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
