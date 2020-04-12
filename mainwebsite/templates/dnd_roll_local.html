@@ -25,7 +25,7 @@
 
         <span style="color: white">
             Max: {{ max_roll }}, Row Number: {{ row_number }}
-            <table class="table" style="color: white;width:100%">
+            <table style="color: white;width:100%">
               <thead>
                 <tr>
                   <th scope="col">Trial Number</th>
@@ -34,27 +34,32 @@
                   <th scope="col">D8</th>
                   <th scope="col">D10</th>
                   <th scope="col">D10</th>
+                  <th scope="col">D12</th>
                   <th scope="col">D20</th>
                   <th scope="col">Total</th>
                 </tr>
               </thead>
               <tbody>
-              {% for roll in rolls %}
-                  {% if roll.total == 70 %}
-                      <span style="color: green">
-                  {% endif %}
-                    <tr>
-                      <th scope="row">{{ forloop.counter }}</th>
-                      <td>{{roll.d4}}</td>
-                      <td>{{roll.d6}}</td>
-                      <td>{{roll.d8}}</td>
-                      <td>{{roll.oned10}}</td>
-                      <td>{{roll.twod10}}</td>
-                      <td>{{roll.d20}}</td>
-                      <td>{{roll.total}}</td>
-                    </tr>
-                  {% if roll.total == 70 %}
-                      </span>>
+              {% load mainwebsite_extras %}
+              {% for val in d4 %}
+                  {% if total|index:forloop.counter0 > 64 %}
+                      {% if roll.total == 70 %}
+                          <span style="color: green">
+                      {% endif %}
+                        <tr>
+                          <th scope="row">{{ forloop.counter0 }}</th>
+                          <td>{{ d4|index:forloop.counter0 }}</td>
+                          <td>{{d6|index:forloop.counter0}}</td>
+                          <td>{{d8|index:forloop.counter0}}</td>
+                          <td>{{oned10|index:forloop.counter0}}</td>
+                          <td>{{twod10|index:forloop.counter0}}</td>
+                          <td>{{d12|index:forloop.counter0}}</td>
+                          <td>{{d20|index:forloop.counter0}}</td>
+                          <td>{{total|index:forloop.counter0}}</td>
+                        </tr>
+                      {% if roll.total == 70 %}
+                          </span>>
+                      {% endif %}
                   {% endif %}
               {% endfor %}
               </tbody>
