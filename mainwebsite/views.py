@@ -14,7 +14,6 @@ def homepage(request):
     }
     return render(request, 'base.html', context)
 
-
 def resume(request):
     context = {
         'title': 'Resume',
@@ -22,11 +21,8 @@ def resume(request):
     }
     return render(request, 'base.html', context)
 
-
 def calendar_webpage(request):
     return render(request, 'calendar.html')
-
-
 
 def dnd_rolls(request, roll_size):
     numpy.random.seed()
@@ -119,4 +115,6 @@ def dnd_rolls_api(request, roll_size):
     }
     return render(request, 'dnd_roll.html', context)
 
-
+def kky_acceptance_page(request):
+    context = {}
+    return render(request, 'kky.html', context)
