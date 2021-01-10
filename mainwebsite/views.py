@@ -14,6 +14,12 @@ def homepage(request):
     }
     return render(request, 'base.html', context)
 
+def cube_wallpaper(request):
+    context = {
+        'title': 'Cube Wallpaper',
+    }
+    return render(request, 'cube_wallpaper.html', context)
+
 def resume(request):
     context = {
         'title': 'Resume',
