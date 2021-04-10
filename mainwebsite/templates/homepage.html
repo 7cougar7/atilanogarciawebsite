@@ -18,16 +18,18 @@
         $(document).ready(function () {
             let cards = $.find('.glass-card');
             const delayAmount = 250;
-            for (let i = 0; i < cards.length; i += 2) {
-                setTimeout(function () {
-                    $(cards[i]).animate({opacity: 1});
-                }, delayAmount * i);
-            }
-            for (let i = 1; i < cards.length; i += 2) {
-                setTimeout(function () {
-                    $(cards[i]).animate({opacity: 1});
-                }, delayAmount * (i + 3));
-            }
+            setTimeout(function () {
+                for (let i = 0; i < cards.length; i += 2) {
+                    setTimeout(function () {
+                        $(cards[i]).animate({opacity: 1});
+                    }, delayAmount * i);
+                }
+                for (let i = 1; i < cards.length; i += 2) {
+                    setTimeout(function () {
+                        $(cards[i]).animate({opacity: 1});
+                    }, delayAmount * (i + 3));
+                }
+            }, 500)
             $('#switchButton').click(function () {
                 $('.dark-color').addClass('temp-color').removeClass('dark-color')
                 $('.light-color').addClass('dark-color').removeClass('light-color')
@@ -74,19 +76,24 @@
                     <div id="imageCarousel" class="carousel slide carousel-fade">
                         <div class="carousel-inner w-75 mx-auto">
                             <div class="carousel-item active">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/PepBand.jpg" %}" class="w-100" alt="..." style="border-radius: 20px">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/PepBand.jpg" %}" class="w-100"
+                                     alt="..." style="border-radius: 20px">
                             </div>
                             <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/SectionPic.png" %}" class="w-100" alt="..." style="border-radius: 20px">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/SectionPic.png" %}" class="w-100"
+                                     alt="..." style="border-radius: 20px">
                             </div>
                             <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/Stadium Pic.jpg" %}" class="w-100" alt="..." style="border-radius: 20px">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/Stadium Pic.jpg" %}"
+                                     class="w-100" alt="..." style="border-radius: 20px">
                             </div>
                             <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloAndEllie.jpg" %}" class="w-100" alt="..." style="border-radius: 20px">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloAndEllie.jpg" %}"
+                                     class="w-100" alt="..." style="border-radius: 20px">
                             </div>
                             <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloPlayingTrom.JPG" %}" class="w-100" alt="..." style="border-radius: 20px">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloPlayingTrom.JPG" %}"
+                                     class="w-100" alt="..." style="border-radius: 20px">
                             </div>
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel"
