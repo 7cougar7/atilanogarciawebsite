@@ -70,8 +70,36 @@
     <div class="container">
         <div class="row">
             <div class="col-md-5" style="padding-left: 10px !important; padding-right: 10px !important;">
-                <div class="glass-card" style="height: 35vh; opacity: 0;">
-                    {#                    <p class="dark-color">Test</p>#}
+                <div class="glass-card d-flex align-items-center" style="height: 35vh; opacity: 0;">
+                    <div id="imageCarousel" class="carousel slide carousel-fade">
+                        <div class="carousel-inner w-75 mx-auto">
+                            <div class="carousel-item active">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/PepBand.jpg" %}" class="w-100" alt="..." style="border-radius: 20px">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/SectionPic.png" %}" class="w-100" alt="..." style="border-radius: 20px">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/Stadium Pic.jpg" %}" class="w-100" alt="..." style="border-radius: 20px">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloAndEllie.jpg" %}" class="w-100" alt="..." style="border-radius: 20px">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloPlayingTrom.JPG" %}" class="w-100" alt="..." style="border-radius: 20px">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel"
+                                data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel"
+                                data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="glass-card" style="height: 45vh; opacity: 0;">
                     {#                    <p class="dark-color">Test</p>#}

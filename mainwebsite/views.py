@@ -1,8 +1,5 @@
 import logging
 import numpy
-import random
-from datetime import datetime, time
-
 import requests
 from django.shortcuts import render
 
