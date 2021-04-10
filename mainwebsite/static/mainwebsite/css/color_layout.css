@@ -1,0 +1,107 @@
+:root {
+    --light: #F3F3F3;
+    --dark: #323744;
+    --accent-blue: #0520F8;
+    --comfort-blue: #2F80ED;
+    --middle-blue: #2D9CDB;
+    --light-blue: #00B9F4;
+    --orange-accent: #F87605;
+}
+
+.light-fill {
+    background: var(--light);
+}
+
+.light-color {
+    color: var(--light);
+    border-color: var(--light);
+}
+
+.dark-fill {
+    background: var(--dark);
+}
+
+.dark-color {
+    color: var(--dark);
+    border-color: var(--dark);
+}
+
+.accent-blue-fill {
+    background: var(--accent-blue);
+}
+
+.accent-blue-color {
+    color: var(--accent-blue);
+}
+
+.comfort-blue-fill {
+    background: var(--comfort-blue);
+}
+
+.comfort-blue-color {
+    color: var(--comfort-blue);
+}
+
+.middle-blue-fill {
+    background: var(--middle-blue);
+}
+
+.middle-blue-color {
+    color: var(--middle-blue);
+}
+
+.light-blue-fill {
+    background: var(--light-blue);
+}
+
+.light-blue-color {
+    color: var(--light-blue);
+}
+
+.orange-accent-fill {
+    background: var(--orange-accent);
+}
+
+.orange-accent-color {
+    color: var(--orange-accent);
+}
+
+.glass-card {
+    /*position: absolute;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*top: 0;*/
+    /*bottom: 0;*/
+    width: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: linear-gradient(180deg, rgba(47, 128, 237, 0.82) 0.27%, rgba(143, 184, 240, 0.58) 100%);
+    backdrop-filter: blur(12px);
+    /* Note: backdrop-filter has minimal browser support */
+
+    border-radius: 20px;
+}
+
+.nohover-light:hover {
+    color: var(--light) !important;
+    text-decoration: none;
+}
+
+.nohover-dark:hover {
+    color: var(--dark) !important;
+    text-decoration: none;
+}
+
+#switchButton {
+    position: absolute;
+    bottom: 5vh;
+    right: 0;
+}
+
+.navbar-link {
+    text-decoration: none;
+}
+.navbar-link:hover {
+    color: var(--orange-accent);
+    text-decoration: none;
+}

@@ -7,18 +7,23 @@ import requests
 from django.shortcuts import render
 
 logger = logging.getLogger(__name__)
+
+
 def homepage(request):
     context = {
         'title': 'Home Page',
         'content': 'homepage'
     }
-    return render(request, 'base.html', context)
+    # return render(request, 'base.html', context)
+    return render(request, 'homepage.html', context)
+
 
 def cube_wallpaper(request):
     context = {
         'title': 'Cube Wallpaper',
     }
     return render(request, 'cube_wallpaper.html', context)
+
 
 def resume(request):
     context = {
@@ -27,8 +32,10 @@ def resume(request):
     }
     return render(request, 'base.html', context)
 
+
 def calendar_webpage(request):
     return render(request, 'calendar.html')
+
 
 def dnd_rolls(request, roll_size):
     numpy.random.seed()
@@ -57,6 +64,7 @@ def dnd_rolls(request, roll_size):
         'row_number': row_number
     }
     return render(request, 'dnd_roll_local.html', context)
+
 
 def dnd_rolls_api(request, roll_size):
     dices = [4, 6, 8, 10, 10, 20]
@@ -91,7 +99,7 @@ def dnd_rolls_api(request, roll_size):
         max_roll = 0
         row_number = 1
         for x in range(0, roll_size):
-            total = values[0][x]+values[1][x]+values[2][x]+values[3][x]+values[4][x]+values[5][x]
+            total = values[0][x] + values[1][x] + values[2][x] + values[3][x] + values[4][x] + values[5][x]
             rolls.append({
                 "d4": values[0][x],
                 "d6": values[1][x],
@@ -103,7 +111,7 @@ def dnd_rolls_api(request, roll_size):
             })
             if total > max_roll:
                 max_roll = total
-                row_number = x+1
+                row_number = x + 1
         context = {
             'title': 'DND Roller',
             'content': 'roller',
@@ -120,6 +128,7 @@ def dnd_rolls_api(request, roll_size):
         'row_number': "Error. Too many roles requested"
     }
     return render(request, 'dnd_roll.html', context)
+
 
 def kky_acceptance_page(request):
     context = {}

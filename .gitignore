@@ -1,2 +1,8 @@
 .idea/
-"__pycache__"/
+.env
+*__pycache__/
+desktop.ini
+db.sqlite3
+media/
+venv/
+.gitignore
