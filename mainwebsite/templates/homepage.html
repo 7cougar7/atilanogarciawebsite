@@ -16,6 +16,18 @@
     <script src="https://kit.fontawesome.com/f87ea10b1c.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            let cards = $.find('.glass-card');
+            const delayAmount = 250;
+            for (let i = 0; i < cards.length; i += 2) {
+                setTimeout(function () {
+                    $(cards[i]).animate({opacity: 1});
+                }, delayAmount * i);
+            }
+            for (let i = 1; i < cards.length; i += 2) {
+                setTimeout(function () {
+                    $(cards[i]).animate({opacity: 1});
+                }, delayAmount * (i + 3));
+            }
             $('#switchButton').click(function () {
                 $('.dark-color').addClass('temp-color').removeClass('dark-color')
                 $('.light-color').addClass('dark-color').removeClass('light-color')
@@ -43,31 +55,33 @@
         </div>
         <div class="col-md-5"></div>
         <div class="col-md-2">
-            <p class="dark-color fs-4">Resume</p>
+            <a class="dark-color fs-4 navbar-link"
+               href="{% static "mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf" %}"
+               target="_blank">Resume</a>
         </div>
         <div class="col-md-2">
             <a class="dark-color fs-4 navbar-link" href="https://www.linkedin.com/in/atilano-garcia/">LinkedIn</a>
         </div>
         <div class="col-md-1">
-            <p class="dark-color fs-4">@</p>
+            <p class="dark-color fs-4"></p>
         </div>
         <hr style="border: 1px solid" class="dark-color"/>
     </div>
     <div class="container">
         <div class="row">
             <div class="col-md-5" style="padding-left: 10px !important; padding-right: 10px !important;">
-                <div class="glass-card" style="height: 35vh">
+                <div class="glass-card" style="height: 35vh; opacity: 0;">
                     {#                    <p class="dark-color">Test</p>#}
                 </div>
-                <div class="glass-card" style="height: 45vh">
+                <div class="glass-card" style="height: 45vh; opacity: 0;">
                     {#                    <p class="dark-color">Test</p>#}
                 </div>
             </div>
             <div class="col-md-7" style="padding-left: 10px !important; padding-right: 10px !important;">
-                <div class="glass-card" style="height: 55vh">
+                <div class="glass-card" style="height: 55vh; opacity: 0;">
                     {#                    <p class="dark-color">Test</p>#}
                 </div>
-                <div class="glass-card" style="height: 25vh">
+                <div class="glass-card" style="height: 25vh; opacity: 0;">
                     {#                    <p class="dark-color">Test</p>#}
                 </div>
             </div>
