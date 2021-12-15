@@ -101,7 +101,11 @@
 .navbar-link {
     text-decoration: none;
 }
+
 .navbar-link:hover {
     color: var(--orange-accent);
     text-decoration: none;
+}
+
+.center-elements {
 }

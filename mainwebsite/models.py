@@ -1,3 +1,18 @@
+from django.contrib import admin
 from django.db import models
+from django.utils.crypto import get_random_string
 
-# Create your models here.
+
+def unique_short_code():
+    while True:
+        code = get_random_string(6)
+        if not ShortenedUrl.objects.filter(shortened_url=code).exists():
+            return code
+
+
+class ShortenedUrl(models.Model):
+    shortened_url = models.CharField(default=unique_short_code, unique=True, max_length=12)
+    real_url = models.URLField()
+
+
+admin.site.register(ShortenedUrl)

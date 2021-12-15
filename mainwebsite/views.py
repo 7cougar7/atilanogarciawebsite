@@ -1,7 +1,11 @@
+import json
 import logging
 import numpy
 import requests
-from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+
+from mainwebsite import models
 
 logger = logging.getLogger(__name__)
 
@@ -130,3 +134,23 @@ def dnd_rolls_api(request, roll_size):
 def kky_acceptance_page(request):
     context = {}
     return render(request, 'kky.html', context)
+
+
+def url_shortener(request):
+    return render(request, 'url_shortener.html')
+
+
+def url_shortener_submit(request):
+    if request.method == 'POST':
+        url = request.POST['url']
+        if url:
+            shortened_url = models.ShortenedUrl(real_url=url)
+            shortened_url.save()
+            return JsonResponse({'shortened_url': request.build_absolute_uri("r/" + shortened_url.shortened_url)})
+    return JsonResponse({})
+
+
+def redirect_url(request, shortened_url):
+    possible_url = models.ShortenedUrl.objects.filter(shortened_url=shortened_url)
+    if possible_url.exists():
+        return redirect(possible_url.first().real_url)

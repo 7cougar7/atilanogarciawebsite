@@ -1,0 +1,61 @@
+{% extends 'new_base.html' %}
+
+{% block js %}
+    <script>
+        function copyUrl() {
+            /* Get the text field */
+            let copyText = document.getElementById("shortenedUrlField");
+
+            /* Select the text field */
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+            /* Copy the text inside the text field */
+            navigator.clipboard.writeText(copyText.value);
+
+            /* Alert the copied text */
+            alert("Copied the text: " + copyText.value);
+        }
+
+        function submitForm() {
+            $.ajax({
+                url: "{% url 'urlShortenerSubmit' %}",
+                dataType: "json",
+                type: "POST",
+                async: true,
+                data: {
+                    "url": $("#urlInput").val(),
+                    'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
+                },
+                success: function (data) {
+                    $("#shortenedUrlArea").show()
+                    $("#shortenedUrlField").val(data['shortened_url'])
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="glass-card"
+         style="height: 45vh; opacity: 0; display: flex; justify-content: center; align-items: center;">
+        <div class="column w-100">
+            <div class="row">
+                <div class="input-group center-elements p-5">
+                    <input type="text" class="form-control" aria-label="URL To Shorten"
+                           aria-describedby="inputGroup-sizing-default" placeholder="URL To Shorten" id="urlInput">
+                    <button type="button" class="btn light-fill" onclick="submitForm()"><span
+                            class="dark-color">Shorten URL</span></button>
+                </div>
+            </div>
+
+            <div id="shortenedUrlArea" class="row" style="display: none; justify-content: center; align-items: center;">
+                <div class="input-group center-elements w-50 px-5">
+                <input type="text" class="form-control" aria-label="Shortened URL"
+                           aria-describedby="inputGroup-sizing-default" placeholder="Shortened URL" id="shortenedUrlField">
+                <button type="button" class="btn light-fill" onclick="copyUrl()"><i class="far fa-clipboard"></i></button>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
