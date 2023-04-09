@@ -16,3 +16,5 @@ urlpatterns = [
     path('r/<str:shortened_url>', views.redirect_url, name='redirection'),
     path('graduation', views.graduation, name='graduation')
 ]
+
+handler404 = "mainwebsite.views.page_not_found_view"
