@@ -8,7 +8,7 @@ gunicorn==20.0.4
 idna==2.9
 load-dotenv==0.1.0
 numpy
-python-dotenv==1.0.0
+python-dotenv
 pytz==2019.1
 requests==2.23.0
 sqlparse==0.3.0
