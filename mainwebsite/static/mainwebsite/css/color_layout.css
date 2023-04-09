@@ -83,19 +83,15 @@
 }
 
 .nohover-light:hover {
+    border-color: var(--light) !important;
     color: var(--light) !important;
     text-decoration: none;
 }
 
 .nohover-dark:hover {
+    border-color: var(--dark) !important;
     color: var(--dark) !important;
     text-decoration: none;
-}
-
-#switchButton {
-    position: absolute;
-    bottom: 5vh;
-    right: 0;
 }
 
 .navbar-link {
