@@ -9,7 +9,7 @@
 }
 
 .light-fill {
-    background: var(--light);
+    background: var(--light)!important;
 }
 
 .light-color {
@@ -18,7 +18,7 @@
 }
 
 .dark-fill {
-    background: var(--dark);
+    background: var(--dark)!important;
 }
 
 .dark-color {

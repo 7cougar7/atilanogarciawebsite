@@ -2,55 +2,142 @@
 {% load static %}
 
 {% block content %}
-        <div class="row">
-            <div class="col-md-5" style="padding-left: 10px !important; padding-right: 10px !important;">
-                <div class="glass-card d-flex align-items-center" style="height: 35vh; opacity: 0;">
-                    <div id="imageCarousel" class="carousel slide carousel-fade">
-                        <div class="carousel-inner w-75 mx-auto">
-                            <div class="carousel-item active">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/PepBand.jpg" %}" class="w-100"
-                                     alt="..." style="border-radius: 20px">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/SectionPic.png" %}" class="w-100"
-                                     alt="..." style="border-radius: 20px">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/Stadium Pic.jpg" %}"
-                                     class="w-100" alt="..." style="border-radius: 20px">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloAndEllie.jpg" %}"
-                                     class="w-100" alt="..." style="border-radius: 20px">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{% static "mainwebsite/img/homepage/carousel/TiloPlayingTrom.JPG" %}"
-                                     class="w-100" alt="..." style="border-radius: 20px">
-                            </div>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel"
-                                data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel"
-                                data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-5" style="padding-left: 10px !important; padding-right: 10px !important;">
+            <div class="container-fluid h-100 d-flex flex-column g-0">
+                <div class="glass-card mb-0" style="height: auto; opacity: 0;">
+                    <!-- <div id="imageCarousel" class="carousel slide carousel-fade">
+                <div class="carousel-inner w-75 mx-auto">
+                    <div class="carousel-item active"> -->
+                    <img src="{% static 'mainwebsite/img/homepage/carousel/PepBand.jpg' %}" class="img-thumbnail"
+                        alt="..." style="border-radius: 20px">
+                    <!--
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static " mainwebsite/img/homepage/carousel/SectionPic.png" %}" class="w-100"
+                            alt="..." style="border-radius: 20px">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static " mainwebsite/img/homepage/carousel/Stadium Pic.jpg" %}" class="w-100"
+                            alt="..." style="border-radius: 20px">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static " mainwebsite/img/homepage/carousel/TiloAndEllie.jpg" %}" class="w-100"
+                            alt="..." style="border-radius: 20px">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static " mainwebsite/img/homepage/carousel/TiloPlayingTrom.JPG" %}" class="w-100"
+                            alt="..." style="border-radius: 20px">
                     </div>
                 </div>
-                <div class="glass-card" style="height: 45vh; opacity: 0;">
-                    {#                    <p class="dark-color">Test</p>#}
+                <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div> -->
                 </div>
-            </div>
-            <div class="col-md-7" style="padding-left: 10px !important; padding-right: 10px !important;">
-                <div class="glass-card" style="height: 55vh; opacity: 0;">
-                    {#                    <p class="dark-color">Test</p>#}
-                </div>
-                <div class="glass-card" style="height: 25vh; opacity: 0;">
-                    {#                    <p class="dark-color">Test</p>#}
+                <div class="glass-card flex-grow-1" style="height: auto; opacity: 0;">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col text-center">
+                                <h3 class="dark-color card-title">Latest Projects</h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-center">
+                                <ul class="list-unstyled dark-color text-left d-inline-block">
+                                    <li>
+                                        <a href="https://github.com/7cougar7/atilanogarciawebsite" target="_blank"
+                                            class="dark-color">Project 1: This Website!</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://github.com/7cougar7/spotify-api-test" target="_blank"
+                                            class="dark-color">Project 2: Exploration of the Spotify API</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://github.com/7cougar7/ultimate-football-predictor"
+                                            target="_blank" class="dark-color">Project 3: Ultimate AI Football
+                                            Predictor</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://github.com/7cougar7/pearlinlab" target="_blank"
+                                            class="dark-color">Project 4: Augmented Reality Map Generator</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://github.com/7cougar7/machine-learning-learning" target="_blank"
+                                            class="dark-color">Project 5: Exploration of Machine Learning</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-center">
+                                <a href="https://github.com/7cougar7/machine-learning-learning" target="_blank"
+                                    class="dark-color">View more projects &raquo;</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-7" style="padding-left: 10px !important; padding-right: 10px !important;">
+            <div class="container-fluid h-100 d-flex flex-column g-0">
+                <div class="glass-card mb-0" style="height: auto; opacity: 0;">
+                    {# <p class="dark-color">Test</p>#}
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col text-center">
+                                <h1 class="dark-color card-title">Welcome to My Website!</h2>
+                            </div>
+                        </div>
+                        <p class="lead dark-color card-text">
+                            &emsp;Hi, I'm Atilano Garcia, a software developer who is passionate
+                            about using technology to solve real-world problems and make people's lives easier. I have
+                            worked on
+                            various software development projects, ranging from small-scale web applications to large
+                            enterprise-level software systems. Through my experience, I have developed a deep
+                            understanding
+                            of
+                            multiple programming languages and development frameworks.
+                        </p>
+                        <p class="lead dark-color card-text">
+                            &emsp;My approach to software development is centered around creating solutions that are
+                            intuitive,
+                            efficient, and user-friendly. I believe that technology should always work for people, not
+                            against
+                            them, and that software should always be designed with the end user in mind. Whether I am
+                            developing
+                            a new software application or optimizing an existing system, I work closely with my clients
+                            to
+                            understand their needs and deliver solutions that meet their unique requirements.
+                        </p>
+                    </div>
+                </div>
+                <div class="glass-card flex-grow-1" style="height: auto; opacity: 0;">
+                    <div class="h-100 d-flex align-items-center">
+                        <div class="row w-100">
+                            <div class="col text-center">
+                                <a href="https://www.linkedin.com/in/atilano-garcia/"><i
+                                        class="fa fa-linkedin dark-color fa-2x mx-3"></i></a>
+                                <a href="https://www.github.com/7cougar7"><i
+                                        class="fab fa-github dark-color fa-2x mx-3"></i></a>
+                                <a href="https://www.instagram.com/tilo.g_"><i
+                                        class="fa fa-instagram dark-color fa-2x mx-3"></i></a>
+                                <a href="https://twitter.com/tilo_g__"><i
+                                        class="fa fa-twitter dark-color fa-2x mx-3"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
