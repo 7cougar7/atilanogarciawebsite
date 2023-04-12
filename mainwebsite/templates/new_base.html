@@ -23,7 +23,7 @@
     {% csrf_token %}
     <script type="text/javascript">
         // Change class names in css file then replace here using document to avoid flicker
-        const dark_mode = localStorage.getItem("dark_mode");
+        let dark_mode = localStorage.getItem("dark_mode");
         if (dark_mode == null) {
             localStorage.setItem("dark-mode", "false");
             dark_mode = "false";
