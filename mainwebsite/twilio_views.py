@@ -10,15 +10,15 @@ logger = logging.getLogger(__name__)
 MENU_OPTIONS = {
     1: {
         'description': 'a dank beat',
-        'sound_url': static('mainwebsite/music/swamp_remix.mp3')
+        'sound_url': static("mainwebsite/music/swamp_remix.mp3")
         },
     2: {
         'description': 'hype music',
-        'sound_url': static('mainwebsite/music/hype_music.mp3')
+        'sound_url': static("mainwebsite/music/hype_music.mp3")
         },
     3: {
         'description': 'Taylor',
-        'sound_url': static('mainwebsite/music/paper_rings.mp3')
+        'sound_url': static("mainwebsite/music/paper_rings.mp3")
         },
     4: {
         'description': 'something crazy',
