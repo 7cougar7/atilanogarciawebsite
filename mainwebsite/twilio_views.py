@@ -62,6 +62,7 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
         selection = int(request.POST.get('Digits'))
         if selection not in get_menu_options().keys():
             raise Exception
+        logger.info(f'{selection=}')
     except Exception as error:
         response.say('Please select an option from the list.')
         response.redirect(reverse('twilio_incoming'))
@@ -70,12 +71,13 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
     else:
         try:
             if selection == 4:
-                response.repeat(
+                response.say(
                     'Crazy? I was crazy once. \
                     They locked me in a room. \
                     A rubber room. \
                     A rubber room with rats. \
-                    And rats make me crazy'
+                    And rats make me crazy',
+                    loop=10
                 )
             else:
                 response.play(get_menu_options()[selection]['song_url'])
