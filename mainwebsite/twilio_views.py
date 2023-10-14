@@ -6,25 +6,25 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 
 logger = logging.getLogger(__name__)
-
-MENU_OPTIONS = {
-    1: {
-        'description': 'a dank beat',
-        'sound_url': static("mainwebsite/music/swamp_remix.mp3")
-        },
-    2: {
-        'description': 'hype music',
-        'sound_url': static("mainwebsite/music/hype_music.mp3")
-        },
-    3: {
-        'description': 'Taylor',
-        'sound_url': static("mainwebsite/music/paper_rings.mp3")
-        },
-    4: {
-        'description': 'something crazy',
-        'sound_url': ''
-        }
-}
+def get_menu_options():
+    return {
+        1: {
+            'description': 'a dank beat',
+            'sound_url': static("mainwebsite/music/swamp_remix.mp3")
+            },
+        2: {
+            'description': 'hype music',
+            'sound_url': static("mainwebsite/music/swamp_remix.mp3")
+            },
+        3: {
+            'description': 'Taylor',
+            'sound_url': static("mainwebsite/music/swamp_remix.mp3")
+            },
+        4: {
+            'description': 'something crazy',
+            'sound_url': ''
+            }
+    }
 
 @twilio_view
 def twilio_incoming(request: HttpRequest) -> HttpResponse:
@@ -39,7 +39,7 @@ def twilio_incoming(request: HttpRequest) -> HttpResponse:
         timeout=20,
     ) as gather:
         prompt = 'Please press'
-        for key, info in MENU_OPTIONS.items():
+        for key, info in get_menu_options().items():
             if key == dict.keys()[-1]:
                 prompt += ', or '
             prompt += f' {key} for {info["description"]}'
@@ -58,7 +58,7 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
     response = VoiceResponse()
     try:
         selection = int(request.POST.get('Digits'))
-        if selection not in MENU_OPTIONS.keys():
+        if selection not in get_menu_options().keys():
             raise Exception
     except Exception:
         response.say('Please select an option from the list.')
@@ -74,6 +74,6 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
                 And rats make me crazy'
             )
         else:
-            response.play(MENU_OPTIONS[selection]['song_url'])
+            response.play(get_menu_options()[selection]['song_url'])
     
     return HttpResponse(str(response), content_type='text/xml')
