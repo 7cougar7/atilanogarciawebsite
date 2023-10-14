@@ -40,10 +40,10 @@ def twilio_incoming(request: HttpRequest) -> HttpResponse:
         ) as gather:
             prompt = 'Please press'
             for key, info in get_menu_options().items():
-                if key == dict.keys()[-1]:
+                if key == get_menu_options().keys()[-1]:
                     prompt += ', or '
                 prompt += f' {key} for {info["description"]}'
-                if key != dict.keys()[-1]:
+                if key != get_menu_options().keys()[-1]:
                     prompt += ','
                 else:
                     prompt += '.'
