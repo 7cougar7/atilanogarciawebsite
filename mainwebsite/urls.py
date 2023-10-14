@@ -16,7 +16,7 @@ urlpatterns = [
     path('r/<str:shortened_url>/', views.redirect_url, name='redirection'),
     path('graduation/', views.graduation, name='graduation'),
     path('twilio_incoming/', twilio_views.twilio_incoming, name='twilio_incoming'),
-    path('twilio_outgoing/', twilio_views.twilio_outgoing, name='twilio_outgoing')
+    path('twilio_menu_action/', twilio_views.twilio_menu_action, name='twilio_menu_action')
 ]
 
 handler404 = "mainwebsite.views.page_not_found_view"
