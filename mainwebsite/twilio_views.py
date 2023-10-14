@@ -84,8 +84,8 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
             else:
                 print(get_menu_options())
                 print(get_menu_options()[selection])
-                print(get_menu_options()[selection]['song_url'])
-                response.play(get_menu_options()[selection]['song_url'])
+                print(get_menu_options()[selection]['sound_url'])
+                response.play(get_menu_options()[selection]['sound_url'])
         except Exception as error:
             logger.error(error)
             print(error)
