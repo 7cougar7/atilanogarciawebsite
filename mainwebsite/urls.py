@@ -1,6 +1,7 @@
 from django.urls import path
 
 from mainwebsite import views, views_dnd, twilio_views
+import django_twilio
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
@@ -16,7 +17,7 @@ urlpatterns = [
     path('graduation/', views.graduation, name='graduation'),
     path('twilio_incoming/', twilio_views.twilio_incoming, name='twilio_incoming'),
     path('twilio_outgoing/', twilio_views.twilio_outgoing, name='twilio_outgoing'),
-    path('hello_world/', 'django_twilio.views.say', {
+    path('hello_world/', django_twilio.views.say, {
         'text': 'Hello, world! This is just a test of all those crazy test type things'
     }),
 ]
