@@ -31,25 +31,27 @@ def twilio_incoming(request: HttpRequest) -> HttpResponse:
     '''Respond to incoming phone calls with a 'Hello world' message'''
     # Start our TwiML response
     response = VoiceResponse()
-    
-    response.say('Welcome to Tealow\'s Phone Application')
-    with response.gather(
-        action=reverse('twilio_menu_action'),
-        numDigits=1,
-        timeout=20,
-    ) as gather:
-        prompt = 'Please press'
-        for key, info in get_menu_options().items():
-            if key == dict.keys()[-1]:
-                prompt += ', or '
-            prompt += f' {key} for {info["description"]}'
-            if key != dict.keys()[-1]:
-                prompt += ','
-            else:
-                prompt += '.'
-        gather.say(prompt)
-    response.say('We did not receive your selection')
-    response.redirect('')
+    try:
+        response.say('Welcome to Tealow\'s Phone Application')
+        with response.gather(
+            action=reverse('twilio_menu_action'),
+            numDigits=1,
+            timeout=20,
+        ) as gather:
+            prompt = 'Please press'
+            for key, info in get_menu_options().items():
+                if key == dict.keys()[-1]:
+                    prompt += ', or '
+                prompt += f' {key} for {info["description"]}'
+                if key != dict.keys()[-1]:
+                    prompt += ','
+                else:
+                    prompt += '.'
+            gather.say(prompt)
+        response.say('We did not receive your selection')
+        response.redirect('')
+    except Exception as error:
+        logger.error(error)
 
     return HttpResponse(str(response), content_type='text/xml')
 
