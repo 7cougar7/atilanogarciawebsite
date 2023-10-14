@@ -16,10 +16,7 @@ urlpatterns = [
     path('r/<str:shortened_url>/', views.redirect_url, name='redirection'),
     path('graduation/', views.graduation, name='graduation'),
     path('twilio_incoming/', twilio_views.twilio_incoming, name='twilio_incoming'),
-    path('twilio_outgoing/', twilio_views.twilio_outgoing, name='twilio_outgoing'),
-    path('hello_world/', django_twilio.views.say, {
-        'text': 'Hello, world! This is just a test of all those crazy test type things'
-    }),
+    path('twilio_outgoing/', twilio_views.twilio_outgoing, name='twilio_outgoing')
 ]
 
 handler404 = "mainwebsite.views.page_not_found_view"

@@ -15,7 +15,7 @@ def twilio_incoming(request):
     resp = VoiceResponse()
 
     # Read a message aloud to the caller
-    resp.say("Hello world! Tealow testing")
+    resp.say("Hello world! Tealow testing this is saying a weird word potato football swift")
 
     return str(resp)
     
