@@ -73,3 +73,10 @@ def redirect_url(request, shortened_url):
     possible_url = models.ShortenedUrl.objects.filter(shortened_url=shortened_url)
     if possible_url.exists():
         return redirect(possible_url.first().real_url)
+
+def translator(request):
+    context = {
+        'title': 'Translator',
+        'content': 'translator'
+    }
+    return render(request, 'translator.html', context)

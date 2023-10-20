@@ -15,6 +15,7 @@ urlpatterns = [
     path('url_shortener_submit/', views.url_shortener_submit, name='urlShortenerSubmit'),
     path('r/<str:shortened_url>/', views.redirect_url, name='redirection'),
     path('graduation/', views.graduation, name='graduation'),
+    path('translator/', views.translator, name='translator'),
     path('twilio_incoming/', twilio_views.twilio_incoming, name='twilio_incoming'),
     path('twilio_menu_action/', twilio_views.twilio_menu_action, name='twilio_menu_action')
 ]
