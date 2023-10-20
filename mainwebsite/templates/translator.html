@@ -38,22 +38,16 @@
 
 {% block content %}
     <div class="glass-card"
-         style="height: 45vh; opacity: 0; display: flex; justify-content: center; align-items: center;">
+    style="height: 45vh; opacity: 0; display: flex; justify-content: center; align-items: center;">
         <div class="column w-100">
             <div class="row">
                 <div class="input-group center-elements p-5">
-                    <input type="text" class="form-control" aria-label="URL To Shorten"
-                           aria-describedby="inputGroup-sizing-default" placeholder="URL To Shorten" id="urlInput">
+                    <input type="text" class="form-control" aria-label="Caller Phone Number"
+                            aria-describedby="inputGroup-sizing-default" placeholder="Caller Phone Number" id="callerNumber">
+                    <input type="text" class="form-control" aria-label="Callee Phone Number"
+                            aria-describedby="inputGroup-sizing-default" placeholder="Callee Phone Number" id="calleeNumber">
                     <button type="button" class="btn light-fill" onclick="submitForm()"><span
                             class="dark-color">Shorten URL</span></button>
-                </div>
-            </div>
-
-            <div id="shortenedUrlArea" class="row" style="display: none; justify-content: center; align-items: center;">
-                <div class="input-group center-elements w-50 px-5">
-                    <input type="text" class="form-control" aria-label="Shortened URL"
-                            aria-describedby="inputGroup-sizing-default" placeholder="Shortened URL" id="shortenedUrlField">
-                    <button type="button" class="btn light-fill" onclick="copyUrl()"><i class="far fa-clipboard"></i></button>
                 </div>
             </div>
         </div>

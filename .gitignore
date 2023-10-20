@@ -6,4 +6,6 @@ db.sqlite3
 media/
 venv/
 .gitignore
-staticfiles/
+staticfiles/db.sqlite3
+.vscode/*
+staticfiles/*
