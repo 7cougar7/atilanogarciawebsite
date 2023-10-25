@@ -65,7 +65,7 @@ def url_shortener_submit(request):
         if url:
             shortened_url = models.ShortenedUrl(real_url=url)
             shortened_url.save()
-            return JsonResponse({'shortened_url': request.build_absolute_uri("r/" + shortened_url.shortened_url)})
+            return JsonResponse({'shortened_url': request.build_absolute_uri(f"r/{shortened_url.shortened_url}")})
     return JsonResponse({})
 
 

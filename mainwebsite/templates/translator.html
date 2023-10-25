@@ -2,34 +2,16 @@
 
 {% block js %}
     <script>
-        function copyUrl() {
-            /* Get the text field */
-            let copyText = document.getElementById("shortenedUrlField");
-
-            /* Select the text field */
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); /* For mobile devices */
-
-            /* Copy the text inside the text field */
-            navigator.clipboard.writeText(copyText.value);
-
-            /* Alert the copied text */
-            alert("Copied the text: " + copyText.value);
-        }
-
         function submitForm() {
             $.ajax({
-                url: "{% url 'urlShortenerSubmit' %}",
+                url: "{% url 'start_two_way' %}",
                 dataType: "json",
                 type: "POST",
                 async: true,
                 data: {
-                    "url": $("#urlInput").val(),
+                    "caller_phone_number": $("#callerNumber").val(),
+                    "callee_phone_number": $("#calleeNumber").val(),
                     'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
-                },
-                success: function (data) {
-                    $("#shortenedUrlArea").show()
-                    $("#shortenedUrlField").val(data['shortened_url'])
                 }
             });
         }
