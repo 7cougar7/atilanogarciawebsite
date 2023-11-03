@@ -3,6 +3,16 @@ from django.db import models
 from django.utils.crypto import get_random_string
 from phonenumber_field.modelfields import PhoneNumberField
 
+AVAILABLE_LANGUAGES = [
+    'en-us',
+    'es-mx',
+    'fr',
+    'vi',
+    'ko'
+]
+
+def get_gtrans_code(locale):
+    return locale.replace('-', '_')
 
 def unique_short_code():
     while True:
@@ -18,10 +28,18 @@ class ShortenedUrl(models.Model):
 
 class PhoneNumber(models.Model):
     phone_number = PhoneNumberField(null=False, blank=False, unique=True)
-    language = models.CharField(max_length=5, null=True, blank=True, default="")
-    
+    language = models.CharField(max_length=5, null=True, blank=True, default="", choices=zip(AVAILABLE_LANGUAGES, AVAILABLE_LANGUAGES))
+
     def __str__(self):
         return str(self.phone_number)
+
+    @property
+    def gtrans_lang_code(self):
+        return get_gtrans_code(self.language)
+
+    @property
+    def twilio_lang_code(self):
+        return self.language
 
 
 class PhoneNumberAdmin(admin.ModelAdmin):
@@ -34,6 +52,8 @@ class PhoneCallSession(models.Model):
 
     callee = models.ForeignKey(PhoneNumber, null=True, on_delete=models.CASCADE, related_name='callee')
     callee_is_active = models.BooleanField(default=False)
+    
+    call_sid = models.CharField(max_length=50, null=True, blank=True, default='')
     
     @property
     def in_progress(self):
@@ -59,10 +79,10 @@ class PhoneCallSession(models.Model):
         self.callee_is_active = True
         self.save()
 
+
 class PhoneCallSessionAdmin(admin.ModelAdmin):
     list_display = ['caller', 'callee', 'in_progress']
         
-
 
 admin.site.register(ShortenedUrl)
 admin.site.register(PhoneNumber, PhoneNumberAdmin)

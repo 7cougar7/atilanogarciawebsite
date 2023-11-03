@@ -18,7 +18,9 @@ urlpatterns = [
     path('translator/', views.translator, name='translator'),
     path('twilio_incoming/', twilio_views.twilio_incoming, name='twilio_incoming'),
     path('twilio_menu_action/', twilio_views.twilio_menu_action, name='twilio_menu_action'),
-    path('start_two_way/', translator_calls.start_two_way, name='start_two_way')
+    path('start_two_way/', translator_calls.start_two_way, name='start_two_way'),
+    path('set_language/', translator_calls.set_language, name='set_language'),
+    path('establish_language_menu/', translator_calls.establish_language_menu, name='establish_language_menu'),
 ]
 
 handler404 = "mainwebsite.views.page_not_found_view"

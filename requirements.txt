@@ -1,4 +1,5 @@
 asgiref==3.7.2
+Babel==2.13.1
 certifi==2020.4.5.1
 chardet==3.0.4
 charset-normalizer==3.3.0
@@ -8,9 +9,17 @@ Django==4.2.6
 django-heroku==0.3.1
 django-phonenumber-field==7.2.0
 django-twilio==0.14.3.2
+googletrans==4.0.0rc1
 gunicorn==20.0.4
-h11==0.14.0
+h11==0.9.0
+h2==3.2.0
+hpack==3.0.0
+hstspreload==2023.1.1
+httpcore==0.9.1
+httpx==0.13.3
+hyperframe==5.2.0
 idna==2.9
+iso-639==0.4.5
 load-dotenv==0.1.0
 numpy==1.26.0
 phonenumbers==8.13.22
@@ -20,6 +29,8 @@ PyJWT==2.8.0
 python-dotenv==1.0.0
 pytz==2019.1
 requests==2.31.0
+rfc3986==1.5.0
+sniffio==1.3.0
 sqlparse==0.4.4
 twilio==7.17.0
 typing_extensions==4.8.0

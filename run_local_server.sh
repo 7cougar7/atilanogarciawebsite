@@ -5,4 +5,4 @@ if [ ! -d "$DIR" ]; then
 fi
 source venv/bin/activate
 ./build.sh
-./start_server.sh -- --reload
+gunicorn atilanogarciawebsite.asgi:application -k uvicorn.workers.UvicornWorker --reload
