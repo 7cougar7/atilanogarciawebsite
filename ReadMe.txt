@@ -1,1 +1,0 @@
-waitress-serve --listen=*:8000 atilanogarciawebsite.wsgi:application
