@@ -46,6 +46,7 @@ class PhoneNumber(models.Model):
         return self.language
 
 
+@admin.register(PhoneNumber)
 class PhoneNumberAdmin(admin.ModelAdmin):
     list_display = ["phone_number", "language"]
 
@@ -88,10 +89,9 @@ class PhoneCallSession(models.Model):
         self.save()
 
 
+@admin.register(PhoneCallSession)
 class PhoneCallSessionAdmin(admin.ModelAdmin):
     list_display = ["caller", "callee", "in_progress"]
 
 
 admin.site.register(ShortenedUrl)
-admin.site.register(PhoneNumber, PhoneNumberAdmin)
-admin.site.register(PhoneCallSession, PhoneCallSessionAdmin)

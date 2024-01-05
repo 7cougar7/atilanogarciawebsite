@@ -1,5 +1,4 @@
 from django.urls import path
-
 from mainwebsite import views, views_dnd, twilio_views, translator_calls
 
 urlpatterns = [
