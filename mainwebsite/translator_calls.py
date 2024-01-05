@@ -29,11 +29,11 @@ def start_two_way(request: HttpRequest) -> HttpResponse:
                     phone_number_model=session.caller,
                 )
 
-                # initiate_phone_call(
-                #     request=request,
-                #     session_model=session,
-                #     phone_number_model=session.callee
-                # )
+                initiate_phone_call(
+                    request=request,
+                    session_model=session,
+                    phone_number_model=session.callee,
+                )
                 return HttpResponse(status=200)
             except Exception as error:
                 logger.exception(error)

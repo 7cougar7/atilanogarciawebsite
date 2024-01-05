@@ -8,6 +8,7 @@ flake8
 flake8-black
 flake8-bugbear
 googletrans-py
+google-cloud-speech
 gunicorn
 numpy
 pip-tools

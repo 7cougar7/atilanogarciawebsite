@@ -9,3 +9,4 @@ venv/
 staticfiles/db.sqlite3
 .vscode/*
 staticfiles/*
+phone-translator-*.json

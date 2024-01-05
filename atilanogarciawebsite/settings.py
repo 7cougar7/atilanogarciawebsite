@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     ".atilanogarcia.com",
     ".tilogarcia.com",
     ".tilog.me",
+    ".ngrok-free.app",
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
