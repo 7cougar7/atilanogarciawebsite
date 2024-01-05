@@ -3,14 +3,14 @@ from babel import Locale
 from django.templatetags.static import static
 from django_twilio.decorators import twilio_view
 from django_twilio.request import decompose
-from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.voice_response import VoiceResponse, Start
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 from mainwebsite import models
 from googletrans import Translator
-from twilio import twiml
 from twilio.rest import Client
 import atilanogarciawebsite.settings as settings
+from django.contrib.sites.shortcuts import get_current_site
 
 logger = logging.getLogger(__name__)
 translator = Translator()
@@ -29,11 +29,12 @@ def start_two_way(request: HttpRequest)  -> HttpResponse:
                     session_model=session,
                     phone_number_model=session.caller
                 )
-                initiate_phone_call(
-                    request=request,
-                    session_model=session,
-                    phone_number_model=session.callee
-                )
+    
+                # initiate_phone_call(
+                #     request=request,
+                #     session_model=session,
+                #     phone_number_model=session.callee
+                # )
                 return HttpResponse(status=200)
             except Exception as error:
                 logger.exception(error)
@@ -132,6 +133,16 @@ def set_language(request: HttpRequest) -> HttpResponse:
 
 def initiate_phone_call(request: HttpRequest, session_model: models.PhoneCallSession, phone_number_model: models.PhoneNumber):
     twiml = VoiceResponse()
+    start = Start()
+    protocol = 'ws'
+    if request.build_absolute_uri()[:5] == 'https':
+        protocol += 's'
+
+    websocket_url = f'{protocol}://{get_current_site(request)}/ws/call/'
+    print(f'{websocket_url=}')
+    start.stream(url=websocket_url)
+    twiml.append(start)
+
     if not phone_number_model.language:
         establish_language_menu(request, twiml, phone_number_model)
     else:
@@ -145,8 +156,8 @@ def initiate_phone_call(request: HttpRequest, session_model: models.PhoneCallSes
             language=phone_number_model.twilio_lang_code,
             message=translated_message
         )
+    twiml.pause(10)
     
-    print(str(twiml))
     call = client.calls.create(
         twiml=twiml,
         to=str(phone_number_model.phone_number),

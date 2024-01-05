@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mainwebsite',
-    'django_twilio'
+    'django_twilio',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -132,6 +133,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 APPEND_SLASH = True
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Activate Django-Heroku
 django_heroku.settings(locals())
