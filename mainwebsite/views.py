@@ -1,7 +1,4 @@
-import json
 import logging
-import numpy
-import requests
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 

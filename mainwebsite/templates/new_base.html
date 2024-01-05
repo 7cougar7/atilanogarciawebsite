@@ -57,6 +57,10 @@
             $('.carousel-dark' + selectorModifer).addClass('carousel-temp').removeClass('carousel-dark')
             $('.carousel' + selectorModifer).addClass('carousel-dark').removeClass('carousel')
             $('.carousel-temp' + selectorModifer).addClass('carousel').removeClass('carousel-temp')
+
+            $('.navbar-dark' + selectorModifer).addClass('navbar-temp').removeClass('navbar-dark')
+            $('.navbar-light' + selectorModifer).addClass('navbar-dark').removeClass('navbar-light')
+            $('.navbar-temp' + selectorModifer).addClass('navbar-light').removeClass('navbar-temp')
             if (setStorage) {
                 const dark_mode = localStorage.getItem("dark_mode");
                 if (dark_mode === "true") {
@@ -104,7 +108,7 @@
 <body>
     <div class="container my-auto">
         <div>
-            <nav class="navbar navbar-expand-lg mt-2">
+            <nav class="navbar navbar-light navbar-expand-lg mt-2">
                 <div class="container-fluid">
                     <a class="navbar-brand dark-color fs-4" href="/">Atilano Garcia</a>
                     <button class="navbar-toggler mb-2" type="button" data-bs-toggle="collapse"
