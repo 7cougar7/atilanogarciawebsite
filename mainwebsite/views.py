@@ -1,4 +1,5 @@
 import logging
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
@@ -59,9 +60,7 @@ def url_shortener_submit(request):
             shortened_url.save()
             return JsonResponse(
                 {
-                    "shortened_url": request.build_absolute_uri(
-                        f"r/{shortened_url.shortened_url}"
-                    )
+                    "shortened_url": f"{get_current_site(request)}/r/{shortened_url.shortened_url}"
                 }
             )
     return JsonResponse({})
