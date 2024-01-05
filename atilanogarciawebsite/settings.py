@@ -31,9 +31,9 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "atilanogarcia.com",
-    "tilogarcia.com",
-    "tilog.me",
+    ".atilanogarcia.com",
+    ".tilogarcia.com",
+    ".tilog.me",
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
