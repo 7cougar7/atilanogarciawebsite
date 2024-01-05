@@ -14,12 +14,15 @@ from django.core.asgi import get_asgi_application
 from django.urls import path
 from atilanogarciawebsite.translator_consumers import CallConsumer
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atilanogarciawebsite.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "atilanogarciawebsite.settings")
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket":
-        URLRouter([
-             path('ws/call/', CallConsumer.as_asgi()),
-    ]),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": URLRouter(
+            [
+                path("ws/call/", CallConsumer.as_asgi()),
+            ]
+        ),
+    }
+)

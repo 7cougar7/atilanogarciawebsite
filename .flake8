@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 88
+exclude = 
+    .git
+    __pycache__
+    venv
+    db.sqlite3
+    .env
+    staticfiles
+    migrations
+select = C,E,F,W,B,B950,BLK
+extend-ignore = E203, E501, E704, W503
