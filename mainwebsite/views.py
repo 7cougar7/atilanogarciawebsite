@@ -45,6 +45,8 @@ def resume(request):
     }
     return render(request, 'base.html', context)
 
+def linkedin(request):
+    return redirect("https://www.linkedin.com/in/atilano-garcia/")
 
 def calendar_webpage(request):
     return render(request, 'calendar.html')
