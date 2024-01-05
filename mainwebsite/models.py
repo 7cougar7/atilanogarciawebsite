@@ -4,8 +4,8 @@ from django.utils.crypto import get_random_string
 from phonenumber_field.modelfields import PhoneNumberField
 
 AVAILABLE_LANGUAGES = [
-    'en-us',
-    'es-mx',
+    'en-US',
+    'es-MX',
     'fr',
     'vi',
     'ko'
@@ -48,12 +48,13 @@ class PhoneNumberAdmin(admin.ModelAdmin):
 
 class PhoneCallSession(models.Model):  
     caller = models.ForeignKey(PhoneNumber, null=True, on_delete=models.CASCADE, related_name='caller')
+    caller_sid = models.CharField(max_length=50, null=True, blank=True, default='')
     caller_is_active = models.BooleanField(default=False)
 
     callee = models.ForeignKey(PhoneNumber, null=True, on_delete=models.CASCADE, related_name='callee')
+    callee_sid = models.CharField(max_length=50, null=True, blank=True, default='')
     callee_is_active = models.BooleanField(default=False)
     
-    call_sid = models.CharField(max_length=50, null=True, blank=True, default='')
     
     @property
     def in_progress(self):

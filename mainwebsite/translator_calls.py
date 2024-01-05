@@ -26,8 +26,13 @@ def start_two_way(request: HttpRequest)  -> HttpResponse:
                 setup_callee(callee_phone_number, session)
                 initiate_phone_call(
                     request=request,
-                    phone_session_model=session,
+                    session_model=session,
                     phone_number_model=session.caller
+                )
+                initiate_phone_call(
+                    request=request,
+                    session_model=session,
+                    phone_number_model=session.callee
                 )
                 return HttpResponse(status=200)
             except Exception as error:
@@ -64,15 +69,14 @@ def setup_callee(callee_phone_number: str, session: models.PhoneCallSession) -> 
 
 
 
-def establish_language_menu(twiml):
-    
+def establish_language_menu(request: HttpRequest, twiml: VoiceResponse, phone_number_model: models.PhoneNumber):
     twiml.say('You do not have a set language yet')
     
     try:
         with twiml.gather(
-            action=reverse('set_language'), #, kwargs={'phone_model_id': phone_number_model.id}),
+            action=f'{request.build_absolute_uri(reverse("set_language"))}?phone_number_model_id={phone_number_model.id}',
             numDigits=1,
-            timeout=20,
+            timeout=20
         ) as gather:
             for index, lang_code in enumerate(models.AVAILABLE_LANGUAGES):
                 split_code = lang_code.split('-')
@@ -81,17 +85,18 @@ def establish_language_menu(twiml):
                     territory=split_code[1] if len(split_code) == 2 else ''
                 )
                 
-                prompt = f'Press {index+1} to set your language to {locale.display_name}.'
-                print(prompt)
+                prompt = f'Press {index+1} to set your language to'
+                
+                translated_prompt = translator.translate(
+                    text=prompt, 
+                    dest=models.get_gtrans_code(lang_code)
+                )
+
                 gather.say(
                     language=lang_code,
-                    message=translator.translate(
-                        text=prompt, 
-                        dest=models.get_gtrans_code(lang_code)
-                    )
+                    message=f'{translated_prompt.text} {locale.display_name}.'
                 )
             gather.say('Or press pound to repeat this menu.')
-        twiml.redirect('')
     except Exception as error:
         logger.error(error)
         print(error)
@@ -99,24 +104,25 @@ def establish_language_menu(twiml):
     return twiml
 
 
+@twilio_view
 def set_language(request: HttpRequest) -> HttpResponse:
     response = VoiceResponse()
     try:
         selection = int(request.POST.get('Digits'))
         if selection > len(models.AVAILABLE_LANGUAGES):
             raise Exception
-        logger.info(f'{selection=}')
+        
+        phone_number_model_id = int(request.GET.get('phone_number_model_id'))
+        print(f'{phone_number_model_id=}')
+        phone_number_model = models.PhoneNumber.objects.get(id=phone_number_model_id)
     except Exception as error:
         response.say('Please select an option from the list.')
-        response.redirect(reverse('establish_language_menu'))
         logger.error(error)
         print(error)
-    
     else:
         try:
-            twilio_resp = decompose(request)
-            logger.info(f'{twilio_resp=}')
-            print(f'{twilio_resp=}')
+            phone_number_model.language = models.AVAILABLE_LANGUAGES[selection-1]
+            phone_number_model.save()
         except Exception as error:
             logger.error(error)
             print(error)
@@ -124,11 +130,10 @@ def set_language(request: HttpRequest) -> HttpResponse:
     return str(response)
 
 
-def initiate_phone_call(request: HttpRequest, phone_session_model: models.PhoneCallSession, phone_number_model: models.PhoneNumber):
+def initiate_phone_call(request: HttpRequest, session_model: models.PhoneCallSession, phone_number_model: models.PhoneNumber):
     twiml = VoiceResponse()
     if not phone_number_model.language:
-        # twiml.redirect(reverse('establish_language_menu'))
-        establish_language_menu(twiml)
+        establish_language_menu(request, twiml, phone_number_model)
     else:
         message_to_translate = "Hello, world!"
         translated_message = translator.translate(
@@ -148,10 +153,10 @@ def initiate_phone_call(request: HttpRequest, phone_session_model: models.PhoneC
         from_='+18445680811'
     )
     
-    phone_session_model.call_sid = call.sid
-    phone_session_model.save()
-    
-    if not phone_number_model.language:
-        twiml.redirect(reverse('establish_language_menu'))
+    if session_model.callee == phone_number_model:
+        session_model.callee_sid = call.sid
+    else:
+        session_model.caller_sid = call.sid
+    session_model.save()
     
     return call
