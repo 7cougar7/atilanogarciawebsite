@@ -15,7 +15,7 @@ def on_transcription_response(response):
         return
 
     transcription = result.alternatives[0].transcript
-    print("Transcription: " + transcription)
+    print(transcription)
 
 
 class CallConsumer(WebsocketConsumer):
@@ -46,10 +46,11 @@ class CallConsumer(WebsocketConsumer):
         message = json.loads(text_data)
         event = message["event"]
         if event == "connected":
+            print(f"{message=}")
             print("A new call has connected")
 
-        elif event == "started":
-            print(f"Starting Media Stream {message.streamSid}")
+        elif event == "start":
+            print(f'{message["start"]["customParameters"]["phoneNumber"]=}')
 
         elif event == "media":
             media = message["media"]

@@ -1,7 +1,7 @@
 import logging
 from babel import Locale
 from django_twilio.decorators import twilio_view
-from twilio.twiml.voice_response import VoiceResponse, Start
+from twilio.twiml.voice_response import VoiceResponse, Start, Stream
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 from mainwebsite import models
@@ -29,11 +29,11 @@ def start_two_way(request: HttpRequest) -> HttpResponse:
                     phone_number_model=session.caller,
                 )
 
-                initiate_phone_call(
-                    request=request,
-                    session_model=session,
-                    phone_number_model=session.callee,
-                )
+                # initiate_phone_call(
+                #     request=request,
+                #     session_model=session,
+                #     phone_number_model=session.callee,
+                # )
                 return HttpResponse(status=200)
             except Exception as error:
                 logger.exception(error)
@@ -144,7 +144,10 @@ def initiate_phone_call(
 
     websocket_url = f"{protocol}://{get_current_site(request)}/ws/call/"
     print(f"{websocket_url=}")
-    start.stream(url=websocket_url)
+    stream = Stream(url=websocket_url)
+    stream.parameter(name="phoneNumber", value=phone_number_model.phone_number)
+    start.append(stream)
+
     twiml.append(start)
 
     if not phone_number_model.language:
@@ -172,5 +175,4 @@ def initiate_phone_call(
     else:
         session_model.caller_sid = call.sid
     session_model.save()
-
-    return call
+    # return call
