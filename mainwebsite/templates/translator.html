@@ -11,6 +11,7 @@
                 data: {
                     "caller_phone_number": $("#callerNumber").val(),
                     "callee_phone_number": $("#calleeNumber").val(),
+                    "access_code": $("#accessCode").val(),
                     'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
                 }
             });
@@ -28,8 +29,10 @@
                             aria-describedby="inputGroup-sizing-default" placeholder="Caller Phone Number" id="callerNumber">
                     <input type="text" class="form-control" aria-label="Callee Phone Number"
                             aria-describedby="inputGroup-sizing-default" placeholder="Callee Phone Number" id="calleeNumber">
+                    <input type="text" class="form-control" aria-label="Access Code"
+                            aria-describedby="inputGroup-sizing-default" placeholder="Access Code" id="accessCode">
                     <button type="button" class="btn light-fill" onclick="submitForm()"><span
-                            class="dark-color">Shorten URL</span></button>
+                            class="dark-color">Initiate Call</span></button>
                 </div>
             </div>
         </div>

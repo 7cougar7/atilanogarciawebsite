@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db import models
+from django.db.models import F
 from django.utils.crypto import get_random_string
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -15,6 +16,16 @@ def unique_short_code():
         code = get_random_string(6)
         if not ShortenedUrl.objects.filter(shortened_url=code).exists():
             return code
+
+
+class TranscribeAccessCode(models.Model):
+    access_code = models.CharField(unique=True, max_length=25)
+
+    number_of_calls = models.PositiveBigIntegerField()
+
+    def increment_calls(self):
+        self.number_of_calls = F("number_of_calls") + 1
+        self.save(update_fields=["number_of_calls"])
 
 
 class ShortenedUrl(models.Model):
@@ -95,3 +106,4 @@ class PhoneCallSessionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ShortenedUrl)
+admin.site.register(TranscribeAccessCode)

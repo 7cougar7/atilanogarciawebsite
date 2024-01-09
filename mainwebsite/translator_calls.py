@@ -17,6 +17,14 @@ client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
 def start_two_way(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
+        try:
+            access_code_model = models.TranscribeAccessCode.objects.get(
+                access_code=request.POST["access_code"]
+            )
+            access_code_model.increment_calls()
+        except Exception as error:
+            print(error)
+            return HttpResponse(status=403)
         caller_phone_number = request.POST["caller_phone_number"]
         callee_phone_number = request.POST["callee_phone_number"]
         if caller_phone_number and callee_phone_number:
