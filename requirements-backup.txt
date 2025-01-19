@@ -58,6 +58,6 @@ twilio==7.17.0
 typing_extensions==4.8.0
 urllib3==2.1.0
 uvicorn==0.23.2
-virtualenv==20.25.0
+virtualenv==20.26.6
 websockets==12.0
 whitenoise==5.0.1

@@ -26,14 +26,17 @@ To view my website locally or contribute, follow the steps below:
    ```bash
    cd atilanogarciawebsite
    ```
-
-3. **Run the Web Application Locally:**
+3. **Create Environment File**
+   ```bash
+   touch .env; echo 'SECRET_KEY="<secret_key>"\nDEBUG="True"' > .env
+   ```
+4. **Run the Web Application Locally:**
      ```bash
-     ./run_local_server.sh
+     source ./run_local_server.sh
      ```
      This will create a virtual environment for the website, install all necessary dependencies and pre-commit hooks, and start the server locally at https://localhost:8000/
 
-4. **Explore and Contribute:**
+5. **Explore and Contribute:**
    Feel free to explore the code, make changes, and submit pull requests. I welcome contributions and feedback!
 
 ## Contact

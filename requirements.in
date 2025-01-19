@@ -10,8 +10,11 @@ flake8-bugbear
 googletrans-py
 google-cloud-speech
 gunicorn
+grpcio==1.69.0
 numpy
 pip-tools
+proto-plus==1.25.0
+protobuf==4.25.5
 phonenumbers
 pre-commit
 python-dotenv

@@ -12,7 +12,6 @@ from django.contrib.sites.shortcuts import get_current_site
 
 logger = logging.getLogger(__name__)
 translator = Translator()
-client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
 
 def start_two_way(request: HttpRequest) -> HttpResponse:
@@ -95,7 +94,7 @@ def establish_language_menu(
                     territory=split_code[1] if len(split_code) == 2 else "",
                 )
 
-                prompt = f"Press {index+1} to set your language to"
+                prompt = f"Press {index + 1} to set your language to"
 
                 translated_prompt = translator.translate(
                     text=prompt, dest=models.get_gtrans_code(lang_code)
@@ -172,7 +171,7 @@ def initiate_phone_call(
         )
     twiml.pause(10)
 
-    call = client.calls.create(
+    call = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN).calls.create(
         twiml=twiml,
         to=str(phone_number_model.phone_number),
         from_="+18445680811",
