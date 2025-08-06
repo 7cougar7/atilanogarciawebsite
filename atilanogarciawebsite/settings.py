@@ -47,9 +47,22 @@ TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "suppress_unauthorized_reg_begin": {
+            "()": "mainwebsite.logging_filters.SuppressUnauthorizedRegBegin",
+        },
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+            "filters": ["suppress_unauthorized_reg_begin"],
         },
     },
     "root": {
