@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from mainwebsite.custom_passkey_views import (
     dynamic_reg_begin,
     dynamic_reg_complete,
@@ -36,4 +37,10 @@ urlpatterns = [
     path("passkeys/auth/complete", custom_auth_complete, name="passkeys_auth_complete"),
     # Include the rest of the passkeys URLs
     path("passkeys/", include("passkeys.urls")),
+    # Custom logout URL that redirects to the passkey login page
+    path(
+        "logout/",
+        auth_views.LogoutView.as_view(next_page="passkey_login"),
+        name="logout",
+    ),
 ]

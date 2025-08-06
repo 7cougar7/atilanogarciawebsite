@@ -9,7 +9,10 @@
                     <h2 class="card-title">Welcome to Your Personal AI Page</h2>
                     <p>This is your personal space. More features will be added soon!</p>
                     <p>You are logged in as: <strong>{{ user.username }}</strong></p>
-                    <a href="{% url 'mainwebsite:logout' %}" class="btn btn-danger">Log Out</a>
+                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Log Out</button>
+                    </form>
                 </div>
             </div>
         </div>
