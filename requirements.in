@@ -1,8 +1,10 @@
 Babel
 black>=24.3.0
+cbor2
 certifi>=2024.07.04
 channels
 Django>=4.2.18
+django-passkeys
 django-phonenumber-field
 django-twilio
 flake8

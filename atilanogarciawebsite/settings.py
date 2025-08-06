@@ -38,9 +38,25 @@ ALLOWED_HOSTS = [
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+LOGIN_URL = "/passkeys-ui/"
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+
+# --- Logging Configuration ---
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
 
 # Application definition
 
@@ -54,6 +70,7 @@ INSTALLED_APPS = [
     "mainwebsite",
     "django_twilio",
     "channels",
+    "passkeys",
 ]
 
 MIDDLEWARE = [

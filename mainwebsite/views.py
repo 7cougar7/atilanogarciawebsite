@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from mainwebsite import models
+from mainwebsite.decorators import passkey_login_required
 
 logger = logging.getLogger(__name__)
 
@@ -75,3 +76,14 @@ def redirect_url(request, shortened_url):
 def translator(request):
     context = {"title": "Translator", "content": "translator"}
     return render(request, "translator.html", context)
+
+
+def passkey_login(request):
+    """Renders the passkey login/registration page."""
+    return render(request, "passkey_login.html")
+
+
+@passkey_login_required
+def personal_ai(request):
+    """Renders the personal AI page, which is accessible after login."""
+    return render(request, "personal_ai.html")

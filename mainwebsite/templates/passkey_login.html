@@ -1,0 +1,197 @@
+{% extends 'new_base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Passkey Login</h2>
+                    <p class="text-center">Log in or register with a passkey. No username required!</p>
+
+                    <div id="messages" class="mb-3"></div>
+
+                    <div class="d-grid gap-2">
+                        <button id="login-button" class="btn btn-primary">Log In with Passkey</button>
+                        <button id="register-button" class="btn btn-secondary">Register a New Passkey</button>
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <small>Note: Registration requires you to be logged in via the admin panel first. If you are a new user, please contact the administrator.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Helper functions to handle Base64 URL encoding/decoding
+    function bufferDecode(value) {
+        return Uint8Array.from(atob(value.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+    }
+
+    function bufferEncode(value) {
+        return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+    }
+
+    // Function to display messages to the user
+    function showMessage(message, isError = false) {
+        const messagesDiv = document.getElementById('messages');
+        const alertType = isError ? 'alert-danger' : 'alert-success';
+        messagesDiv.innerHTML = `<div class="alert ${alertType}">${message}</div>`;
+    }
+
+    // --- Passkey Registration ---
+    document.getElementById('register-button').addEventListener('click', async () => {
+        showMessage('Starting passkey registration...');
+        console.log('[REG_FLOW] Register button clicked. Client origin:', window.location.origin);
+        try {
+            // 1. Get registration options from the server
+            console.log('[REG_FLOW] 1. Fetching registration options from /passkeys/reg/begin...');
+            const resp = await fetch('/passkeys/reg/begin');
+            let options = await resp.json();
+            console.log('[REG_FLOW] 1a. Received raw options from server:', JSON.parse(JSON.stringify(options)));
+
+            // Handle redirect if user is not logged in
+            if (resp.status === 401 && options.status === 'redirect') {
+                console.error('[REG_FLOW] User not authenticated. Redirecting to:', options.redirectUrl);
+                window.location.href = options.redirectUrl;
+                return;
+            }
+
+            if (!resp.ok) {
+                console.error('[REG_FLOW] Server returned an error at begin step:', options);
+                throw new Error(options.message || 'Registration failed at begin step.');
+            }
+
+            // 2. Decode the server options for the WebAuthn API
+            console.log('[REG_FLOW] 2. Decoding server options for WebAuthn API...');
+            options.publicKey.challenge = bufferDecode(options.publicKey.challenge);
+            options.publicKey.user.id = bufferDecode(options.publicKey.user.id);
+            if (options.publicKey.excludeCredentials) {
+                for (let cred of options.publicKey.excludeCredentials) {
+                    cred.id = bufferDecode(cred.id);
+                }
+            }
+            console.log('[REG_FLOW] 2a. Decoded options ready for navigator.credentials.create:', JSON.parse(JSON.stringify(options.publicKey)));
+
+            // 3. Create the credential with the browser's WebAuthn API
+            console.log('[REG_FLOW] 3. Calling navigator.credentials.create()...');
+            const cred = await navigator.credentials.create({ publicKey: options.publicKey });
+            console.log('[REG_FLOW] 3a. navigator.credentials.create() SUCCESS! Raw credential object:', cred);
+
+            // 4. Encode the credential data to send to the server
+            console.log('[REG_FLOW] 4. Encoding credential data for server...');
+            const attestationResponse = {
+                id: cred.id,
+                rawId: bufferEncode(cred.rawId),
+                response: {
+                    clientDataJSON: bufferEncode(cred.response.clientDataJSON),
+                    attestationObject: bufferEncode(cred.response.attestationObject),
+                },
+                type: cred.type,
+            };
+            console.log('[REG_FLOW] 4a. Encoded data ready to send:', attestationResponse);
+
+            // 5. Send the encoded data to the server to complete registration
+            console.log('[REG_FLOW] 5. Sending data to /custom/passkeys/reg/complete...');
+            const regCompleteResp = await fetch('/custom/passkeys/reg/complete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(attestationResponse)
+            });
+
+            if (regCompleteResp.ok) {
+                console.log('[REG_FLOW] 5a. Server responded OK!');
+                showMessage('Registration successful!');
+            } else {
+                const error = await regCompleteResp.json();
+                console.error('[REG_FLOW] 5b. Server responded with an error:', error);
+                throw new Error(error.message || 'Could not register passkey.');
+            }
+        } catch (e) {
+            console.error('[REG_FLOW] An error occurred in the registration flow:', e);
+            showMessage('Error: ' + e.message, true);
+        }
+    });
+
+    // --- Passkey Login (Username-less) ---
+    document.getElementById('login-button').addEventListener('click', async () => {
+        showMessage('Starting passkey login...');
+        console.log('[AUTH_FLOW] Login button clicked. Client origin:', window.location.origin);
+        try {
+            // 1. Get authentication options from the server (no username needed)
+            console.log('[AUTH_FLOW] 1. Fetching authentication options from /passkeys/auth/begin...');
+            const resp = await fetch('/passkeys/auth/begin');
+            let options = await resp.json();
+            console.log('[AUTH_FLOW] 1a. Received raw options from server:', JSON.parse(JSON.stringify(options)));
+
+            if (!resp.ok) {
+                console.error('[AUTH_FLOW] Server returned an error at begin step:', options);
+                throw new Error(options.message || 'Authentication failed at begin step.');
+            }
+
+            // 2. Decode the server options for the WebAuthn API
+            console.log('[AUTH_FLOW] 2. Decoding server options for WebAuthn API...');
+            options.publicKey.challenge = bufferDecode(options.publicKey.challenge);
+            if (options.publicKey.allowCredentials) {
+                for (let cred of options.publicKey.allowCredentials) {
+                    cred.id = bufferDecode(cred.id);
+                }
+            }
+            console.log('[AUTH_FLOW] 2a. Decoded options ready for navigator.credentials.get:', JSON.parse(JSON.stringify(options.publicKey)));
+
+            // 3. Get the credential with the browser's WebAuthn API
+            console.log('[AUTH_FLOW] 3. Calling navigator.credentials.get()...');
+            const cred = await navigator.credentials.get({ publicKey: options.publicKey });
+            console.log('[AUTH_FLOW] 3a. navigator.credentials.get() SUCCESS! Raw credential object:', cred);
+
+            // 4. Encode the credential data to send to the server
+            console.log('[AUTH_FLOW] 4. Encoding credential data for server...');
+            const assertionResponse = {
+                id: cred.id,
+                rawId: bufferEncode(cred.rawId),
+                response: {
+                    clientDataJSON: bufferEncode(cred.response.clientDataJSON),
+                    authenticatorData: bufferEncode(cred.response.authenticatorData),
+                    signature: bufferEncode(cred.response.signature),
+                    userHandle: cred.response.userHandle ? bufferEncode(cred.response.userHandle) : null,
+                },
+                type: cred.type,
+            };
+            console.log('[AUTH_FLOW] 4a. Encoded data ready to send:', assertionResponse);
+
+            // 5. Send the encoded data to the server to complete authentication
+            console.log('[AUTH_FLOW] 5. Sending data to /passkeys/auth/complete...');
+            const authCompleteResp = await fetch('/passkeys/auth/complete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(assertionResponse)
+            });
+
+            if (authCompleteResp.ok) {
+                console.log('[AUTH_FLOW] 5a. Server responded OK!');
+                showMessage('Login successful! Redirecting...');
+                window.location.href = '/personal-ai/'; // Redirect to the personal AI page on success
+            } else {
+                const error = await authCompleteResp.json();
+                console.error('[AUTH_FLOW] 5b. Server responded with an error:', error);
+                throw new Error(error.message || 'Login failed.');
+            }
+        } catch (e) {
+            console.error('[AUTH_FLOW] An error occurred in the authentication flow:', e);
+            showMessage('Error: ' + e.message, true);
+        }
+    });
+</script>
+{% endblock %}
