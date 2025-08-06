@@ -15,3 +15,11 @@ repos:
     rev: 7.0.0
     hooks:
     -   id: flake8
+-   repo: local
+    hooks:
+    -   id: django-test
+        name: Run Django Tests
+        entry: python manage.py test mainwebsite
+        language: system
+        types: [python]
+        pass_filenames: false
