@@ -1,6 +1,12 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from mainwebsite import views, views_dnd, twilio_views, translator_calls
+from mainwebsite.custom_passkey_views import (
+    dynamic_reg_begin,
+    dynamic_reg_complete,
+    dynamic_auth_begin,
+    custom_auth_complete,
+)
 
 app_name = "mainwebsite"
 
@@ -45,6 +51,27 @@ urlpatterns = [
     ),
     path("personal-ai/", views.personal_ai, name="personal_ai"),
     path("passkeys-ui/", views.passkey_login, name="passkey_login"),
+    # Custom Passkey URLs
+    path(
+        "custom/passkeys/reg/begin",
+        dynamic_reg_begin,
+        name="custom_passkey_reg_begin",
+    ),
+    path(
+        "custom/passkeys/reg/complete",
+        dynamic_reg_complete,
+        name="custom_passkey_reg_complete",
+    ),
+    path(
+        "custom/passkeys/auth/begin",
+        dynamic_auth_begin,
+        name="custom_passkey_auth_begin",
+    ),
+    path(
+        "custom/passkeys/auth/complete",
+        custom_auth_complete,
+        name="custom_passkey_auth_complete",
+    ),
     path(
         "logout/",
         auth_views.LogoutView.as_view(template_name="logged_out.html"),

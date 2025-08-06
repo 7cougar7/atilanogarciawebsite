@@ -28,7 +28,12 @@
 <script>
     // Helper functions to handle Base64 URL encoding/decoding
     function bufferDecode(value) {
-        return Uint8Array.from(atob(value.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+        try {
+            return Uint8Array.from(atob(value.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+        } catch (e) {
+            console.error('Failed to decode a base64url string:', value, e);
+            throw new Error('A server-provided value was not correctly encoded. See console for details.');
+        }
     }
 
     function bufferEncode(value) {
@@ -51,10 +56,18 @@
         console.log('[REG_FLOW] Register button clicked. Client origin:', window.location.origin);
         try {
             // 1. Get registration options from the server
-            console.log('[REG_FLOW] 1. Fetching registration options from /passkeys/reg/begin...');
-            const resp = await fetch('/passkeys/reg/begin');
-            let options = await resp.json();
-            console.log('[REG_FLOW] 1a. Received raw options from server:', JSON.parse(JSON.stringify(options)));
+            console.log('[REG_FLOW] 1. Fetching registration options from /custom/passkeys/reg/begin...');
+            const resp = await fetch('/custom/passkeys/reg/begin');
+            const responseText = await resp.text(); // Read as text first!
+            console.log('[REG_FLOW] 1a. Raw server response text:', responseText);
+
+            let options;
+            try {
+                options = JSON.parse(responseText);
+            } catch (e) {
+                console.error('[REG_FLOW] FAILED TO PARSE TEXT AS JSON.');
+                throw new Error('Server sent an invalid response that was not JSON. See raw output above.');
+            }
 
             // Handle redirect if user is not logged in
             if (resp.status === 401 && options.status === 'redirect') {
@@ -70,14 +83,22 @@
 
             // 2. Decode the server options for the WebAuthn API
             console.log('[REG_FLOW] 2. Decoding server options for WebAuthn API...');
+
+            console.log('[REG_FLOW] 2a. Decoding challenge:', options.publicKey.challenge);
             options.publicKey.challenge = bufferDecode(options.publicKey.challenge);
+
+            console.log('[REG_FLOW] 2b. Decoding user.id:', options.publicKey.user.id);
             options.publicKey.user.id = bufferDecode(options.publicKey.user.id);
-            if (options.publicKey.excludeCredentials) {
-                for (let cred of options.publicKey.excludeCredentials) {
+
+            if (options.publicKey.excludeCredentials && options.publicKey.excludeCredentials.length > 0) {
+                console.log('[REG_FLOW] 2c. Decoding excludeCredentials...');
+                for (let i = 0; i < options.publicKey.excludeCredentials.length; i++) {
+                    let cred = options.publicKey.excludeCredentials[i];
+                    console.log(`[REG_FLOW] 2d[${i}]. Decoding credential id:`, cred.id);
                     cred.id = bufferDecode(cred.id);
                 }
             }
-            console.log('[REG_FLOW] 2a. Decoded options ready for navigator.credentials.create:', JSON.parse(JSON.stringify(options.publicKey)));
+            console.log('[REG_FLOW] 2e. Decoded options ready for navigator.credentials.create:', JSON.parse(JSON.stringify(options.publicKey)));
 
             // 3. Create the credential with the browser's WebAuthn API
             console.log('[REG_FLOW] 3. Calling navigator.credentials.create()...');
@@ -128,10 +149,18 @@
         console.log('[AUTH_FLOW] Login button clicked. Client origin:', window.location.origin);
         try {
             // 1. Get authentication options from the server (no username needed)
-            console.log('[AUTH_FLOW] 1. Fetching authentication options from /passkeys/auth/begin...');
-            const resp = await fetch('/passkeys/auth/begin');
-            let options = await resp.json();
-            console.log('[AUTH_FLOW] 1a. Received raw options from server:', JSON.parse(JSON.stringify(options)));
+            console.log('[AUTH_FLOW] 1. Fetching authentication options from /custom/passkeys/auth/begin...');
+            const resp = await fetch('/custom/passkeys/auth/begin');
+            const responseText = await resp.text(); // Read as text first!
+            console.log('[AUTH_FLOW] 1a. Raw server response text:', responseText);
+
+            let options;
+            try {
+                options = JSON.parse(responseText);
+            } catch (e) {
+                console.error('[AUTH_FLOW] FAILED TO PARSE TEXT AS JSON.');
+                throw new Error('Server sent an invalid response that was not JSON. See raw output above.');
+            }
 
             if (!resp.ok) {
                 console.error('[AUTH_FLOW] Server returned an error at begin step:', options);
@@ -169,8 +198,8 @@
             console.log('[AUTH_FLOW] 4a. Encoded data ready to send:', assertionResponse);
 
             // 5. Send the encoded data to the server to complete authentication
-            console.log('[AUTH_FLOW] 5. Sending data to /passkeys/auth/complete...');
-            const authCompleteResp = await fetch('/passkeys/auth/complete', {
+            console.log('[AUTH_FLOW] 5. Sending data to /custom/passkeys/auth/complete...');
+            const authCompleteResp = await fetch('/custom/passkeys/auth/complete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
