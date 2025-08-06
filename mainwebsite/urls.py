@@ -12,6 +12,7 @@ app_name = "mainwebsite"
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
+    path("login/", views.custom_login, name="login"),
     path("resume/", views.resume, name="resume"),
     path("linkedin/", views.linkedin, name="linkedin"),
     path("calendar/", views.calendar_webpage, name="calendar_webpage"),

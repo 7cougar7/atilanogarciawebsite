@@ -1,0 +1,44 @@
+{% extends "new_base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card p-4" style="opacity: 1;">
+                <h2 class="text-center dark-color">Login</h2>
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Your username and password didn't match. Please try again.
+                    </div>
+                {% endif %}
+                {% if next %}
+                    {% if user.is_authenticated %}
+                    <p class="text-center dark-color">Your account doesn't have access to this page. To proceed,
+                    please login with an account that has access.</p>
+                    {% else %}
+                    <p class="text-center dark-color">Please login to see this page.</p>
+                    {% endif %}
+                {% endif %}
+                <form method="post" action="{% url 'mainwebsite:login' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                    <div class="mb-3">
+                        <label for="username" class="form-label dark-color">Username</label>
+                        <input type="text" class="form-control" name="username" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label dark-color">Password</label>
+                        <input type="password" class="form-control" name="password" id="password" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary dark-fill light-color">Login</button>
+                    </div>
+                </form>
+                <p class="text-center mt-3">
+                    <a href="{% url 'mainwebsite:passkey_login' %}" class="dark-color">Login with a Passkey</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

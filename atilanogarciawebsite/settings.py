@@ -38,7 +38,7 @@ ALLOWED_HOSTS = [
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-LOGIN_URL = "/passkeys-ui/"
+LOGIN_URL = "mainwebsite:login"
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")

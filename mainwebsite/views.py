@@ -1,4 +1,6 @@
 import logging
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -7,6 +9,24 @@ from mainwebsite import models
 from mainwebsite.decorators import passkey_login_required
 
 logger = logging.getLogger(__name__)
+
+
+def custom_login(request):
+    redirect_to = request.POST.get("next", request.GET.get("next", ""))
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                if redirect_to:
+                    return redirect(redirect_to)
+                return redirect("mainwebsite:homepage")
+    else:
+        form = AuthenticationForm()
+    return render(request, "login.html", {"form": form, "next": redirect_to})
 
 
 def page_not_found_view(request, exception):

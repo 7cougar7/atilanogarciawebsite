@@ -32,9 +32,7 @@ def get_user_credentials(user):
 
 def dynamic_reg_begin(request):
     if not request.user.is_authenticated:
-        login_url = (
-            f"{reverse('admin:login')}?next={reverse('mainwebsite:passkey_login')}"
-        )
+        login_url = f"{reverse('mainwebsite:login')}?next={reverse('mainwebsite:passkey_login')}"
         return JsonResponse(
             {
                 "error": "You must be logged in to register a new passkey.",
