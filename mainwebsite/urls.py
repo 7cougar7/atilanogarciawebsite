@@ -1,18 +1,26 @@
-from django.urls import path
 from django.contrib.auth import views as auth_views
-from mainwebsite import views, views_dnd, twilio_views, translator_calls
+from django.urls import path
+
+from mainwebsite import translator_calls, twilio_views, views, views_dnd
 from mainwebsite.custom_passkey_views import (
+    custom_auth_complete,
+    dynamic_auth_begin,
     dynamic_reg_begin,
     dynamic_reg_complete,
-    dynamic_auth_begin,
-    custom_auth_complete,
 )
+
+from .views import MagicLinkVerifyView, UnifiedLoginView
 
 app_name = "mainwebsite"
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
-    path("login/", views.custom_login, name="login"),
+    path("login/", UnifiedLoginView.as_view(), name="login"),
+    path(
+        "magic-link-verify/<uidb64>/<token>/",
+        MagicLinkVerifyView.as_view(),
+        name="magic_link_verify",
+    ),
     path("resume/", views.resume, name="resume"),
     path("linkedin/", views.linkedin, name="linkedin"),
     path("calendar/", views.calendar_webpage, name="calendar_webpage"),
@@ -52,6 +60,7 @@ urlpatterns = [
     ),
     path("personal-ai/", views.personal_ai, name="personal_ai"),
     path("passkeys-ui/", views.passkey_login, name="passkey_login"),
+    path("passkeys-register/", views.passkey_register, name="passkey_register"),
     # Custom Passkey URLs
     path(
         "custom/passkeys/reg/begin",

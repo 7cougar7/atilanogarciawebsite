@@ -1,5 +1,7 @@
 {% extends 'new_base.html' %}
 
+{% block title %}Passkey Login{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -7,17 +9,20 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title text-center mb-4">Passkey Login</h2>
-                    <p class="text-center">Log in or register with a passkey. No username required!</p>
+                    <p class="text-center">Log in using your previously registered passkey.</p>
 
                     <div id="messages" class="mb-3"></div>
 
                     <div class="d-grid gap-2">
                         <button id="login-button" class="btn btn-primary">Log In with Passkey</button>
-                        <button id="register-button" class="btn btn-secondary">Register a New Passkey</button>
+                        <a href="{% url 'mainwebsite:login' %}" class="btn btn-outline-secondary">Use Magic Link Instead</a>
                     </div>
 
                     <div class="mt-3 text-center">
-                        <small>Note: Registration requires you to be logged in via the admin panel first. If you are a new user, please contact the administrator.</small>
+                        <small class="text-muted">
+                            Don't have a passkey yet?
+                            <a href="{% url 'mainwebsite:passkey_register' %}">Set one up here</a>
+                        </small>
                     </div>
                 </div>
             </div>
@@ -48,71 +53,6 @@
         const alertType = isError ? 'alert-danger' : 'alert-success';
         messagesDiv.innerHTML = `<div class="alert ${alertType}">${message}</div>`;
     }
-
-    // --- Passkey Registration ---
-    document.getElementById('register-button').addEventListener('click', async () => {
-        showMessage('Starting passkey registration...');
-        try {
-            // 1. Get registration options from the server
-            const resp = await fetch('/custom/passkeys/reg/begin');
-
-            if (resp.status === 401) {
-                const data = await resp.json();
-                window.location.href = data.login_url;
-                return;
-            }
-
-            const options = await resp.json();
-
-            if (!resp.ok) {
-                throw new Error(options.message || 'Registration failed at begin step.');
-            }
-
-            // 2. Decode the server options for the WebAuthn API
-            options.publicKey.challenge = bufferDecode(options.publicKey.challenge);
-            options.publicKey.user.id = bufferDecode(options.publicKey.user.id);
-
-            if (options.publicKey.excludeCredentials && options.publicKey.excludeCredentials.length > 0) {
-                for (let i = 0; i < options.publicKey.excludeCredentials.length; i++) {
-                    let cred = options.publicKey.excludeCredentials[i];
-                    cred.id = bufferDecode(cred.id);
-                }
-            }
-
-            // 3. Create the credential with the browser's WebAuthn API
-            const cred = await navigator.credentials.create({ publicKey: options.publicKey });
-
-            // 4. Encode the credential data to send to the server
-            const attestationResponse = {
-                id: cred.id,
-                rawId: bufferEncode(cred.rawId),
-                response: {
-                    clientDataJSON: bufferEncode(cred.response.clientDataJSON),
-                    attestationObject: bufferEncode(cred.response.attestationObject),
-                },
-                type: cred.type,
-            };
-
-            // 5. Send the encoded data to the server to complete registration
-            const regCompleteResp = await fetch('/custom/passkeys/reg/complete', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify(attestationResponse)
-            });
-
-            if (regCompleteResp.ok) {
-                showMessage('Registration successful!');
-            } else {
-                const error = await regCompleteResp.json();
-                throw new Error(error.message || 'Could not register passkey.');
-            }
-        } catch (e) {
-            showMessage('Error: ' + e.message, true);
-        }
-    });
 
     // --- Passkey Login (Username-less) ---
     document.getElementById('login-button').addEventListener('click', async () => {

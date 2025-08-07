@@ -1,14 +1,16 @@
 import logging
+
 from babel import Locale
-from django_twilio.decorators import twilio_view
-from twilio.twiml.voice_response import VoiceResponse, Start, Stream
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
-from mainwebsite import models
+from django_twilio.decorators import twilio_view
 from googletrans import Translator
 from twilio.rest import Client
+from twilio.twiml.voice_response import Start, Stream, VoiceResponse
+
 import atilanogarciawebsite.settings as settings
-from django.contrib.sites.shortcuts import get_current_site
+from mainwebsite import models
 
 logger = logging.getLogger(__name__)
 translator = Translator()
