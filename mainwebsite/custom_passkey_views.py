@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from fido2.server import Fido2Server
 from fido2.utils import websafe_decode, websafe_encode
@@ -19,6 +18,12 @@ from fido2.webauthn import (
     ResidentKeyRequirement,
 )
 from passkeys.models import UserPasskey as Passkey
+
+from mainwebsite.error_handling import (
+    handle_view_exception,
+    log_security_event,
+    secure_json_error_response,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,64 +51,62 @@ def get_user_credentials(user):
     ]
 
 
-@csrf_exempt
 def dynamic_reg_begin(request):
-    if not request.user.is_authenticated:
-        logger.error("dynamic_reg_begin: User not authenticated")
-        login_url = f"{reverse('mainwebsite:login')}?next={reverse('mainwebsite:passkey_register')}"
-        return JsonResponse(
-            {
-                "error": "You must be logged in to register a new passkey.",
-                "redirect_url": login_url,
-            },
-            status=401,
-        )
-
     try:
+        if not request.user.is_authenticated:
+            log_security_event(
+                "unauthenticated_passkey_registration_attempt",
+                {"path": request.path},
+                request=request,
+            )
+            login_url = f"{reverse('mainwebsite:login')}?next={reverse('mainwebsite:passkey_register')}"
+            return JsonResponse(
+                {
+                    "error": "You must be logged in to register a new passkey.",
+                    "redirect_url": login_url,
+                },
+                status=401,
+            )
+
         user = request.user
         logger.info(f"dynamic_reg_begin: User: {user.username} (ID: {user.id})")
 
-        # Get existing credentials for this user
         existing_credentials = get_user_credentials(user)
         logger.info(
             f"dynamic_reg_begin: Found {len(existing_credentials)} existing credentials"
         )
 
-        # Get FIDO2 server instance
         fido2_server = get_fido2_server(request)
 
-        # Create user info for FIDO2
         user_info = {
             "id": user.username.encode("utf-8"),
             "name": user.get_full_name() or "",
             "displayName": user.username,
         }
 
-        # Begin registration
         try:
             logger.info("dynamic_reg_begin: Calling fido2_server.register_begin")
             registration_data, state = fido2_server.register_begin(
                 user_info,
                 existing_credentials,
-                resident_key_requirement=ResidentKeyRequirement.REQUIRED,
+                resident_key_requirement=ResidentKeyRequirement.PREFERRED,
             )
             logger.info("dynamic_reg_begin: register_begin call successful")
 
-            # Store state in session
             request.session["passkey_registration_state"] = state
             logger.info("dynamic_reg_begin: Registration state saved to session")
 
-            # Convert to dictionary for JSON serialization
             public_key_options = asdict(registration_data)["public_key"]
             return JsonResponse(public_key_options, encoder=BytesEncoder, safe=False)
 
         except Exception as e:
+            handle_view_exception(e, request, user, "dynamic_reg_begin_asdict")
             logger.error(f"dynamic_reg_begin: Error in asdict conversion: {e}")
-            raise
+            return secure_json_error_response("passkey_error", 500)
 
     except Exception as e:
-        logger.error(f"dynamic_reg_begin: General error: {e}")
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        handle_view_exception(e, request, user, "dynamic_reg_begin_general")
+        return secure_json_error_response("server_error", 500)
 
 
 @require_POST
@@ -115,72 +118,55 @@ def dynamic_reg_complete(request):
         state = request.session.get("passkey_registration_state")
 
         if not state:
-            return JsonResponse(
-                {
-                    "status": "error",
-                    "message": "Registration state not found in session.",
-                },
-                status=400,
-            )
+            log_security_event("Registration state not found in session")
+            return secure_json_error_response("Invalid request")
 
-        # Verify the credential with the FIDO2 server
         credential = fido2_server.register_complete(state, data)
 
-        # Extract credential ID from the request data (not from the AuthenticatorData object)
-        credential_id = data.get("id")  # This is the credential ID from the browser
+        credential_id = data.get("id")
         if not credential_id:
-            return JsonResponse(
-                {
-                    "status": "error",
-                    "message": "Credential ID not found in request data.",
-                },
-                status=400,
-            )
+            log_security_event("Credential ID not found in request data")
+            return secure_json_error_response("Invalid request")
 
-        # The credential object is AuthenticatorData, we need to encode it for storage
         encoded_credential = websafe_encode(credential)
 
         Passkey.objects.create(
             user=request.user,
             token=encoded_credential,
-            credential_id=credential_id,  # Use the ID from the request data
+            credential_id=credential_id,
             name=data.get("name", f"Passkey {timezone.now():%Y-%m-%d}"),
         )
 
-        # Clear the registration state from the session
         del request.session["passkey_registration_state"]
 
-        # After successful passkey registration, redirect to login page to complete authentication
         login_url = reverse("mainwebsite:login")
-
         return JsonResponse({"status": "OK", "redirect_url": login_url})
 
     except Exception as e:
-        logger.error(f"Error in custom_passkey_reg_complete: {e}")
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        handle_view_exception(e, request, "dynamic_reg_complete")
+        return secure_json_error_response("Registration failed")
 
 
-@csrf_exempt
 def dynamic_auth_begin(request):
     logger.info(f"dynamic_auth_begin: POST data: {request.POST}")
     fido2_server = get_fido2_server(request)
     username = request.POST.get("username")
     logger.info(f"dynamic_auth_begin: username from POST: {username}")
     if not username:
-        username = request.session.get("webauthn_username")
-        logger.info(f"dynamic_auth_begin: username from session: {username}")
-
-    if not username:
-        logger.error("dynamic_auth_begin: Username not found in POST or session.")
+        log_security_event(
+            "missing_username_in_auth_begin", {"path": request.path}, request=request
+        )
         return JsonResponse(
             {"status": "error", "message": "Username not provided."}, status=400
         )
 
     try:
         user = User.objects.get(username=username)
-        logger.info(f"dynamic_auth_begin: Found user: {user}")
+        logger.info(f"dynamic_auth_begin: Found user: {username}")
     except User.DoesNotExist:
-        logger.error(f"dynamic_auth_begin: User '{username}' not found.")
+        log_security_event(
+            "user_not_found_in_auth_begin", {"username": username}, request=request
+        )
         return JsonResponse(
             {"status": "error", "message": "User not found."}, status=404
         )
@@ -188,16 +174,12 @@ def dynamic_auth_begin(request):
     keys = Passkey.objects.filter(user=user)
     logger.info(f"dynamic_auth_begin: Found {len(keys)} credentials for user.")
 
-    # Extract AttestedCredentialData objects from stored AuthenticatorData
     credentials = []
     for k in keys:
         try:
-            # The stored token is an encoded AuthenticatorData object
             auth_data = AuthenticatorData(websafe_decode(k.token))
 
-            # Check if this AuthenticatorData contains attested credential data
             if auth_data.is_attested():
-                # Extract the AttestedCredentialData from the AuthenticatorData
                 attested_cred_data = auth_data.credential_data
                 credentials.append(attested_cred_data)
                 logger.info(
@@ -208,6 +190,9 @@ def dynamic_auth_begin(request):
                     f"dynamic_auth_begin: Stored credential {k.credential_id} is not attested"
                 )
         except Exception as e:
+            handle_view_exception(
+                e, request, user, "dynamic_auth_begin_credential_processing"
+            )
             logger.error(
                 f"dynamic_auth_begin: Error processing credential {k.credential_id}: {e}"
             )
@@ -222,15 +207,14 @@ def dynamic_auth_begin(request):
     request.session["passkey_auth_state"] = state
     logger.info("dynamic_auth_begin: passkey_auth_state saved to session.")
 
-    # Convert to dictionary for JSON serialization
     return JsonResponse(asdict(auth_data), encoder=BytesEncoder, safe=False)
 
 
 @require_POST
-@csrf_exempt
 def custom_auth_complete(request):
     logger.debug(f"custom_auth_complete: request body: {request.body}")
     logger.debug(f"custom_auth_complete: session data: {request.session.items()}")
+    username = None  # Initialize username to avoid UnboundLocalError
     try:
         data = json.loads(request.body)
         server = get_fido2_server(request)
@@ -240,17 +224,12 @@ def custom_auth_complete(request):
         keys = Passkey.objects.filter(user__username=username)
         logger.debug(f"custom_auth_complete: found {keys.count()} keys for user")
 
-        # Create AttestedCredentialData objects for authentication
-        # The authenticate_complete method expects the same credential objects that were passed to authenticate_begin
         credentials = []
         for k in keys:
             try:
-                # Decode the stored AuthenticatorData
                 auth_data = AuthenticatorData(websafe_decode(k.token))
 
-                # Check if this AuthenticatorData contains attested credential data
                 if auth_data.is_attested():
-                    # Extract the AttestedCredentialData from the AuthenticatorData
                     attested_cred_data = auth_data.credential_data
                     credentials.append(attested_cred_data)
                     logger.debug(
@@ -261,6 +240,9 @@ def custom_auth_complete(request):
                         f"custom_auth_complete: Stored credential {k.credential_id} is not attested"
                     )
             except Exception as e:
+                handle_view_exception(
+                    e, request, username, "custom_auth_complete_credential_processing"
+                )
                 logger.error(
                     f"custom_auth_complete: Failed to process credential {k.credential_id}: {e}"
                 )
@@ -272,13 +254,13 @@ def custom_auth_complete(request):
             data,
         )
 
-        # Find the passkey that was used for authentication
-        # The cred object should contain the credential_id that was used
         key = Passkey.objects.get(credential_id=websafe_encode(cred.credential_id))
         user = key.user
         login(request, user)
-        # Set passkey authentication flag in session
         request.session["passkey_authenticated"] = True
+        import time
+
+        request.session["passkey_last_activity"] = time.time()
         next_url = request.session.pop("next", "/")
         logger.debug(
             f"custom_auth_complete: login successful for user {user.username}, redirecting to {next_url}"
@@ -286,5 +268,5 @@ def custom_auth_complete(request):
         return JsonResponse({"status": "OK", "redirect_url": next_url})
 
     except Exception as e:
-        logger.error(f"Error in custom_auth_complete: {e}", exc_info=True)
-        return JsonResponse({"status": "error", "message": "Login failed"}, status=400)
+        handle_view_exception(e, request, username, "custom_auth_complete_general")
+        return secure_json_error_response("authentication_failed", 400)

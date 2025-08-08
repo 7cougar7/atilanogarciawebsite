@@ -91,6 +91,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "mainwebsite.middleware.PasskeySessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -193,3 +194,48 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() in ("true", "1", "t")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@atilanogarcia.com")
+
+# --- Session Security Configuration ---
+# Session timeout settings
+SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True  # Sliding expiration
+
+# Passkey-specific session timeout (30 minutes)
+PASSKEY_SESSION_TIMEOUT = 1800  # 30 minutes in seconds
+
+# --- Magic Link Security Configuration ---
+# Magic link expiration time (15 minutes)
+MAGIC_LINK_TIMEOUT = 900  # 15 minutes in seconds
+
+# Magic link rate limiting
+MAGIC_LINK_RATE_LIMIT_PER_USER = 3  # Max requests per user per hour
+MAGIC_LINK_RATE_LIMIT_PER_IP = 10  # Max requests per IP per hour
+MAGIC_LINK_RATE_LIMIT_WINDOW = 3600  # 1 hour in seconds
+
+# Force HTTPS for magic links in production
+MAGIC_LINK_FORCE_HTTPS = not DEBUG
+
+# Session cookie security flags
+SESSION_COOKIE_SECURE = not DEBUG  # Use secure cookies in production
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookies
+SESSION_COOKIE_SAMESITE = "Lax"  # CSRF protection
+SESSION_COOKIE_NAME = "sessionid"  # Default name, but explicit for clarity
+
+# CSRF cookie security flags
+CSRF_COOKIE_SECURE = not DEBUG  # Use secure cookies in production
+CSRF_COOKIE_HTTPONLY = True  # Prevent JavaScript access to CSRF cookies
+CSRF_COOKIE_SAMESITE = "Lax"  # Additional CSRF protection
+CSRF_COOKIE_AGE = 3600  # 1 hour, same as session
+
+# Additional security settings
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"  # Prevent clickjacking
+
+# In production, also set these (commented for development)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

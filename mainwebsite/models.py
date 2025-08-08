@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import F
 from django.utils.crypto import get_random_string
@@ -105,5 +106,32 @@ class PhoneCallSessionAdmin(admin.ModelAdmin):
     list_display = ["caller", "callee", "in_progress"]
 
 
+class MagicLinkRequest(models.Model):
+    """
+    Model to track magic link requests for rate limiting and security monitoring
+    """
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="magic_link_requests"
+    )
+    email = models.EmailField()
+    ip_address = models.GenericIPAddressField()
+    user_agent = models.TextField(blank=True)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-requested_at"]
+        indexes = [
+            models.Index(fields=["user", "requested_at"]),
+            models.Index(fields=["ip_address", "requested_at"]),
+            models.Index(fields=["email", "requested_at"]),
+        ]
+
+    def __str__(self):
+        return f"Magic link request for {self.email} at {self.requested_at}"
+
+
 admin.site.register(ShortenedUrl)
 admin.site.register(TranscribeAccessCode)
+admin.site.register(MagicLinkRequest)
