@@ -125,13 +125,31 @@ WSGI_APPLICATION = "atilanogarciawebsite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+# Environment-based database configuration
+if DEBUG:
+    # Local development - use SQLite3
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
     }
-}
-
+else:
+    # Production - use Aurora DSQL
+    DATABASES = {
+        "default": {
+            "ENGINE": "aurora_dsql_django",
+            "HOST": os.environ.get("AURORA_DSQL_HOST"),
+            "NAME": os.environ.get("AURORA_DSQL_DATABASE", "postgres"),
+            "USER": os.environ.get("AURORA_DSQL_USER", "postgres"),
+            "OPTIONS": {
+                "sslmode": "require",
+                "region": os.environ.get("AWS_REGION", "us-east-2"),
+                # Token expiration in seconds (default is 15 minutes)
+                "expires_in": int(os.environ.get("AURORA_DSQL_TOKEN_EXPIRES", "60")),
+            },
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
