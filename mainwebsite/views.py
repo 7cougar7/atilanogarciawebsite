@@ -226,8 +226,11 @@ class UnifiedLoginView(View):
                 else:
                     # User doesn't have passkey, send magic link
                     try:
-                        # Store next URL in session for after magic link verification
-                        request.session["next"] = next_url
+                        # For users without a passkey, the next step after magic
+                        # link verification is always to register a passkey.
+                        request.session["next"] = reverse(
+                            "mainwebsite:passkey_register"
+                        )
                         self.send_magic_link(request, user)
 
                         message = f"A secure magic link has been sent to your email address. It will expire in {magic_link_token_generator.get_token_expiration_minutes()} minutes."

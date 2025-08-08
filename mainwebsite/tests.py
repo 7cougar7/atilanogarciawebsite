@@ -1119,11 +1119,11 @@ class MagicLinkSecurityTests(TestCase):
             # Use the magic link
             response = self.client.get(magic_link_path)
 
-            # Should redirect to the next URL (/personal-ai/) since it's in the whitelist
+            # Should redirect to the next URL (/passkeys-register/) since it's in the whitelist
             self.assertEqual(response.status_code, 302)
             self.assertTrue(
-                response.url.endswith("/personal-ai/"),
-                f"Expected redirect to /personal-ai/, got: {response.url}",
+                response.url.endswith("/passkeys-register/"),
+                f"Expected redirect to /passkeys-register/, got: {response.url}",
             )
 
             # User should be logged in and magic link verified
