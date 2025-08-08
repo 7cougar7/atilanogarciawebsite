@@ -85,6 +85,42 @@ This application implements enterprise-grade security controls to protect agains
 - **Django Security**: Follows Django security best practices
 - **NIST Framework**: Aligned with cybersecurity framework guidelines
 
+## Configuration
+
+This application is configured using environment variables. For local development, you can create a `.env` file in the project root.
+
+### Environment Variables
+
+The following table lists all the environment variables used by the application:
+
+| Variable                      | Description                                                                 | Default Value                  | Required          |
+| ----------------------------- | --------------------------------------------------------------------------- | ------------------------------ | ----------------- |
+| `SECRET_KEY`                  | A long, random string used for cryptographic signing.                       | `None`                         | **Yes**           |
+| `DEBUG`                       | Toggles debug mode. Set to `True` for development, `False` for production.  | `False`                        | **Yes**           |
+| `EMAIL_HOST_USER`             | The username for the email account used to send magic links.                | `None`                         | In Production     |
+| `EMAIL_HOST_PASSWORD`         | The password for the email account.                                         | `None`                         | In Production     |
+
+#### Production Database (Aurora DSQL)
+
+These variables are required only when `DEBUG` is set to `False`.
+
+| Variable                      | Description                                                                 | Default Value                  | Required          |
+| ----------------------------- | --------------------------------------------------------------------------- | ------------------------------ | ----------------- |
+| `AURORA_DSQL_HOST`            | The hostname of the Aurora DSQL cluster.                                    | `None`                         | **Yes (Prod)**    |
+| `AURORA_DSQL_DATABASE`        | The name of the database to connect to.                                     | `postgres`                     | No                |
+| `AURORA_DSQL_USER`            | The database username.                                                      | `postgres`                     | No                |
+| `AWS_REGION`                  | The AWS region where the database is located.                               | `us-east-2`                    | No                |
+| `AURORA_DSQL_TOKEN_EXPIRES`   | The expiration time in seconds for the temporary database token.            | `60`                           | No                |
+
+#### Optional Email Configuration
+
+| Variable                      | Description                                                                 | Default Value                  | Required          |
+| ----------------------------- | --------------------------------------------------------------------------- | ------------------------------ | ----------------- |
+| `EMAIL_HOST`                  | The SMTP server host.                                                       | `smtp.gmail.com`               | No                |
+| `EMAIL_PORT`                  | The port for the SMTP server.                                               | `587`                          | No                |
+| `EMAIL_USE_TLS`               | Whether to use a TLS secure connection.                                     | `True`                         | No                |
+| `DEFAULT_FROM_EMAIL`          | The default email address for automated emails.                             | `no-reply@atilanogarcia.com`   | No                |
+
 ## Getting Started
 
 To view my website locally or contribute, follow the steps below:
