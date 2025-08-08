@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -38,9 +39,38 @@ ALLOWED_HOSTS = [
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+LOGIN_URL = "mainwebsite:login"
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+
+# --- Logging Configuration ---
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "suppress_unauthorized_reg_begin": {
+            "()": "mainwebsite.logging_filters.SuppressUnauthorizedRegBegin",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+            "filters": ["suppress_unauthorized_reg_begin"],
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
 
 # Application definition
 
@@ -54,12 +84,16 @@ INSTALLED_APPS = [
     "mainwebsite",
     "django_twilio",
     "channels",
+    "passkeys",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "mainwebsite.security_middleware.SecurityHeadersMiddleware",
+    "mainwebsite.security_middleware.CORSMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "mainwebsite.middleware.PasskeySessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -152,3 +186,64 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+
+# --- Production Email Configuration ---
+# Uses environment variables for security. Defaults are set for Gmail SMTP.
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() in ("true", "1", "t")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@atilanogarcia.com")
+
+# --- Session Security Configuration ---
+# Session timeout settings
+SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True  # Sliding expiration
+
+# Passkey-specific session timeout (30 minutes)
+PASSKEY_SESSION_TIMEOUT = 1800  # 30 minutes in seconds
+
+# --- Magic Link Security Configuration ---
+# Magic link expiration time (15 minutes)
+MAGIC_LINK_TIMEOUT = 900  # 15 minutes in seconds
+
+# Magic link rate limiting
+MAGIC_LINK_RATE_LIMIT_PER_USER = 3  # Max requests per user per hour
+MAGIC_LINK_RATE_LIMIT_PER_IP = 10  # Max requests per IP per hour
+MAGIC_LINK_RATE_LIMIT_WINDOW = 3600  # 1 hour in seconds
+
+# Force HTTPS for magic links in production
+MAGIC_LINK_FORCE_HTTPS = not DEBUG
+
+# --- Account Lockout Security Configuration ---
+# Account lockout settings to prevent brute force attacks
+ACCOUNT_LOCKOUT_MAX_ATTEMPTS = 5  # Max failed attempts before lockout
+ACCOUNT_LOCKOUT_DURATION = 900  # Lockout duration in seconds (15 minutes)
+ACCOUNT_LOCKOUT_ATTEMPT_WINDOW = 300  # Time window for counting attempts (5 minutes)
+
+# Session cookie security flags
+SESSION_COOKIE_SECURE = not DEBUG  # Use secure cookies in production
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookies
+SESSION_COOKIE_SAMESITE = "Lax"  # CSRF protection
+SESSION_COOKIE_NAME = "sessionid"  # Default name, but explicit for clarity
+
+# CSRF cookie security flags
+CSRF_COOKIE_SECURE = not DEBUG  # Use secure cookies in production
+CSRF_COOKIE_HTTPONLY = True  # Prevent JavaScript access to CSRF cookies
+CSRF_COOKIE_SAMESITE = "Lax"  # Additional CSRF protection
+CSRF_COOKIE_AGE = 3600  # 1 hour, same as session
+
+# Additional security settings
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"  # Prevent clickjacking
+
+# In production, also set these (commented for development)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

@@ -1,0 +1,238 @@
+{% extends 'new_base.html' %}
+
+{% block title %}Set Up Passkey{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Set Up Your Passkey</h2>
+                    <p class="text-center">Create a passkey for secure, passwordless authentication on future visits.</p>
+
+                    <div id="messages" class="mb-3"></div>
+
+                    <div class="d-grid gap-2">
+                        <button id="register-button" class="btn btn-primary">Create Passkey</button>
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            Passkeys use your device's built-in security (Face ID, Touch ID, or Windows Hello)
+                            to provide secure, convenient authentication without passwords.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Helper functions to handle Base64 URL encoding/decoding
+    function bufferDecode(value) {
+        try {
+            return Uint8Array.from(atob(value.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+        } catch (e) {
+            throw new Error('A server-provided value was not correctly encoded. See console for details.');
+        }
+    }
+
+    function bufferEncode(value) {
+        return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+    }
+
+    // Function to display messages to the user
+    function showMessage(message, isError = false) {
+        const messagesDiv = document.getElementById('messages');
+        const alertType = isError ? 'alert-danger' : 'alert-success';
+        messagesDiv.innerHTML = `<div class="alert ${alertType}">${message}</div>`;
+    }
+
+    // Function to get CSRF token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+               document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    document.getElementById('register-button').addEventListener('click', async () => {
+        showMessage('Starting passkey registration...');
+        console.log('=== PASSKEY REGISTRATION DEBUG ===');
+        try {
+            // 1. Get registration options from the server
+            console.log('Step 1: Requesting registration options from server...');
+            const resp = await fetch('{% url "mainwebsite:custom_passkey_reg_begin" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+            });
+
+            console.log('Server response status:', resp.status);
+            if (!resp.ok) {
+                const errorData = await resp.json();
+                console.error('Server error response:', errorData);
+                throw new Error(errorData.message || 'Failed to start registration');
+            }
+
+            const options = await resp.json();
+            console.log('Raw options from server:', JSON.stringify(options, null, 2));
+
+            // Validate that we have the required fields
+            const requiredFields = ['challenge', 'rp', 'user', 'pub_key_cred_params'];
+            const missingFields = [];
+            for (const field of requiredFields) {
+                if (!(field in options)) {
+                    missingFields.push(field);
+                }
+            }
+
+            if (missingFields.length > 0) {
+                throw new Error(`Server response missing required fields: ${missingFields.join(', ')}`);
+            }
+
+            console.log('✓ All required fields present in server response');
+            console.log(`✓ pubKeyCredParams contains ${options.pub_key_cred_params.length} algorithms`);
+
+            // The server now returns the options object directly.
+            const publicKeyOptions = options;
+
+            // Convert field names from snake_case to camelCase for WebAuthn API
+            console.log('Step 1.5: Converting field names for WebAuthn API...');
+            if (publicKeyOptions.pub_key_cred_params) {
+                publicKeyOptions.pubKeyCredParams = publicKeyOptions.pub_key_cred_params;
+                delete publicKeyOptions.pub_key_cred_params;
+                console.log(`✓ Converted pub_key_cred_params to pubKeyCredParams (${publicKeyOptions.pubKeyCredParams.length} algorithms)`);
+            }
+
+            if (publicKeyOptions.exclude_credentials) {
+                publicKeyOptions.excludeCredentials = publicKeyOptions.exclude_credentials;
+                delete publicKeyOptions.exclude_credentials;
+                console.log('✓ Converted exclude_credentials to excludeCredentials');
+            }
+
+            // Convert user object field names
+            if (publicKeyOptions.user && publicKeyOptions.user.display_name) {
+                publicKeyOptions.user.displayName = publicKeyOptions.user.display_name;
+                delete publicKeyOptions.user.display_name;
+                console.log('✓ Converted user.display_name to user.displayName');
+            }
+
+            // 2. Decode the options for the browser
+            console.log('Step 2: Decoding options for browser...');
+            console.log('Original challenge (string):', publicKeyOptions.challenge);
+            console.log('Original user.id (string):', publicKeyOptions.user.id);
+
+            try {
+                publicKeyOptions.challenge = bufferDecode(publicKeyOptions.challenge);
+                console.log('Decoded challenge (ArrayBuffer):', publicKeyOptions.challenge);
+                console.log('Challenge length:', publicKeyOptions.challenge.byteLength);
+            } catch (e) {
+                console.error('Error decoding challenge:', e);
+                throw new Error('Failed to decode challenge: ' + e.message);
+            }
+
+            try {
+                publicKeyOptions.user.id = bufferDecode(publicKeyOptions.user.id);
+                console.log('Decoded user.id (ArrayBuffer):', publicKeyOptions.user.id);
+                console.log('User ID length:', publicKeyOptions.user.id.byteLength);
+            } catch (e) {
+                console.error('Error decoding user.id:', e);
+                throw new Error('Failed to decode user.id: ' + e.message);
+            }
+
+            if (publicKeyOptions.excludeCredentials) {
+                console.log('Processing excludeCredentials...');
+                for (let i = 0; i < publicKeyOptions.excludeCredentials.length; i++) {
+                    let cred = publicKeyOptions.excludeCredentials[i];
+                    console.log(`Excluding credential ${i}:`, cred.id);
+                    try {
+                        cred.id = bufferDecode(cred.id);
+                        console.log(`Decoded credential ${i} ID:`, cred.id);
+                    } catch (e) {
+                        console.error(`Error decoding credential ${i} ID:`, e);
+                        throw new Error(`Failed to decode credential ${i} ID: ` + e.message);
+                    }
+                }
+            }
+
+            console.log('Final options object for WebAuthn:', publicKeyOptions);
+
+            // Debug: Log the user object specifically
+            console.log('User object details:', publicKeyOptions.user);
+            console.log('User object keys:', Object.keys(publicKeyOptions.user));
+            if (publicKeyOptions.user.displayName) {
+                console.log('✓ user.displayName present:', publicKeyOptions.user.displayName);
+            } else {
+                console.log('✗ user.displayName missing!');
+                if (publicKeyOptions.user.display_name) {
+                    console.log('Found display_name instead:', publicKeyOptions.user.display_name);
+                    // Force conversion if it wasn't caught above
+                    publicKeyOptions.user.displayName = publicKeyOptions.user.display_name;
+                    delete publicKeyOptions.user.display_name;
+                    console.log('✓ Force converted display_name to displayName');
+                }
+            }
+
+            showMessage('Please use your device\'s authentication method...');
+
+            // 3. Create the credential
+            console.log('Step 3: Creating credential with WebAuthn API...');
+            const credential = await navigator.credentials.create({
+                publicKey: publicKeyOptions
+            });
+            console.log('Credential created successfully:', credential);
+
+            showMessage('Saving your passkey...');
+
+            // 4. Encode the credential for the server
+            console.log('Step 4: Encoding credential for server...');
+            const encodedCredential = {
+                id: credential.id,
+                rawId: bufferEncode(credential.rawId),
+                response: {
+                    clientDataJSON: bufferEncode(credential.response.clientDataJSON),
+                    attestationObject: bufferEncode(credential.response.attestationObject),
+                },
+                type: credential.type,
+            };
+            console.log('Encoded credential for server:', JSON.stringify(encodedCredential, null, 2));
+
+            // 5. Send the credential to the server
+            console.log('Step 5: Sending credential to server...');
+            const verificationResp = await fetch('{% url "mainwebsite:custom_passkey_reg_complete" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                body: JSON.stringify(encodedCredential),
+            });
+
+            console.log('Verification response status:', verificationResp.status);
+            const verificationData = await verificationResp.json();
+            console.log('Verification response data:', verificationData);
+
+            if (verificationData.status === 'OK') {
+                showMessage('Passkey created successfully! You can now use it to log in.');
+                setTimeout(() => {
+                    window.location.href = verificationData.redirect_url || '{% url "mainwebsite:homepage" %}';
+                }, 2000);
+            } else {
+                throw new Error(verificationData.message || 'Registration failed');
+            }
+
+        } catch (error) {
+            console.error('=== REGISTRATION ERROR ===');
+            console.error('Error details:', error);
+            console.error('Error stack:', error.stack);
+            showMessage(error.message, true);
+        }
+    });
+</script>
+{% endblock %}

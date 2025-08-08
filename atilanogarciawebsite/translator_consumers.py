@@ -1,8 +1,10 @@
 import base64
 import json
 import threading
+
 from channels.generic.websocket import WebsocketConsumer
 from google.cloud import speech
+
 from atilanogarciawebsite.speech_client_bridge import SpeechClientBridge
 
 

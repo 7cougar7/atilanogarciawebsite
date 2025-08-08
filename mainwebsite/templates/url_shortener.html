@@ -19,7 +19,7 @@
 
         function submitForm() {
             $.ajax({
-                url: "{% url 'urlShortenerSubmit' %}",
+                url: "{% url 'mainwebsite:urlShortenerSubmit' %}",
                 dataType: "json",
                 type: "POST",
                 async: true,

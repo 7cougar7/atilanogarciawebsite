@@ -13,7 +13,6 @@
         <script type="text/javascript" src="{% static "mainwebsite/js/homepage.js" %}"></script>
     </head>
     <body style="background: rgba(43,43,43,0.87)">
-    <div class="navbar-fixed">
         <nav class="transparent z-depth-0">
             <div class="nav-wrapper">
                 <img class="responsive-img" style="height: 64px" src="{% static "mainwebsite/img/logo/logo_size_invert_square.jpg" %}">
@@ -25,21 +24,17 @@
                 </ul>
             </div>
         </nav>
+
         <ul class="sidenav" id="mobile-demo">
             <li><a href="/">Home</a></li>
             <li><a href="resume">Resume</a></li>
             <li><a href="https://www.github.com/7cougar7" target="_blank">GitHub</a></li>
         </ul>
-        <div class="parallax-container" style="height: 100vh">
-            <div class="parallax">
-                <img style="width: 100%" src="{% static "mainwebsite/img/homepage/collage.png" %}">
-            </div>
-        </div>
-        <div class="section white">
-            <div class="row container">
-                <p class="grey-text text-darken-3 lighten-3">{{ content }}</p>
-            </div>
-        </div>
-    </div>
+
+        <main class="container">
+            {% block content %}
+            {% endblock %}
+        </main>
+
     </body>
 </html>
