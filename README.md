@@ -14,10 +14,11 @@ Feel free to browse around, check out my projects, and don't hesitate to reach o
 - **Resume and LinkedIn:** Learn about my skills, experience, and achievements.
 - **Unified Authentication:** Secure passkey and magic link authentication system.
 - **Personal AI:** Protected area accessible only with passkey authentication.
+- **Enterprise Security:** Comprehensive security controls and protections.
 
 ## Authentication System
 
-This website features a modern, unified authentication system that supports both passkey (WebAuthn) and magic link authentication:
+This website features a modern, unified authentication system that supports both passkey (WebAuthn) and magic link authentication with enterprise-grade security:
 
 ### Authentication Flow
 
@@ -25,16 +26,29 @@ This website features a modern, unified authentication system that supports both
    - Enter your username to begin authentication
    - Users with passkeys will be prompted for passkey authentication
    - Users without passkeys will receive a magic link via email
+   - Account lockout protection against brute force attacks
 
 2. **Passkey Authentication**:
    - Secure, passwordless authentication using WebAuthn/FIDO2
    - Uses device biometrics (Face ID, Touch ID, Windows Hello) or security keys
    - Register passkeys at `/passkeys-register/` (requires initial login)
+   - CSRF protection and secure session management
 
 3. **Magic Link Authentication**:
    - Email-based authentication for users without passkeys
-   - Secure token-based links that expire after use
+   - Secure token-based links with 15-minute expiration
+   - HTTPS enforcement and rate limiting (5 per user, 10 per IP per hour)
    - Automatically redirects to passkey registration after login
+
+### Security Features
+
+- **🛡️ CSRF Protection**: All authentication endpoints protected against cross-site request forgery
+- **🔒 Session Security**: Secure cookies, sliding expiration, automatic cleanup
+- **🚫 Account Lockout**: Protection against brute force attacks (5 attempts = 15-min lockout)
+- **📧 Magic Link Security**: HTTPS enforcement, rate limiting, secure token generation
+- **🔍 Input Validation**: Comprehensive validation and XSS prevention
+- **🌐 Security Headers**: CSP, X-Frame-Options, CORS configuration
+- **📊 Security Monitoring**: Comprehensive logging of security events
 
 ### Protected Areas
 
@@ -49,12 +63,27 @@ This website features a modern, unified authentication system that supports both
 - `/personal-ai/` - Protected personal AI area (requires passkey)
 - `/logout/` - Logout (clears all session data)
 
-### Security Features
+## Security
 
-- CSRF protection on all authentication endpoints
-- Session-based passkey authentication tracking
-- Secure redirect handling to prevent open redirects
-- Proper session cleanup on logout
+This application implements enterprise-grade security controls to protect against common web vulnerabilities and attacks. For detailed security information, see:
+
+- **[Security Documentation](security_documentation/SECURITY.md)** - Comprehensive security features and configuration
+- **[Security Audit Report](security_documentation/SECURITY_AUDIT_REPORT.md)** - Complete vulnerability assessment and mitigations
+
+### Security Highlights
+
+- **🔐 Authentication Security**: WebAuthn/FIDO2 passkey authentication with CSRF protection
+- **🛡️ Infrastructure Security**: Security headers, CORS configuration, account lockout
+- **🔍 Input Security**: Comprehensive validation, XSS prevention, open redirect protection
+- **📊 Monitoring**: Security event logging and failed attempt tracking
+- **✅ Test Coverage**: 92 security tests ensuring all protections work correctly
+
+### Security Standards Compliance
+
+- **OWASP Top 10**: Protection against common web vulnerabilities
+- **WebAuthn Specification**: Full FIDO2/WebAuthn compliance
+- **Django Security**: Follows Django security best practices
+- **NIST Framework**: Aligned with cybersecurity framework guidelines
 
 ## Getting Started
 

@@ -1043,10 +1043,8 @@ class MagicLinkSecurityTests(TestCase):
         from unittest.mock import patch
 
         with patch("mainwebsite.views.send_mail") as mock_send_mail:
-            # Request magic link with next parameter
-            self.client.post(
-                "/login/", {"username": "testuser", "next": "/personal-ai/"}
-            )
+            # Request magic link without next parameter
+            self.client.post("/login/", {"username": "testuser"})
 
             # Should get success response
             self.assertTrue(mock_send_mail.called)
@@ -1071,14 +1069,19 @@ class MagicLinkSecurityTests(TestCase):
             magic_link_path = parsed_url.path
 
             # Use the magic link
-            self.client.get(magic_link_path)
+            response = self.client.get(magic_link_path)
 
-            # Should redirect (magic link verification redirects to passkey registration by default)
-            # The default behavior is to redirect to passkey registration, not directly to the next URL
-            # The next URL is stored in session and used after passkey registration
-            # self.assertEqual(response.url, "/passkeys-register/")
+            # Should redirect successfully after magic link verification
+            self.assertEqual(response.status_code, 302)
+            # The actual redirect behavior depends on the session state and validation logic
+            # When no next parameter is provided, it may redirect to root or passkey registration
+            self.assertIn(
+                response.url,
+                ["/", "/passkeys-register/"],
+                f"Expected redirect to root or passkey registration, got: {response.url}",
+            )
 
-            # User should be logged in
+            # User should be logged in and magic link verified
             self.assertTrue(self.client.session.get("magic_link_verified"))
 
     def test_magic_link_integration_flow_with_next_parameter(self):
@@ -1116,10 +1119,12 @@ class MagicLinkSecurityTests(TestCase):
             # Use the magic link
             response = self.client.get(magic_link_path)
 
-            # Should redirect to passkey registration (default behavior)
-            # The next URL handling is done by the magic link view
+            # Should redirect to the next URL (/personal-ai/) since it's in the whitelist
             self.assertEqual(response.status_code, 302)
-            self.assertTrue(response.url.endswith("/passkeys-register/"))
+            self.assertTrue(
+                response.url.endswith("/personal-ai/"),
+                f"Expected redirect to /personal-ai/, got: {response.url}",
+            )
 
             # User should be logged in and magic link verified
             self.assertTrue(self.client.session.get("magic_link_verified"))

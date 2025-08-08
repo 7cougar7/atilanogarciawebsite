@@ -4,6 +4,8 @@ from urllib.parse import urlencode
 from django.shortcuts import redirect
 from django.urls import reverse
 
+from .input_validation import get_safe_redirect_url
+
 
 def passkey_login_required(view_func):
     """
@@ -20,7 +22,13 @@ def passkey_login_required(view_func):
         else:
             # Redirect to the unified login page with next parameter
             login_url = reverse("mainwebsite:login")
-            next_url = request.get_full_path()
+
+            # Use secure redirect validation for the next parameter
+            raw_next_url = request.get_full_path()
+            next_url = get_safe_redirect_url(
+                raw_next_url, default_url="/", request=request
+            )
+
             return redirect(f"{login_url}?{urlencode({'next': next_url})}")
 
     return _wrapped_view

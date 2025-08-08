@@ -90,6 +90,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "mainwebsite.security_middleware.SecurityHeadersMiddleware",
+    "mainwebsite.security_middleware.CORSMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "mainwebsite.middleware.PasskeySessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -215,6 +217,12 @@ MAGIC_LINK_RATE_LIMIT_WINDOW = 3600  # 1 hour in seconds
 
 # Force HTTPS for magic links in production
 MAGIC_LINK_FORCE_HTTPS = not DEBUG
+
+# --- Account Lockout Security Configuration ---
+# Account lockout settings to prevent brute force attacks
+ACCOUNT_LOCKOUT_MAX_ATTEMPTS = 5  # Max failed attempts before lockout
+ACCOUNT_LOCKOUT_DURATION = 900  # Lockout duration in seconds (15 minutes)
+ACCOUNT_LOCKOUT_ATTEMPT_WINDOW = 300  # Time window for counting attempts (5 minutes)
 
 # Session cookie security flags
 SESSION_COOKIE_SECURE = not DEBUG  # Use secure cookies in production

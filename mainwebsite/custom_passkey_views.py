@@ -19,6 +19,11 @@ from fido2.webauthn import (
 )
 from passkeys.models import UserPasskey as Passkey
 
+from mainwebsite.account_lockout import (
+    clear_login_attempts,
+    is_account_locked,
+    record_failed_login,
+)
 from mainwebsite.error_handling import (
     handle_view_exception,
     log_security_event,
@@ -171,6 +176,14 @@ def dynamic_auth_begin(request):
             {"status": "error", "message": "User not found."}, status=404
         )
 
+    if is_account_locked(username=username, request=request):
+        log_security_event(
+            "account_locked_in_auth_begin", {"username": username}, request=request
+        )
+        return JsonResponse(
+            {"status": "error", "message": "Account is locked."}, status=403
+        )
+
     keys = Passkey.objects.filter(user=user)
     logger.info(f"dynamic_auth_begin: Found {len(keys)} credentials for user.")
 
@@ -256,7 +269,20 @@ def custom_auth_complete(request):
 
         key = Passkey.objects.get(credential_id=websafe_encode(cred.credential_id))
         user = key.user
+        username = user.username
+        if is_account_locked(username=username, request=request):
+            log_security_event(
+                "account_locked_in_auth_complete",
+                {"username": username},
+                request=request,
+            )
+            record_failed_login(username=username, request=request)
+            return JsonResponse(
+                {"status": "error", "message": "Account is locked."}, status=403
+            )
+
         login(request, user)
+        clear_login_attempts(username=username, request=request)
         request.session["passkey_authenticated"] = True
         import time
 

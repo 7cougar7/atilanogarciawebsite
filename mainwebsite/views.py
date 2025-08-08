@@ -16,7 +16,18 @@ from django.views import View
 from passkeys.models import UserPasskey
 
 from mainwebsite import models
+from mainwebsite.account_lockout import (
+    clear_login_attempts,
+    is_account_locked,
+    record_failed_login,
+)
 from mainwebsite.decorators import passkey_login_required
+from mainwebsite.input_validation import (
+    get_safe_redirect_url,
+    get_whitelisted_redirect_url,
+    validate_url_input,
+    validate_username_input,
+)
 from mainwebsite.magic_link_tokens import magic_link_token_generator
 from mainwebsite.rate_limiting import (
     get_client_ip,
@@ -74,16 +85,24 @@ def url_shortener(request):
 
 def url_shortener_submit(request):
     if request.method == "POST":
-        url = request.POST["url"]
+        url = request.POST.get("url", "").strip()
         if url:
-            shortened_url = models.ShortenedUrl(real_url=url)
-            shortened_url.save()
-            return JsonResponse(
-                {
-                    "shortened_url": f"{get_current_site(request)}/r/{shortened_url.shortened_url}"
-                }
-            )
-    return JsonResponse({})
+            # Validate the URL using our security-focused validation
+            is_valid, error_message = validate_url_input(url)
+
+            if is_valid:
+                shortened_url = models.ShortenedUrl(real_url=url)
+                shortened_url.save()
+                return JsonResponse(
+                    {
+                        "shortened_url": f"{get_current_site(request)}/r/{shortened_url.shortened_url}"
+                    }
+                )
+            else:
+                return JsonResponse({"error": error_message}, status=400)
+        else:
+            return JsonResponse({"error": "URL is required"}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 def redirect_url(request, shortened_url):
@@ -137,19 +156,49 @@ class UnifiedLoginView(View):
 
     def get(self, request):
         form = UsernameForm()
+        # Validate and sanitize the next parameter
+        next_url = get_safe_redirect_url(
+            request.GET.get("next", "/"), default_url="/", request=request
+        )
         return render(
             request,
             self.template_name,
-            {"form": form, "next": request.GET.get("next", "/")},
+            {"form": form, "next": next_url},
         )
 
     def post(self, request):
         form = UsernameForm(request.POST)
-        next_url = request.POST.get("next", request.GET.get("next", "/"))
+        # Validate and sanitize the next parameter from both POST and GET
+        raw_next = request.POST.get("next", request.GET.get("next", "/"))
+        next_url = get_safe_redirect_url(raw_next, default_url="/", request=request)
         is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
         if form.is_valid():
             username = form.cleaned_data["username"]
+            # Validate username input
+            is_valid, error_msg = validate_username_input(username)
+            if not is_valid:
+                message = error_msg or "Invalid username format."
+                if is_ajax:
+                    return JsonResponse(
+                        {"action": "error", "message": message}, status=400
+                    )
+                form.add_error(None, message)
+                return render(
+                    request, self.template_name, {"form": form, "next": next_url}
+                )
+
+            if is_account_locked(username=username, request=request):
+                message = "Account is locked due to excessive failed login attempts."
+                if is_ajax:
+                    return JsonResponse(
+                        {"action": "error", "message": message}, status=403
+                    )
+                form.add_error(None, message)
+                return render(
+                    request, self.template_name, {"form": form, "next": next_url}
+                )
+
             try:
                 user = User.objects.get(username=username)
                 # Check if user has any passkeys
@@ -162,48 +211,54 @@ class UnifiedLoginView(View):
 
                     if is_ajax:
                         return JsonResponse({"action": "prompt_passkey"})
-                    # For non-AJAX requests, stay on login page to show passkey UI
-                    return render(
-                        request,
-                        self.template_name,
-                        {
-                            "form": form,
-                            "next": next_url,
-                            "show_passkey_ui": True,
-                            "username": username,
-                        },
-                    )
-                else:
-                    # User doesn't have a passkey, send magic link
-                    try:
-                        self.send_magic_link(request, user)
-                        message = "A secure magic link has been sent to your email address. It will expire in 15 minutes."
-                    except Exception as e:
-                        # Handle rate limiting and other errors
-                        error_message = str(e)
-                        if (
-                            "rate limited" in error_message.lower()
-                            or "too many" in error_message.lower()
-                        ):
-                            message = error_message
-                        else:
-                            message = (
-                                "Unable to send magic link. Please try again later."
-                            )
-                            logger.error(
-                                f"Magic link send error for user {username}: {e}"
-                            )
-
-                    if is_ajax:
-                        return JsonResponse(
-                            {"action": "magic_link_sent", "message": message}
+                    else:
+                        # For non-AJAX requests, show passkey UI on the same page
+                        return render(
+                            request,
+                            self.template_name,
+                            {
+                                "form": form,
+                                "next": next_url,
+                                "show_passkey_ui": True,
+                                "username": username,
+                            },
                         )
-                    messages.success(request, message)
-                    return render(
-                        request, self.template_name, {"form": form, "next": next_url}
-                    )
+                else:
+                    # User doesn't have passkey, send magic link
+                    try:
+                        # Store next URL in session for after magic link verification
+                        request.session["next"] = next_url
+                        self.send_magic_link(request, user)
+
+                        message = f"A secure magic link has been sent to your email address. It will expire in {magic_link_token_generator.get_token_expiration_minutes()} minutes."
+                        if is_ajax:
+                            return JsonResponse(
+                                {"action": "magic_link_sent", "message": message}
+                            )
+                        else:
+                            messages.success(request, message)
+                            return render(
+                                request,
+                                self.template_name,
+                                {"form": form, "next": next_url},
+                            )
+                    except Exception as e:
+                        logger.error(f"Failed to send magic link: {e}")
+                        error_message = "Failed to send magic link. Please try again."
+                        if is_ajax:
+                            return JsonResponse(
+                                {"action": "error", "message": error_message},
+                                status=500,
+                            )
+                        form.add_error(None, error_message)
+                        return render(
+                            request,
+                            self.template_name,
+                            {"form": form, "next": next_url},
+                        )
 
             except User.DoesNotExist:
+                record_failed_login(username=username, request=request)
                 message = "User not found. Please check your username."
                 if is_ajax:
                     return JsonResponse(
@@ -309,9 +364,25 @@ class MagicLinkVerifyView(View):
                 f"Magic link verification failed - invalid user ID: uidb64={uidb64}, ip={client_ip}"
             )
 
+        # Check if account is locked before proceeding
+        if user and is_account_locked(username=user.username, request=request):
+            logger.warning(
+                f"Magic link verification blocked - account locked: user={user.username}, ip={client_ip}"
+            )
+            return render(
+                request,
+                "magic_link_invalid.html",
+                {
+                    "error_message": "Account is locked due to excessive failed attempts."
+                },
+            )
+
         if user is not None and magic_link_token_generator.check_token(user, token):
             # Successful magic link verification
             login(request, user)
+
+            # Clear any failed login attempts after successful verification
+            clear_login_attempts(username=user.username, request=request)
 
             logger.info(
                 f"Magic link verification successful: user={user.username}, ip={client_ip}"
@@ -320,10 +391,25 @@ class MagicLinkVerifyView(View):
             # Set session flag to indicate magic link verification
             request.session["magic_link_verified"] = True
 
-            # Get the next URL from session or default to passkey registration
-            next_url = request.session.pop(
+            # Get the next URL from session with secure validation
+            raw_next = request.session.pop(
                 "next", reverse("mainwebsite:passkey_register")
             )
+
+            # Use whitelist validation for magic link redirects
+            allowed_urls = [
+                "/",
+                "/personal-ai/",
+                "/passkeys-register/",
+                reverse("mainwebsite:passkey_register"),
+                reverse("mainwebsite:personal_ai"),
+            ]
+            next_url = get_whitelisted_redirect_url(
+                raw_next,
+                allowed_urls=allowed_urls,
+                default_url=reverse("mainwebsite:passkey_register"),
+            )
+
             # Redirect to the intended destination or passkey registration page
             return redirect(next_url)
         else:
