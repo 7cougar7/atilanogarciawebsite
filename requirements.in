@@ -15,7 +15,7 @@ google-cloud-speech
 gunicorn>=22.0.0
 grpcio==1.69.0
 idna>=3.7
-numpy
+numpy==2.2.6
 pip-tools
 proto-plus>=1.25.0
 protobuf>=4.25.5
