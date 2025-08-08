@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -128,61 +128,41 @@ class UnifiedLoginView(View):
         )
 
     def post(self, request):
-        logger.error(f"UnifiedLoginView POST: Headers: {dict(request.headers)}")
-        logger.error(f"UnifiedLoginView POST: Method: {request.method}")
-        logger.error(f"UnifiedLoginView POST: Content-Type: {request.content_type}")
-        logger.error(f"UnifiedLoginView POST: POST data: {dict(request.POST)}")
-
         form = UsernameForm(request.POST)
         next_url = request.POST.get("next", request.GET.get("next", "/"))
         is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
-        logger.error(f"UnifiedLoginView POST: is_ajax={is_ajax}")
-        logger.error(f"UnifiedLoginView POST: next_url={next_url}")
-        logger.error(f"UnifiedLoginView POST: form.is_valid()={form.is_valid()}")
-
-        if not form.is_valid():
-            logger.error(f"UnifiedLoginView POST: form errors: {form.errors}")
-
         if form.is_valid():
             username = form.cleaned_data["username"]
-            logger.error(f"UnifiedLoginView POST: username={username}")
             try:
-                user = User.objects.get(username__iexact=username)
-                logger.error(f"UnifiedLoginView POST: user found: {user.username}")
-                if UserPasskey.objects.filter(user=user).exists():
-                    logger.error(
-                        "UnifiedLoginView POST: user has passkey, setting session and responding"
-                    )
-                    # User has a passkey, prompt for it
-                    request.session["webauthn_username"] = user.username
+                user = User.objects.get(username=username)
+                # Check if user has any passkeys
+                has_passkey = UserPasskey.objects.filter(user=user).exists()
+
+                if has_passkey:
+                    # Store username and next URL in session for passkey auth
+                    request.session["webauthn_username"] = username
                     request.session["next"] = next_url
+
                     if is_ajax:
-                        logger.error(
-                            "UnifiedLoginView POST: returning JSON response for passkey prompt"
-                        )
                         return JsonResponse({"action": "prompt_passkey"})
-                    logger.error(
-                        "UnifiedLoginView POST: staying on login page for passkey authentication"
-                    )
-                    # Stay on the same login page but show passkey authentication UI
+                    # For non-AJAX requests, stay on login page to show passkey UI
                     return render(
                         request,
                         self.template_name,
-                        {"form": form, "next": next_url, "show_passkey": True},
+                        {
+                            "form": form,
+                            "next": next_url,
+                            "show_passkey_ui": True,
+                            "username": username,
+                        },
                     )
                 else:
-                    logger.error(
-                        "UnifiedLoginView POST: user has no passkey, sending magic link"
-                    )
-                    # User exists but has no passkey, send magic link
-                    request.session["next"] = next_url
+                    # User doesn't have a passkey, send magic link
                     self.send_magic_link(request, user)
-                    message = "Please check your email for a magic link to register your first passkey."
+                    message = "A magic link has been sent to your email address."
+
                     if is_ajax:
-                        logger.error(
-                            "UnifiedLoginView POST: returning JSON response for magic link"
-                        )
                         return JsonResponse(
                             {"action": "magic_link_sent", "message": message}
                         )
@@ -190,19 +170,15 @@ class UnifiedLoginView(View):
                     return render(
                         request, self.template_name, {"form": form, "next": next_url}
                     )
+
             except User.DoesNotExist:
-                logger.error(f"UnifiedLoginView POST: user not found: {username}")
-                message = "No account found with that username."
+                message = "User not found. Please check your username."
                 if is_ajax:
-                    logger.error(
-                        "UnifiedLoginView POST: returning JSON error for user not found"
-                    )
                     return JsonResponse(
                         {"action": "error", "message": message}, status=400
                     )
                 form.add_error(None, message)
 
-        logger.error("UnifiedLoginView POST: form invalid or other error")
         if is_ajax:
             return JsonResponse(
                 {"action": "error", "message": "Invalid username."}, status=400
@@ -247,3 +223,16 @@ class MagicLinkVerifyView(View):
 def personal_ai(request):
     """Renders the personal AI page, which is accessible after login."""
     return render(request, "personal_ai.html")
+
+
+def custom_logout(request):
+    """Custom logout view that clears passkey authentication session flag"""
+    # Clear the passkey authentication flag from session
+    if "passkey_authenticated" in request.session:
+        del request.session["passkey_authenticated"]
+
+    # Perform standard logout
+    logout(request)
+
+    # Redirect to the unified login page
+    return redirect(reverse("mainwebsite:login"))

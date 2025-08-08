@@ -24,7 +24,7 @@ def start_two_way(request: HttpRequest) -> HttpResponse:
             )
             access_code_model.increment_calls()
         except Exception as error:
-            print(error)
+            logger.error(error)
             return HttpResponse(status=403)
         caller_phone_number = request.POST["caller_phone_number"]
         callee_phone_number = request.POST["callee_phone_number"]
@@ -109,7 +109,6 @@ def establish_language_menu(
             gather.say("Or press pound to repeat this menu.")
     except Exception as error:
         logger.error(error)
-        print(error)
 
     return twiml
 
@@ -123,19 +122,17 @@ def set_language(request: HttpRequest) -> HttpResponse:
             raise Exception
 
         phone_number_model_id = int(request.GET.get("phone_number_model_id"))
-        print(f"{phone_number_model_id=}")
+        logger.info(f"phone_number_model_id={phone_number_model_id}")
         phone_number_model = models.PhoneNumber.objects.get(id=phone_number_model_id)
     except Exception as error:
         response.say("Please select an option from the list.")
         logger.error(error)
-        print(error)
     else:
         try:
             phone_number_model.language = models.AVAILABLE_LANGUAGES[selection - 1]
             phone_number_model.save()
         except Exception as error:
             logger.error(error)
-            print(error)
 
     return str(response)
 
@@ -152,7 +149,7 @@ def initiate_phone_call(
         protocol += "s"
 
     websocket_url = f"{protocol}://{get_current_site(request)}/ws/call/"
-    print(f"{websocket_url=}")
+    logger.info(f"websocket_url={websocket_url}")
     stream = Stream(url=websocket_url)
     stream.parameter(name="phoneNumber", value=phone_number_model.phone_number)
     start.append(stream)

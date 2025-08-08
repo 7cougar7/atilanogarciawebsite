@@ -53,7 +53,6 @@ def twilio_incoming(request: HttpRequest) -> HttpResponse:
         response.redirect("")
     except Exception as error:
         logger.error(error)
-        print(error)
 
     return HttpResponse(str(response), content_type="text/xml")
 
@@ -70,7 +69,6 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
         response.say("Please select an option from the list.")
         response.redirect(reverse("twilio_incoming"))
         logger.error(error)
-        print(error)
 
     else:
         try:
@@ -84,12 +82,8 @@ def twilio_menu_action(request: HttpRequest) -> HttpResponse:
                     loop=10,
                 )
             else:
-                print(get_menu_options())
-                print(get_menu_options()[selection])
-                print(get_menu_options()[selection]["sound_url"])
                 response.play(get_menu_options()[selection]["sound_url"])
         except Exception as error:
             logger.error(error)
-            print(error)
 
     return HttpResponse(str(response), content_type="text/xml")

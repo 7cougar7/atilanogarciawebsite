@@ -48,110 +48,61 @@ def get_user_credentials(user):
 
 @csrf_exempt
 def dynamic_reg_begin(request):
-    logger.info("=== PASSKEY REGISTRATION BEGIN DEBUG ===")
-    logger.info(f"dynamic_reg_begin: Request method: {request.method}")
-    logger.info(f"dynamic_reg_begin: Request headers: {dict(request.headers)}")
-
     if not request.user.is_authenticated:
         logger.error("dynamic_reg_begin: User not authenticated")
         login_url = f"{reverse('mainwebsite:login')}?next={reverse('mainwebsite:passkey_register')}"
         return JsonResponse(
             {
                 "error": "You must be logged in to register a new passkey.",
-                "login_url": login_url,
+                "redirect_url": login_url,
             },
             status=401,
         )
 
-    fido2_server = get_fido2_server(request)
-    user = request.user
-    logger.info(f"dynamic_reg_begin: User: {user.username} (ID: {user.id})")
-
     try:
-        user_credentials = get_user_credentials(user)
+        user = request.user
+        logger.info(f"dynamic_reg_begin: User: {user.username} (ID: {user.id})")
+
+        # Get existing credentials for this user
+        existing_credentials = get_user_credentials(user)
         logger.info(
-            f"dynamic_reg_begin: Found {len(user_credentials)} existing credentials"
+            f"dynamic_reg_begin: Found {len(existing_credentials)} existing credentials"
         )
 
+        # Get FIDO2 server instance
+        fido2_server = get_fido2_server(request)
+
+        # Create user info for FIDO2
         user_info = {
             "id": user.username.encode("utf-8"),
-            "name": user.get_full_name(),
+            "name": user.get_full_name() or "",
             "displayName": user.username,
         }
-        logger.debug(f"User dict for FIDO2: {user_info}")
 
-        logger.info("dynamic_reg_begin: Calling fido2_server.register_begin")
+        # Begin registration
         try:
+            logger.info("dynamic_reg_begin: Calling fido2_server.register_begin")
             registration_data, state = fido2_server.register_begin(
                 user_info,
-                user_credentials,
+                existing_credentials,
                 resident_key_requirement=ResidentKeyRequirement.REQUIRED,
             )
             logger.info("dynamic_reg_begin: register_begin call successful")
-        except Exception as e:
-            logger.error(f"dynamic_reg_begin: register_begin failed: {e}")
-            logger.error(f"dynamic_reg_begin: Exception type: {type(e)}")
-            logger.error(f"dynamic_reg_begin: user_info: {user_info}")
-            logger.error(f"dynamic_reg_begin: user_credentials: {user_credentials}")
-            raise
 
-        logger.info(
-            f"dynamic_reg_begin: FIDO2 registration_data type: {type(registration_data)}"
-        )
-        logger.info(f"dynamic_reg_begin: FIDO2 registration_data: {registration_data}")
+            # Store state in session
+            request.session["passkey_registration_state"] = state
+            logger.info("dynamic_reg_begin: Registration state saved to session")
 
-        # Log the raw data before conversion - access the nested public_key structure
-        logger.info(
-            f"dynamic_reg_begin: Raw challenge: {registration_data.public_key.challenge}"
-        )
-        logger.info(
-            f"dynamic_reg_begin: Raw challenge type: {type(registration_data.public_key.challenge)}"
-        )
-        logger.info(
-            f"dynamic_reg_begin: Raw user.id: {registration_data.public_key.user.id}"
-        )
-        logger.info(
-            f"dynamic_reg_begin: Raw user.id type: {type(registration_data.public_key.user.id)}"
-        )
-
-        request.session["passkey_registration_state"] = state
-        logger.info("dynamic_reg_begin: Registration state saved to session")
-
-        # Convert to dictionary for JSON serialization
-        try:
-            reg_dict = asdict(registration_data)
-            logger.info(f"dynamic_reg_begin: asdict result type: {type(reg_dict)}")
-            logger.info(f"dynamic_reg_begin: asdict result: {reg_dict}")
-
-            # The client-side script expects the public_key object directly.
-            public_key_options = reg_dict.get("public_key", {})
-
-            # Log specific fields after asdict conversion
-            if "challenge" in public_key_options:
-                logger.info(
-                    f"dynamic_reg_begin: Dict challenge: {public_key_options['challenge']}"
-                )
-                logger.info(
-                    f"dynamic_reg_begin: Dict challenge type: {type(public_key_options['challenge'])}"
-                )
-            if "user" in public_key_options and "id" in public_key_options["user"]:
-                logger.info(
-                    f"dynamic_reg_begin: Dict user.id: {public_key_options['user']['id']}"
-                )
-                logger.info(
-                    f"dynamic_reg_begin: Dict user.id type: {type(public_key_options['user']['id'])}"
-                )
-
+            # Convert to dictionary for JSON serialization
+            public_key_options = asdict(registration_data)["public_key"]
             return JsonResponse(public_key_options, encoder=BytesEncoder, safe=False)
 
         except Exception as e:
             logger.error(f"dynamic_reg_begin: Error in asdict conversion: {e}")
-            logger.error(f"dynamic_reg_begin: Error type: {type(e)}")
             raise
 
     except Exception as e:
         logger.error(f"dynamic_reg_begin: General error: {e}")
-        logger.error(f"dynamic_reg_begin: Error type: {type(e)}")
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 

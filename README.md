@@ -12,6 +12,49 @@ Feel free to browse around, check out my projects, and don't hesitate to reach o
 
 - **Project Showcase:** Explore my latest and greatest projects.
 - **Resume and LinkedIn:** Learn about my skills, experience, and achievements.
+- **Unified Authentication:** Secure passkey and magic link authentication system.
+- **Personal AI:** Protected area accessible only with passkey authentication.
+
+## Authentication System
+
+This website features a modern, unified authentication system that supports both passkey (WebAuthn) and magic link authentication:
+
+### Authentication Flow
+
+1. **Unified Login Page** (`/login/`): Single entry point for all authentication
+   - Enter your username to begin authentication
+   - Users with passkeys will be prompted for passkey authentication
+   - Users without passkeys will receive a magic link via email
+
+2. **Passkey Authentication**:
+   - Secure, passwordless authentication using WebAuthn/FIDO2
+   - Uses device biometrics (Face ID, Touch ID, Windows Hello) or security keys
+   - Register passkeys at `/passkeys-register/` (requires initial login)
+
+3. **Magic Link Authentication**:
+   - Email-based authentication for users without passkeys
+   - Secure token-based links that expire after use
+   - Automatically redirects to passkey registration after login
+
+### Protected Areas
+
+- **Personal AI** (`/personal-ai/`): Requires passkey authentication
+  - Automatically redirects unauthenticated users to login
+  - Preserves intended destination after authentication
+
+### Key URLs
+
+- `/login/` - Unified login page (replaces old separate login/register pages)
+- `/passkeys-register/` - Passkey registration (requires login)
+- `/personal-ai/` - Protected personal AI area (requires passkey)
+- `/logout/` - Logout (clears all session data)
+
+### Security Features
+
+- CSRF protection on all authentication endpoints
+- Session-based passkey authentication tracking
+- Secure redirect handling to prevent open redirects
+- Proper session cleanup on logout
 
 ## Getting Started
 

@@ -29,8 +29,8 @@ class PasskeyTests(TestCase):
         self.assertEqual(response.status_code, 401)
         data = response.json()
         self.assertIn("error", data)
-        self.assertIn("login_url", data)
-        self.assertIn(reverse("mainwebsite:login"), data["login_url"])
+        self.assertIn("redirect_url", data)
+        self.assertIn(reverse("mainwebsite:login"), data["redirect_url"])
 
     @patch("mainwebsite.custom_passkey_views.get_fido2_server")
     def test_dynamic_reg_begin_returns_flat_json(self, mock_get_fido2_server):
@@ -249,15 +249,13 @@ class UnifiedLoginFlowTests(TestCase):
         self.assertTemplateUsed(response, "unified_login.html")
 
     def test_unified_login_nonexistent_user(self):
-        response = self.client.post(
-            reverse("mainwebsite:login"), {"username": "nouser"}
-        )
+        response = self.client.post("/login/", {"username": "nouser"})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No account found with that username.")
+        self.assertContains(response, "User not found. Please check your username.")
 
     def test_unified_login_with_nonexistent_user_ajax(self):
         response = self.client.post(
-            reverse("mainwebsite:login"),
+            "/login/",
             {"username": "nouser"},
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
         )
@@ -276,7 +274,7 @@ class UnifiedLoginFlowTests(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(
             str(messages[0]),
-            "Please check your email for a magic link to register your first passkey.",
+            "A magic link has been sent to your email address.",
         )
         mock_send_magic_link.assert_called_once()
 
@@ -314,8 +312,8 @@ class UnifiedLoginFlowTests(TestCase):
         )
         # Should now stay on the login page and show passkey authentication UI
         self.assertEqual(response.status_code, 200)
-        # Check that show_passkey context variable is set
-        self.assertTrue(response.context.get("show_passkey", False))
+        # Check that show_passkey_ui context variable is set
+        self.assertTrue(response.context.get("show_passkey_ui", False))
 
     def test_magic_link_verify_success(self):
         token = default_token_generator.make_token(self.user)
@@ -340,3 +338,32 @@ class UnifiedLoginFlowTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "magic_link_invalid.html")
+
+
+class PasskeyLogoutTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com"
+        )
+
+    def test_logout_clears_passkey_session(self):
+        """Test that logout properly clears passkey_authenticated session flag"""
+        # Login and set passkey session flag
+        self.client.force_login(self.user)
+        session = self.client.session
+        session["passkey_authenticated"] = True
+        session.save()
+
+        # Verify session flag is set
+        self.assertTrue(self.client.session.get("passkey_authenticated"))
+
+        # Logout
+        response = self.client.post("/logout/")
+
+        # Verify redirect to login page
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+        # Verify user is logged out and session flag is cleared
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        self.assertIsNone(self.client.session.get("passkey_authenticated"))

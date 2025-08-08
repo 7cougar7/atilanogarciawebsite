@@ -15,7 +15,6 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
 from mainwebsite.custom_passkey_views import (
@@ -24,6 +23,7 @@ from mainwebsite.custom_passkey_views import (
     dynamic_reg_begin,
     dynamic_reg_complete,
 )
+from mainwebsite.views import custom_logout
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -42,7 +42,7 @@ urlpatterns = [
     # Custom logout URL that redirects to the unified login page
     path(
         "logout/",
-        auth_views.LogoutView.as_view(next_page="login"),
+        custom_logout,
         name="logout",
     ),
 ]

@@ -1,4 +1,3 @@
-from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from mainwebsite import translator_calls, twilio_views, views, views_dnd
@@ -83,7 +82,7 @@ urlpatterns = [
     ),
     path(
         "logout/",
-        auth_views.LogoutView.as_view(template_name="logged_out.html"),
+        views.custom_logout,
         name="logout",
     ),
 ]
