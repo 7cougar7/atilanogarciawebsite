@@ -32,3 +32,6 @@ uvicorn
 virtualenv
 websockets
 whitenoise
+
+# For postgres
+psycopg2-binary
