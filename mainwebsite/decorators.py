@@ -1,6 +1,8 @@
 from functools import wraps
+from urllib.parse import urlencode
 
 from django.shortcuts import redirect
+from django.urls import reverse
 
 
 def passkey_login_required(view_func):
@@ -16,6 +18,9 @@ def passkey_login_required(view_func):
         ):
             return view_func(request, *args, **kwargs)
         else:
-            return redirect("mainwebsite:passkey_login")
+            # Redirect to the unified login page with next parameter
+            login_url = reverse("mainwebsite:login")
+            next_url = request.get_full_path()
+            return redirect(f"{login_url}?{urlencode({'next': next_url})}")
 
     return _wrapped_view

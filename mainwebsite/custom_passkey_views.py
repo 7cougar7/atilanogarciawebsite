@@ -54,7 +54,7 @@ def dynamic_reg_begin(request):
 
     if not request.user.is_authenticated:
         logger.error("dynamic_reg_begin: User not authenticated")
-        login_url = f"{reverse('mainwebsite:login')}?next={reverse('mainwebsite:passkey_login')}"
+        login_url = f"{reverse('mainwebsite:login')}?next={reverse('mainwebsite:passkey_register')}"
         return JsonResponse(
             {
                 "error": "You must be logged in to register a new passkey.",
@@ -199,12 +199,10 @@ def dynamic_reg_complete(request):
         # Clear the registration state from the session
         del request.session["passkey_registration_state"]
 
-        # Redirect to the stored 'next' URL
-        next_url = request.session.pop(
-            "login_next_url", reverse("mainwebsite:homepage")
-        )
+        # After successful passkey registration, redirect to login page to complete authentication
+        login_url = reverse("mainwebsite:login")
 
-        return JsonResponse({"status": "OK", "redirect_url": next_url})
+        return JsonResponse({"status": "OK", "redirect_url": login_url})
 
     except Exception as e:
         logger.error(f"Error in custom_passkey_reg_complete: {e}")
@@ -328,6 +326,8 @@ def custom_auth_complete(request):
         key = Passkey.objects.get(credential_id=websafe_encode(cred.credential_id))
         user = key.user
         login(request, user)
+        # Set passkey authentication flag in session
+        request.session["passkey_authenticated"] = True
         next_url = request.session.pop("next", "/")
         logger.debug(
             f"custom_auth_complete: login successful for user {user.username}, redirecting to {next_url}"

@@ -92,11 +92,6 @@ def translator(request):
     return render(request, "translator.html", context)
 
 
-def passkey_login(request):
-    """Renders the passkey login/registration page."""
-    return render(request, "passkey_login.html")
-
-
 @login_required
 def passkey_register(request):
     """View for setting up a new passkey (requires user to be logged in)"""
@@ -139,7 +134,7 @@ class UnifiedLoginView(View):
         logger.error(f"UnifiedLoginView POST: POST data: {dict(request.POST)}")
 
         form = UsernameForm(request.POST)
-        next_url = request.POST.get("next", "/")
+        next_url = request.POST.get("next", request.GET.get("next", "/"))
         is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
         logger.error(f"UnifiedLoginView POST: is_ajax={is_ajax}")
@@ -168,10 +163,13 @@ class UnifiedLoginView(View):
                         )
                         return JsonResponse({"action": "prompt_passkey"})
                     logger.error(
-                        "UnifiedLoginView POST: redirecting to passkey_login (non-AJAX)"
+                        "UnifiedLoginView POST: staying on login page for passkey authentication"
                     )
-                    return redirect(
-                        f"{reverse('mainwebsite:passkey_login')}?next={next_url}"
+                    # Stay on the same login page but show passkey authentication UI
+                    return render(
+                        request,
+                        self.template_name,
+                        {"form": form, "next": next_url, "show_passkey": True},
                     )
                 else:
                     logger.error(
@@ -234,16 +232,15 @@ class MagicLinkVerifyView(View):
 
         if user is not None and default_token_generator.check_token(user, token):
             login(request, user)
-            # Redirect to the passkey registration page to set up a passkey
-            return redirect(reverse("mainwebsite:passkey_register"))
+            # Get the next URL from session or default to passkey registration
+            next_url = request.session.pop(
+                "next", reverse("mainwebsite:passkey_register")
+            )
+            # Redirect to the intended destination or passkey registration page
+            return redirect(next_url)
         else:
             # We'll need a template for this
             return render(request, "magic_link_invalid.html")
-
-
-class PasskeyLoginView(View):
-    def get(self, request):
-        return render(request, "passkey_login.html")
 
 
 @passkey_login_required

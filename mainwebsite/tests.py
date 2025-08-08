@@ -210,9 +210,6 @@ class PasskeyTests(TestCase):
         # 3. Set the session state required for registration completion
         session = self.client.session
         session["passkey_registration_state"] = "dummy_state"
-        session["login_next_url"] = (
-            next_page  # Set the next url for the registration view
-        )
         session.save()
 
         # 4. Mock the passkey registration completion
@@ -232,10 +229,11 @@ class PasskeyTests(TestCase):
                 content_type="application/json",
             )
 
-        # 5. Check that the response contains the correct redirect URL
+        # 5. Check that the response redirects to login page after successful registration
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["status"], "OK")
-        self.assertEqual(response.json()["redirect_url"], next_page)
+        # After passkey registration, user should be redirected to login page to complete authentication
+        self.assertEqual(response.json()["redirect_url"], "/login/")
 
 
 class UnifiedLoginFlowTests(TestCase):
@@ -314,8 +312,10 @@ class UnifiedLoginFlowTests(TestCase):
         response = self.client.post(
             reverse("mainwebsite:login"), {"username": "testuser"}
         )
-        self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("mainwebsite:passkey_login"), response.url)
+        # Should now stay on the login page and show passkey authentication UI
+        self.assertEqual(response.status_code, 200)
+        # Check that show_passkey context variable is set
+        self.assertTrue(response.context.get("show_passkey", False))
 
     def test_magic_link_verify_success(self):
         token = default_token_generator.make_token(self.user)

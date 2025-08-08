@@ -39,10 +39,10 @@ urlpatterns = [
     path("passkeys/auth/complete", custom_auth_complete, name="passkeys_auth_complete"),
     # Include the rest of the passkeys URLs
     path("passkeys/", include("passkeys.urls")),
-    # Custom logout URL that redirects to the passkey login page
+    # Custom logout URL that redirects to the unified login page
     path(
         "logout/",
-        auth_views.LogoutView.as_view(next_page="passkey_login"),
+        auth_views.LogoutView.as_view(next_page="login"),
         name="logout",
     ),
 ]
