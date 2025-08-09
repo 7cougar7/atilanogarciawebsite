@@ -138,7 +138,7 @@ else:
     # Production - use Aurora DSQL
     DATABASES = {
         "default": {
-            "ENGINE": "aurora_dsql_django",
+            "ENGINE": "mainwebsite.aurora_dsql_backend",
             "HOST": os.environ.get("AURORA_DSQL_HOST"),
             "NAME": os.environ.get("AURORA_DSQL_DATABASE", "postgres"),
             "USER": os.environ.get("AURORA_DSQL_USER", "admin"),
