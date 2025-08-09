@@ -4,8 +4,15 @@ Custom Aurora DSQL database backend that handles async index creation.
 
 import re
 
-from aurora_dsql_django.base import DatabaseWrapper as AuroraDSQLDatabaseWrapper
-from aurora_dsql_django.schema import DatabaseSchemaEditor as AuroraDSQLSchemaEditor
+try:
+    from aurora_dsql_django.base import DatabaseWrapper as AuroraDSQLDatabaseWrapper
+    from aurora_dsql_django.schema import DatabaseSchemaEditor as AuroraDSQLSchemaEditor
+except ImportError as e:
+    # If aurora-dsql-django is not available, raise a more helpful error
+    raise ImportError(
+        "aurora-dsql-django package is required for this custom backend. "
+        "Please install it with: pip install aurora-dsql-django"
+    ) from e
 
 
 class DatabaseSchemaEditor(AuroraDSQLSchemaEditor):

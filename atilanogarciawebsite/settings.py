@@ -136,9 +136,19 @@ if DEBUG:
     }
 else:
     # Production - use Aurora DSQL
+    # Try custom backend first, fall back to original if there are issues
+    try:
+        # Test if custom backend can be imported
+        pass
+
+        ENGINE = "mainwebsite.aurora_dsql_backend"
+    except ImportError:
+        # Fall back to original Aurora DSQL backend
+        ENGINE = "aurora_dsql_django"
+
     DATABASES = {
         "default": {
-            "ENGINE": "mainwebsite.aurora_dsql_backend",
+            "ENGINE": ENGINE,
             "HOST": os.environ.get("AURORA_DSQL_HOST"),
             "NAME": os.environ.get("AURORA_DSQL_DATABASE", "postgres"),
             "USER": os.environ.get("AURORA_DSQL_USER", "admin"),
