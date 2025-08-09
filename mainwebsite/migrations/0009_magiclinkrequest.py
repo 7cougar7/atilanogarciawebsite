@@ -41,6 +41,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "ordering": ["-requested_at"],
+                "unique_together": set(),
                 "indexes": [
                     models.Index(
                         fields=["user", "requested_at"],
