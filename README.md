@@ -106,6 +106,8 @@ These variables are required only when `DEBUG` is set to `False`.
 
 | Variable                      | Description                                                                 | Default Value                  | Required          |
 | ----------------------------- | --------------------------------------------------------------------------- | ------------------------------ | ----------------- |
+| `AWS_ACCESS_KEY_ID`           | Your AWS access key for an IAM user with `rds-db:connect` permissions.      | `None`                         | **Yes (Prod)**    |
+| `AWS_SECRET_ACCESS_KEY`       | Your AWS secret access key for the IAM user.                                | `None`                         | **Yes (Prod)**    |
 | `AURORA_DSQL_HOST`            | The hostname of the Aurora DSQL cluster.                                    | `None`                         | **Yes (Prod)**    |
 | `AURORA_DSQL_DATABASE`        | The name of the database to connect to.                                     | `postgres`                     | No                |
 | `AURORA_DSQL_USER`            | The database username.                                                      | `postgres`                     | No                |

@@ -140,8 +140,8 @@ else:
         "default": {
             "ENGINE": "aurora_dsql_django",
             "HOST": os.environ.get("AURORA_DSQL_HOST"),
-            "NAME": os.environ.get("AURORA_DSQL_DATABASE", "atilanogarciawebsitedb"),
-            "USER": os.environ.get("AURORA_DSQL_USER", "postgres"),
+            "NAME": os.environ.get("AURORA_DSQL_DATABASE", "postgres"),
+            "USER": os.environ.get("AURORA_DSQL_USER", "admin"),
             "OPTIONS": {
                 "sslmode": "require",
                 "region": os.environ.get("AWS_REGION", "us-east-2"),
