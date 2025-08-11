@@ -63,12 +63,20 @@ class Command(BaseCommand):
                 "\n=== Fixing ContentType cache for UUID compatibility ==="
             )
             try:
-                from django.core.management import call_command
+                # Only try to fix cache if tables exist
+                if self.tables_exist():
+                    from django.core.management import call_command
 
-                call_command("fix_contenttype_cache", verbosity=1)
-                self.stdout.write(
-                    self.style.SUCCESS("ContentType cache fixed automatically!")
-                )
+                    call_command("fix_contenttype_cache", verbosity=1)
+                    self.stdout.write(
+                        self.style.SUCCESS("ContentType cache fixed automatically!")
+                    )
+                else:
+                    self.stdout.write(
+                        self.style.WARNING(
+                            "Database tables don't exist yet - skipping cache fix"
+                        )
+                    )
             except Exception as e:
                 self.stdout.write(
                     self.style.WARNING("Could not fix ContentType cache: {}".format(e))
@@ -456,3 +464,23 @@ class Migration(migrations.Migration):
                     f"Could not check migration state for {app_name}: {e}"
                 )
             )
+
+    def tables_exist(self):
+        """Check if tables exist in the database."""
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM information_schema.tables
+                    WHERE table_name IN ('auth_user', 'auth_group', 'auth_permission', 'django_content_type')
+                """
+                )
+                table_count = cursor.fetchone()[0]
+
+                return table_count > 0
+
+        except Exception as e:
+            self.stdout.write(
+                self.style.WARNING(f"Could not check table existence: {e}")
+            )
+            return False

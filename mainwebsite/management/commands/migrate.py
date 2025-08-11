@@ -22,6 +22,11 @@ class Command(BaseMigrateCommand):
             action="store_true",
             help="Force Aurora DSQL migration consolidation even in development",
         )
+        parser.add_argument(
+            "--skip-aurora-dsql-setup",
+            action="store_true",
+            help="Skip Aurora DSQL migration consolidation",
+        )
 
     def handle(self, *args, **options):
         """
@@ -30,10 +35,12 @@ class Command(BaseMigrateCommand):
         # Apply Django version compatibility patch before running migrations
         self.apply_django_compatibility_patch()
 
-        # Check if we should run Aurora DSQL setup
+        # Check if we should run Aurora DSQL setup (only if not already done)
         if (
-            options.get("force_aurora_dsql_setup")
-            or self.should_run_aurora_dsql_setup()
+            not options.get("skip_aurora_dsql_setup")
+            and self.should_run_aurora_dsql_setup()
+            and not os.environ.get("AURORA_DSQL_CONSOLIDATION_RUNNING")
+            and not getattr(self, "_consolidation_completed", False)
         ):
             self.setup_aurora_dsql_compatibility()
 
@@ -112,7 +119,7 @@ class Command(BaseMigrateCommand):
                     "Aurora DSQL migration compatibility setup complete!"
                 )
             )
-
+            self._consolidation_completed = True
         except Exception as e:
             self.stdout.write(
                 self.style.WARNING(f"Could not set up Aurora DSQL compatibility: {e}")

@@ -8,6 +8,9 @@ class MainwebsiteConfig(AppConfig):
     name = "mainwebsite"
     default_auto_field = "django.db.models.BigAutoField"
 
+    # Class variable to track consolidation state
+    _consolidation_completed = False
+
     def ready(self):
         """
         Called when Django starts up. Set up automatic migration consolidation
@@ -50,6 +53,14 @@ class MainwebsiteConfig(AppConfig):
         Automatically consolidate Django auth and contenttypes migrations
         for Aurora DSQL compatibility before migrations run.
         """
+        # Prevent multiple consolidations in the same process
+        if MainwebsiteConfig._consolidation_completed:
+            return
+
+        # Skip if consolidation is already running (prevent recursion)
+        if os.environ.get("AURORA_DSQL_CONSOLIDATION_RUNNING") == "true":
+            return
+
         import logging
 
         from django.core.management import call_command
@@ -67,6 +78,9 @@ class MainwebsiteConfig(AppConfig):
                 "Aurora DSQL detected - running automatic migration consolidation"
             )
 
+            # Set flag to prevent recursion
+            os.environ["AURORA_DSQL_CONSOLIDATION_RUNNING"] = "true"
+
             # Run the consolidation command
             call_command(
                 "consolidate_django_migrations",
@@ -77,14 +91,17 @@ class MainwebsiteConfig(AppConfig):
                 verbosity=1,
             )
 
-            # Clear Django's ContentType cache to fix UUID/numeric issues
-            self.clear_contenttype_cache()
+            # Mark consolidation as completed
+            MainwebsiteConfig._consolidation_completed = True
 
             logger.info("Migration consolidation completed successfully")
 
         except Exception as e:
             logger.warning(f"Could not run automatic migration consolidation: {e}")
             # Don't fail the migration process if consolidation fails
+        finally:
+            # Clean up the flag
+            os.environ.pop("AURORA_DSQL_CONSOLIDATION_RUNNING", None)
 
     def clear_contenttype_cache(self):
         """
