@@ -180,7 +180,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ContentType',
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, auto_created=True)),
                 ('app_label', models.CharField(max_length=100)),
                 ('model', models.CharField(max_length=100)),
                 ('name', models.CharField(max_length=100, null=True, blank=True)),  # Retained for compatibility
@@ -190,6 +190,16 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'content types',
                 'db_table': 'django_content_type',
             },
+        ),
+        # Custom operation to ensure UUID primary key compatibility
+        migrations.RunSQL(
+            sql=[
+                # Ensure the ContentType table ID column uses UUID with proper default
+                "ALTER TABLE django_content_type ALTER COLUMN id SET DEFAULT gen_random_uuid();",
+            ],
+            reverse_sql=[
+                "ALTER TABLE django_content_type ALTER COLUMN id DROP DEFAULT;",
+            ],
         ),
         migrations.AlterUniqueTogether(
             name='contenttype',
@@ -316,7 +326,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, auto_created=True)),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
                 ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
@@ -337,6 +347,20 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
+            ],
+        ),
+        # Custom operation to ensure UUID primary key compatibility
+        migrations.RunSQL(
+            sql=[
+                # Ensure the User table ID column uses UUID with proper default
+                "ALTER TABLE auth_user ALTER COLUMN id SET DEFAULT gen_random_uuid();",
+                "ALTER TABLE auth_permission ALTER COLUMN id SET DEFAULT gen_random_uuid();",
+                "ALTER TABLE auth_group ALTER COLUMN id SET DEFAULT gen_random_uuid();",
+            ],
+            reverse_sql=[
+                "ALTER TABLE auth_user ALTER COLUMN id DROP DEFAULT;",
+                "ALTER TABLE auth_permission ALTER COLUMN id DROP DEFAULT;",
+                "ALTER TABLE auth_group ALTER COLUMN id DROP DEFAULT;",
             ],
         ),
         migrations.AlterUniqueTogether(
