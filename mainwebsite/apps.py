@@ -13,9 +13,14 @@ class MainwebsiteConfig(AppConfig):
 
     def ready(self):
         """
-        Called when Django starts up. Set up automatic migration consolidation
-        for Aurora DSQL compatibility.
+        Perform app initialization when Django starts.
         """
+        # Import Aurora DSQL compatibility fixes
+        try:
+            pass
+        except ImportError:
+            pass
+
         # Only run consolidation in production or when explicitly requested
         if self.should_run_consolidation():
             self.setup_automatic_consolidation()
