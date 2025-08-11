@@ -63,12 +63,8 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         # Cross-Origin Opener Policy
         response["Cross-Origin-Opener-Policy"] = "same-origin"
 
-        # Cross-Origin Resource Policy
-        # Allow cross-origin for font files to support FontAwesome, but restrict other resources
-        if request.path.endswith((".woff", ".woff2", ".ttf", ".eot", ".otf")):
-            response["Cross-Origin-Resource-Policy"] = "cross-origin"
-        else:
-            response["Cross-Origin-Resource-Policy"] = "same-origin"
+        # Note: Cross-Origin-Resource-Policy removed to allow external font loading
+        # External resources like FontAwesome set their own CORP headers
 
         # Additional security headers
         response["X-Content-Type-Options"] = "nosniff"

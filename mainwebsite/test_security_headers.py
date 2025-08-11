@@ -53,7 +53,6 @@ class SecurityHeadersTests(TestCase):
         # Check Cross-Origin policies
         self.assertIn("Cross-Origin-Embedder-Policy", response)
         self.assertIn("Cross-Origin-Opener-Policy", response)
-        self.assertIn("Cross-Origin-Resource-Policy", response)
 
         # Check Permissions Policy
         self.assertIn("Permissions-Policy", response)
