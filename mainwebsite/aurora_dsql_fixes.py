@@ -8,7 +8,7 @@ and the consolidated migration schema in Aurora DSQL environments.
 import uuid
 
 from django.contrib.auth.models import User
-from django.db import connection, transaction
+from django.db import connection, models, transaction
 from django.utils import timezone
 
 
@@ -19,6 +19,34 @@ def is_aurora_dsql_environment():
         return "aurora" in db_engine.lower() or "dsql" in db_engine.lower()
     except Exception:
         return False
+
+
+# Fix Django's User model primary key field for Aurora DSQL environments
+if is_aurora_dsql_environment():
+    # Replace the AutoField with UUIDField for proper session handling
+    original_pk_field = User._meta.pk
+
+    # Create a new UUIDField to replace the AutoField
+    uuid_field = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid_field.name = "id"
+    uuid_field.attname = "id"
+    uuid_field.column = "id"
+    uuid_field.model = User
+    uuid_field.contribute_to_class(User, "id")
+
+    # Update the model's meta information
+    User._meta.pk = uuid_field
+
+    # Update the fields list
+    User._meta.fields = [f if f.name != "id" else uuid_field for f in User._meta.fields]
+
+    # Clear field caches
+    if hasattr(User._meta, "_field_cache"):
+        User._meta._field_cache = {}
+    if hasattr(User._meta, "_field_name_cache"):
+        User._meta._field_name_cache = []
+
+    print("✅ Aurora DSQL: Patched User model primary key field to UUIDField")
 
 
 # Fix Django's update_last_login for Aurora DSQL environments
