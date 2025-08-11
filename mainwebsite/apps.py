@@ -17,7 +17,7 @@ class MainwebsiteConfig(AppConfig):
         """
         # Import Aurora DSQL compatibility fixes
         try:
-            pass
+            from . import aurora_dsql_fixes  # noqa: F401
         except ImportError:
             pass
 
