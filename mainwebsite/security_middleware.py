@@ -27,7 +27,7 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com; "
             "img-src 'self' data: https:; "
-            "connect-src 'self'; "
+            "connect-src 'self' https://ka-f.fontawesome.com; "
             "frame-ancestors 'none'; "
             "base-uri 'self'; "
             "form-action 'self'; "
