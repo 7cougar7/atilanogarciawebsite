@@ -1,5 +1,5 @@
 """
-Custom createsuperuser command for Aurora DSQL compatibility.
+Aurora DSQL-specific createsuperuser command.
 
 This command handles the UUID primary key mismatch between Django's User model
 and the consolidated migration schema in Aurora DSQL environments.
@@ -8,16 +8,27 @@ and the consolidated migration schema in Aurora DSQL environments.
 import uuid
 
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.management.commands.createsuperuser import (
-    Command as BaseCommand,
-)
 from django.contrib.auth.models import User
-from django.core.management.base import CommandError
+from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 
 
 class Command(BaseCommand):
     help = "Create a superuser with Aurora DSQL UUID compatibility"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--username",
+            help="Specifies the login for the superuser.",
+        )
+        parser.add_argument(
+            "--email",
+            help="Specifies the email for the superuser.",
+        )
+        parser.add_argument(
+            "--password",
+            help="Specifies the password for the superuser.",
+        )
 
     def is_aurora_dsql_environment(self):
         """Check if we're running in an Aurora DSQL environment."""
@@ -28,15 +39,14 @@ class Command(BaseCommand):
         """
         Handle superuser creation with UUID compatibility for Aurora DSQL.
         """
-        # Always check for Aurora DSQL first
-        if self.is_aurora_dsql_environment():
-            return self.handle_aurora_dsql(*args, **options)
-        else:
-            # Use the standard Django createsuperuser for non-Aurora environments
-            return super().handle(*args, **options)
+        if not self.is_aurora_dsql_environment():
+            self.stdout.write(
+                self.style.WARNING(
+                    "Not an Aurora DSQL environment. Use 'python manage.py createsuperuser' instead."
+                )
+            )
+            return
 
-    def handle_aurora_dsql(self, *args, **options):
-        """Handle superuser creation specifically for Aurora DSQL with UUID PKs."""
         self.stdout.write(
             self.style.SUCCESS(
                 "Aurora DSQL detected - using UUID-compatible superuser creation"
