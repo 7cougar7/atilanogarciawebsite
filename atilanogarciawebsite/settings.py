@@ -126,29 +126,11 @@ WSGI_APPLICATION = "atilanogarciawebsite.wsgi.application"
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # Environment-based database configuration
-if DEBUG:
-    # Local development - use SQLite3
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
-    }
-else:
+if not DEBUG:
     # Production - use Aurora DSQL
-    # Try custom backend first, fall back to original if there are issues
-    try:
-        # Test if custom backend can be imported
-        pass
-
-        ENGINE = "mainwebsite.aurora_dsql_backend"
-    except ImportError:
-        # Fall back to original Aurora DSQL backend
-        ENGINE = "aurora_dsql_django"
-
     DATABASES = {
         "default": {
-            "ENGINE": ENGINE,
+            "ENGINE": "aurora_dsql_django",
             "HOST": os.environ.get("AURORA_DSQL_HOST"),
             "NAME": os.environ.get("AURORA_DSQL_DATABASE", "postgres"),
             "USER": os.environ.get("AURORA_DSQL_USER", "admin"),
@@ -156,8 +138,20 @@ else:
                 "sslmode": "require",
                 "region": os.environ.get("AWS_REGION", "us-east-2"),
                 # Token expiration in seconds (default is 15 minutes)
-                "expires_in": int(os.environ.get("AURORA_DSQL_TOKEN_EXPIRES", "60")),
+                "expires_in": int(os.environ.get("AURORA_DSQL_TOKEN_EXPIRES", "900")),
+                # Optional: AWS profile (defaults to 'default' profile if not set)
+                # "aws_profile": "your_custom_profile_name",
+                # Optional: SSL root certificate path (only use with sslmode 'verify-full')
+                # "sslrootcert": "/path/to/root/certificate",
             },
+        }
+    }
+else:
+    # Local development - use SQLite3
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
         }
     }
 
