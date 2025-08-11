@@ -191,16 +191,6 @@ class Migration(migrations.Migration):
                 'db_table': 'django_content_type',
             },
         ),
-        # Custom operation to ensure UUID primary key compatibility
-        migrations.RunSQL(
-            sql=[
-                # Ensure the ContentType table ID column uses UUID with proper default
-                "ALTER TABLE django_content_type ALTER COLUMN id SET DEFAULT gen_random_uuid();",
-            ],
-            reverse_sql=[
-                "ALTER TABLE django_content_type ALTER COLUMN id DROP DEFAULT;",
-            ],
-        ),
         migrations.AlterUniqueTogether(
             name='contenttype',
             unique_together={('app_label', 'model')},
@@ -347,20 +337,6 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
-            ],
-        ),
-        # Custom operation to ensure UUID primary key compatibility
-        migrations.RunSQL(
-            sql=[
-                # Ensure the User table ID column uses UUID with proper default
-                "ALTER TABLE auth_user ALTER COLUMN id SET DEFAULT gen_random_uuid();",
-                "ALTER TABLE auth_permission ALTER COLUMN id SET DEFAULT gen_random_uuid();",
-                "ALTER TABLE auth_group ALTER COLUMN id SET DEFAULT gen_random_uuid();",
-            ],
-            reverse_sql=[
-                "ALTER TABLE auth_user ALTER COLUMN id DROP DEFAULT;",
-                "ALTER TABLE auth_permission ALTER COLUMN id DROP DEFAULT;",
-                "ALTER TABLE auth_group ALTER COLUMN id DROP DEFAULT;",
             ],
         ),
         migrations.AlterUniqueTogether(
