@@ -8,9 +8,7 @@ and the consolidated migration schema in Aurora DSQL environments.
 import uuid
 
 from django.contrib.auth.models import User
-from django.contrib.auth.signals import user_logged_in
 from django.db import connection
-from django.dispatch import receiver
 
 
 def is_aurora_dsql_environment():
@@ -22,30 +20,37 @@ def is_aurora_dsql_environment():
         return False
 
 
-@receiver(user_logged_in)
-def update_last_login_aurora_dsql(sender, user, request, **kwargs):
-    """
-    Custom signal handler to update last_login for Aurora DSQL environments.
+# Fix Django's update_last_login for Aurora DSQL environments
+if is_aurora_dsql_environment():
+    from django.contrib.auth.models import update_last_login
+    from django.contrib.auth.signals import user_logged_in
+    from django.dispatch import receiver
+    from django.utils import timezone
 
-    This fixes the issue where Django can't update the last_login field due to
-    UUID/AutoField primary key mismatch.
-    """
-    if not is_aurora_dsql_environment():
-        return
+    # Disconnect Django's default update_last_login handler
+    user_logged_in.disconnect(update_last_login, dispatch_uid="update_last_login")
 
-    # Skip the default last_login update by Django and handle it manually
-    try:
-        # Use raw SQL to update the last_login field with UUID primary key
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "UPDATE auth_user SET last_login = NOW() WHERE id = %s", [str(user.id)]
-            )
-    except Exception as e:
-        # Log the error but don't fail the login process
-        import logging
+    @receiver(user_logged_in, dispatch_uid="aurora_dsql_update_last_login")
+    def aurora_dsql_update_last_login(sender, user, request, **kwargs):
+        """
+        Custom signal handler to update last_login for Aurora DSQL environments.
 
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Failed to update last_login for user {user.username}: {e}")
+        This replaces Django's default update_last_login handler that fails due to
+        UUID/AutoField primary key mismatch.
+        """
+        try:
+            # Use raw SQL to update the last_login field with UUID primary key
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE auth_user SET last_login = %s WHERE id = %s",
+                    [timezone.now(), str(user.id)],
+                )
+        except Exception as e:
+            # Log the error but don't fail the login process
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Failed to update last_login for user {user.username}: {e}")
 
 
 # Monkey patch the User model's save method to handle UUID primary keys
