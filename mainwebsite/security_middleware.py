@@ -20,17 +20,18 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         """Add security headers to response."""
 
         # Content Security Policy (CSP)
-        # Allow self for scripts, styles, and images, plus specific domains for WebAuthn
+        # Allow self for scripts, styles, and images, plus specific domains for WebAuthn and external resources
         csp_policy = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://kit.fontawesome.com; "
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com; "
+            "font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com; "
             "img-src 'self' data: https:; "
             "connect-src 'self'; "
             "frame-ancestors 'none'; "
             "base-uri 'self'; "
-            "form-action 'self';"
+            "form-action 'self'; "
+            "upgrade-insecure-requests; "
         )
         response["Content-Security-Policy"] = csp_policy
 
