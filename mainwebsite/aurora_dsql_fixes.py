@@ -26,25 +26,36 @@ if is_aurora_dsql_environment():
     # Replace the AutoField with UUIDField for proper session handling
     original_pk_field = User._meta.pk
 
+    # Remove the original primary key field first to avoid duplicates
+    original_pk_field.primary_key = False
+
     # Create a new UUIDField to replace the AutoField
     uuid_field = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     uuid_field.name = "id"
     uuid_field.attname = "id"
     uuid_field.column = "id"
     uuid_field.model = User
-    uuid_field.contribute_to_class(User, "id")
+
+    # Remove the old field from the model completely
+    if hasattr(User, "id"):
+        delattr(User, "id")
+
+    # Add the new UUID field properly
+    User.add_to_class("id", uuid_field)
 
     # Update the model's meta information
     User._meta.pk = uuid_field
 
-    # Update the fields list
+    # Update the fields list - replace the old field with the new one
     User._meta.fields = [f if f.name != "id" else uuid_field for f in User._meta.fields]
 
-    # Clear field caches
+    # Clear field caches to ensure Django recognizes the change
     if hasattr(User._meta, "_field_cache"):
         User._meta._field_cache = {}
     if hasattr(User._meta, "_field_name_cache"):
         User._meta._field_name_cache = []
+    if hasattr(User._meta, "_name_map"):
+        User._meta._name_map = None
 
     print("✅ Aurora DSQL: Patched User model primary key field to UUIDField")
 
