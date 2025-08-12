@@ -5,7 +5,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+
+    <!-- SEO Meta Tags -->
+    <title>{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia - Software Engineer & Developer</title>
+    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia is a skilled software engineer and developer specializing in web development, machine learning, and innovative technology solutions. Explore projects, resume, and professional portfolio.{% endif %}">
+    <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}Atilano Garcia, software engineer, web developer, machine learning, Django, Python, JavaScript, portfolio, resume{% endif %}">
+    <meta name="author" content="Atilano Garcia">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+
+    <!-- Google Search Console Verification -->
+    {% if google_site_verification %}
+    <meta name="google-site-verification" content="{{ google_site_verification }}" />
+    {% endif %}
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
+    <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia is a skilled software engineer and developer specializing in web development, machine learning, and innovative technology solutions.{% endif %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% static 'mainwebsite/img/logo/new/apple-touch-icon.png' %}">
+    <meta property="og:site_name" content="Atilano Garcia - Software Engineer">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
+    <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia is a skilled software engineer and developer specializing in web development, machine learning, and innovative technology solutions.{% endif %}">
+    <meta name="twitter:image" content="{% static 'mainwebsite/img/logo/new/apple-touch-icon.png' %}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Atilano Garcia",
+        "alternateName": "Tilo Garcia",
+        "jobTitle": "Software Engineer",
+        "description": "Software engineer and developer specializing in web development, machine learning, and innovative technology solutions",
+        "url": "{{ request.build_absolute_uri }}",
+        "image": "{% static 'mainwebsite/img/logo/new/apple-touch-icon.png' %}",
+        "sameAs": [
+            "https://www.linkedin.com/in/atilano-garcia/",
+            "https://github.com/7cougar7"
+        ],
+        "knowsAbout": [
+            "Software Engineering",
+            "Web Development",
+            "Machine Learning",
+            "Django",
+            "Python",
+            "JavaScript",
+            "Database Design",
+            "API Development"
+        ],
+        "alumniOf": {
+            "@type": "CollegeOrUniversity",
+            "name": "University of Texas",
+            "sameAs": "https://www.utexas.edu/"
+        },
+        "hasOccupation": {
+            "@type": "Occupation",
+            "name": "Software Engineer",
+            "occupationLocation": {
+                "@type": "Country",
+                "name": "United States"
+            }
+        }
+    }
+    </script>
+
+    <!-- Google Analytics 4 -->
+    {% if google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ google_analytics_id }}');
+
+      // Conversion tracking functions
+      function trackResumeDownload() {
+        gtag('event', 'resume_download', {
+          'event_category': 'engagement',
+          'event_label': 'Resume PDF Download',
+          'value': 1
+        });
+      }
+
+      function trackProjectView(projectName) {
+        gtag('event', 'project_view', {
+          'event_category': 'engagement',
+          'event_label': projectName,
+          'value': 1
+        });
+      }
+
+      function trackToolUsage(toolName) {
+        gtag('event', 'tool_usage', {
+          'event_category': 'engagement',
+          'event_label': toolName,
+          'value': 1
+        });
+      }
+
+      function trackSocialClick(platform) {
+        gtag('event', 'social_click', {
+          'event_category': 'social',
+          'event_label': platform,
+          'value': 1
+        });
+      }
+    </script>
+    {% endif %}
+
+    <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mainwebsite/img/logo/new/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mainwebsite/img/logo/new/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'mainwebsite/img/logo/new/favicon-16x16.png' %}">
@@ -119,13 +232,22 @@
                     <div class="collapse navbar-collapse ms-auto" id="navbarSupportedContent">
                         <ul class="navbar-nav ms-auto mb-lg-0 gap-lg-5 gap-2">
                             <li class="nav-item ms-auto mr-1">
-                                <a class="dark-color fs-4 navbar-link"
-                                    href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}"
-                                    target="_blank">Resume</a>
+                                <a class="dark-color fs-4 navbar-link" href="/">Home</a>
                             </li>
                             <li class="nav-item ms-auto mr-1">
                                 <a class="dark-color fs-4 navbar-link"
-                                    href="https://www.linkedin.com/in/atilano-garcia/">LinkedIn</a>
+                                    href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}"
+                                    target="_blank" onclick="trackResumeDownload()">Resume</a>
+                            </li>
+                            <li class="nav-item ms-auto mr-1">
+                                <a class="dark-color fs-4 navbar-link" href="{% url 'mainwebsite:graduation' %}">Graduation</a>
+                            </li>
+                            <li class="nav-item ms-auto mr-1">
+                                <a class="dark-color fs-4 navbar-link" href="{% url 'mainwebsite:translator' %}">Translator</a>
+                            </li>
+                            <li class="nav-item ms-auto mr-1">
+                                <a class="dark-color fs-4 navbar-link"
+                                    href="https://www.linkedin.com/in/atilano-garcia/" onclick="trackSocialClick('LinkedIn')">LinkedIn</a>
                             </li>
                             <li class="nav-item ms-auto mr-1">
                                 <a class="dark-color fs-4 navbar-link" href="{% url 'mainwebsite:urlShortener' %}">URL Shortener</a>

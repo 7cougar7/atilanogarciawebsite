@@ -1,0 +1,39 @@
+# robots.txt for atilanogarcia.com
+# This file tells search engine crawlers which pages or files they can or can't request from your site
+
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl the entire site
+# Specifically allow important pages
+Allow: /static/
+Allow: /media/
+
+# Disallow sensitive or administrative areas
+Disallow: /admin/
+Disallow: /login/
+Disallow: /magic-link-verify/
+Disallow: /passkey-register/
+Disallow: /personal-ai/
+
+# Disallow temporary or development files
+Disallow: *.log$
+Disallow: *.tmp$
+Disallow: /temp/
+Disallow: /cache/
+
+# Allow common crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Sitemap location
+Sitemap: https://atilanogarcia.com/sitemap.xml
+
+# Crawl-delay for polite crawling (optional)
+Crawl-delay: 1

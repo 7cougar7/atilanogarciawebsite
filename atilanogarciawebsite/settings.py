@@ -46,6 +46,10 @@ ALLOWED_HOSTS = [
     ".ngrok-free.app",
 ]
 
+# SEO and Analytics Configuration
+GOOGLE_ANALYTICS_ID = os.environ.get("GOOGLE_ANALYTICS_ID", "")
+GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "mainwebsite:login"
 
