@@ -4,10 +4,10 @@ black>=24.3.0
 cbor2
 certifi>=2024.07.04
 channels
-Django>=4.2.18
+Django>=5.1.10
 django-passkeys
 django-phonenumber-field
-django-twilio
+git+https://github.com/rdegges/django-twilio.git@v0.14.3.4-a1
 flake8
 flake8-black
 flake8-bugbear
