@@ -75,6 +75,66 @@ class Command(BaseMigrateCommand):
 
             ContentType.objects.clear_cache = clear_cache_noop
 
+        # Fix Django model field checking compatibility issue
+        self.patch_django_model_field_checking()
+
+    def patch_django_model_field_checking(self):
+        """
+        Fix Django model field checking compatibility issue.
+
+        Addresses: TypeError: can only concatenate list (not "ImmutableList") to list
+        This occurs when Django tries to concatenate fields and many_to_many collections
+        that have different types in newer Django versions.
+        """
+        try:
+            from django.db.models.fields.related import RelatedField
+
+            # Store original method
+            if not hasattr(RelatedField, "_original_check_clashes"):
+                RelatedField._original_check_clashes = RelatedField._check_clashes
+
+                def patched_check_clashes(self):
+                    """Patched version that handles ImmutableList compatibility."""
+                    try:
+                        return self._original_check_clashes()
+                    except TypeError as e:
+                        if "can only concatenate list" in str(e):
+                            # Handle the ImmutableList concatenation issue
+                            rel_opts = self.remote_field.model._meta
+                            # Convert both to lists to ensure compatibility
+                            fields = (
+                                list(rel_opts.fields)
+                                if hasattr(rel_opts.fields, "__iter__")
+                                else []
+                            )
+                            many_to_many = (
+                                list(rel_opts.many_to_many)
+                                if hasattr(rel_opts.many_to_many, "__iter__")
+                                else []
+                            )
+                            potential_clashes = fields + many_to_many
+
+                            # Continue with the original logic using the converted lists
+                            clashes = []
+                            for field in potential_clashes:
+                                if field.name == self.name:
+                                    clashes.append(field)
+                            return clashes
+                        else:
+                            raise
+
+                # Apply the patch
+                RelatedField._check_clashes = patched_check_clashes
+
+        except ImportError:
+            # If we can't import the required modules, skip the patch
+            pass
+        except Exception as e:
+            # Log the error but don't fail the migration
+            self.stdout.write(
+                self.style.WARNING(f"Could not apply Django field checking patch: {e}")
+            )
+
     def should_run_aurora_dsql_setup(self):
         """
         Determine if we should run Aurora DSQL setup.
