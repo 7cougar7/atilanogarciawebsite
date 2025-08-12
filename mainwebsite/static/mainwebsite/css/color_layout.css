@@ -105,3 +105,27 @@
 
 .center-elements {
 }
+
+.switch-button {
+    background: var(--dark) !important;
+    color: var(--light) !important;
+    border-color: var(--dark) !important;
+}
+
+.switch-button:hover {
+    opacity: 0.8;
+}
+
+/* Light mode - dark button */
+body.light-fill .switch-button {
+    background: var(--dark) !important;
+    color: var(--light) !important;
+    border-color: var(--dark) !important;
+}
+
+/* Dark mode - light button */
+body.dark-fill .switch-button {
+    background: var(--light) !important;
+    color: var(--dark) !important;
+    border-color: var(--light) !important;
+}
