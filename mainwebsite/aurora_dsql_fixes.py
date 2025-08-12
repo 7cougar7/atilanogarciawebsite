@@ -23,11 +23,8 @@ def is_aurora_dsql_environment():
 
 # Fix Django's User model primary key field for Aurora DSQL environments
 if is_aurora_dsql_environment():
-    # Replace the AutoField with UUIDField for proper session handling
+    # Store reference to original field
     original_pk_field = User._meta.pk
-
-    # Remove the original primary key field first to avoid duplicates
-    original_pk_field.primary_key = False
 
     # Create a new UUIDField to replace the AutoField
     uuid_field = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -36,26 +33,33 @@ if is_aurora_dsql_environment():
     uuid_field.column = "id"
     uuid_field.model = User
 
-    # Remove the old field from the model completely
-    if hasattr(User, "id"):
-        delattr(User, "id")
-
-    # Add the new UUID field properly
-    User.add_to_class("id", uuid_field)
+    # Completely rebuild the fields list without the original AutoField
+    new_fields = []
+    for field in User._meta.fields:
+        if field.name == "id":
+            # Replace the AutoField with our UUIDField
+            new_fields.append(uuid_field)
+        else:
+            new_fields.append(field)
 
     # Update the model's meta information
+    User._meta.fields = new_fields
     User._meta.pk = uuid_field
 
-    # Update the fields list - replace the old field with the new one
-    User._meta.fields = [f if f.name != "id" else uuid_field for f in User._meta.fields]
+    # Update the model class to use the new field
+    setattr(User, "id", uuid_field)
 
-    # Clear field caches to ensure Django recognizes the change
+    # Clear all Django field caches to force recomputation
     if hasattr(User._meta, "_field_cache"):
         User._meta._field_cache = {}
     if hasattr(User._meta, "_field_name_cache"):
         User._meta._field_name_cache = []
     if hasattr(User._meta, "_name_map"):
         User._meta._name_map = None
+    if hasattr(User._meta, "_forward_fields_map"):
+        User._meta._forward_fields_map = None
+    if hasattr(User._meta, "_fields_map"):
+        User._meta._fields_map = None
 
     print("✅ Aurora DSQL: Patched User model primary key field to UUIDField")
 
