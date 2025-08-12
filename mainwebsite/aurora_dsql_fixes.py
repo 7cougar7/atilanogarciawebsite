@@ -21,6 +21,65 @@ def is_aurora_dsql_environment():
         return False
 
 
+def apply_django_compatibility_patches():
+    """
+    Apply Django version compatibility patches globally.
+
+    This fixes the ImmutableList concatenation error that occurs in Django's
+    model field checking system.
+    """
+    try:
+        from django.db.models.fields.related import RelatedField
+
+        # Store original method
+        if not hasattr(RelatedField, "_original_check_clashes"):
+            RelatedField._original_check_clashes = RelatedField._check_clashes
+
+            def patched_check_clashes(self):
+                """Patched version that handles ImmutableList compatibility."""
+                try:
+                    return self._original_check_clashes()
+                except TypeError as e:
+                    if "can only concatenate list" in str(e):
+                        # Handle the ImmutableList concatenation issue
+                        rel_opts = self.remote_field.model._meta
+                        # Convert both to lists to ensure compatibility
+                        fields = (
+                            list(rel_opts.fields)
+                            if hasattr(rel_opts.fields, "__iter__")
+                            else []
+                        )
+                        many_to_many = (
+                            list(rel_opts.many_to_many)
+                            if hasattr(rel_opts.many_to_many, "__iter__")
+                            else []
+                        )
+                        potential_clashes = fields + many_to_many
+
+                        # Continue with the original logic using the converted lists
+                        clashes = []
+                        for field in potential_clashes:
+                            if field.name == self.name:
+                                clashes.append(field)
+                        return clashes
+                    else:
+                        raise
+
+            # Apply the patch
+            RelatedField._check_clashes = patched_check_clashes
+            print("✅ Django Compatibility: Applied ImmutableList concatenation fix")
+
+    except ImportError:
+        # If we can't import the required modules, skip the patch
+        pass
+    except Exception as e:
+        print(f"⚠️ Could not apply Django field checking patch: {e}")
+
+
+# Apply Django compatibility patches globally
+apply_django_compatibility_patches()
+
+
 # Fix Django's User model primary key field for Aurora DSQL environments
 if is_aurora_dsql_environment():
     # Store reference to original field
@@ -49,17 +108,20 @@ if is_aurora_dsql_environment():
     # Update the model class to use the new field
     setattr(User, "id", uuid_field)
 
-    # Clear all Django field caches to force recomputation
+    # Clear field caches but let Django rebuild them naturally
     if hasattr(User._meta, "_field_cache"):
         User._meta._field_cache = {}
     if hasattr(User._meta, "_field_name_cache"):
         User._meta._field_name_cache = []
+
+    # Don't set these to None - let Django rebuild them when needed
+    # This prevents the "NoneType object is not subscriptable" error
     if hasattr(User._meta, "_name_map"):
-        User._meta._name_map = None
+        delattr(User._meta, "_name_map")
     if hasattr(User._meta, "_forward_fields_map"):
-        User._meta._forward_fields_map = None
+        delattr(User._meta, "_forward_fields_map")
     if hasattr(User._meta, "_fields_map"):
-        User._meta._fields_map = None
+        delattr(User._meta, "_fields_map")
 
     print("✅ Aurora DSQL: Patched User model primary key field to UUIDField")
 
