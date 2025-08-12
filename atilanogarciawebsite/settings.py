@@ -11,10 +11,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import warnings
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Suppress Django StreamingHttpResponse async warnings in development
+if os.environ.get("DEBUG", "False").lower() == "true":
+    warnings.filterwarnings(
+        "ignore",
+        message="StreamingHttpResponse must consume synchronous iterators in order to serve them asynchronously*",
+    )
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
