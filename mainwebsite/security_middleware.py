@@ -21,18 +21,23 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
 
         # Content Security Policy (CSP)
         # Allow self for scripts, styles, and images, plus specific domains for WebAuthn and external resources
-        csp_policy = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://kit.fontawesome.com; "
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com; "
-            "img-src 'self' data: https:; "
-            "connect-src 'self' https://ka-f.fontawesome.com; "
-            "frame-ancestors 'none'; "
-            "base-uri 'self'; "
-            "form-action 'self'; "
-            "upgrade-insecure-requests"
-        )
+        csp_directives = [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com",
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "img-src 'self' data: https:",
+            "connect-src 'self'",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ]
+
+        # Only add upgrade-insecure-requests in production to avoid localhost HTTP issues
+        if not settings.DEBUG:
+            csp_directives.append("upgrade-insecure-requests")
+
+        csp_policy = "; ".join(csp_directives)
         response["Content-Security-Policy"] = csp_policy
 
         # Referrer Policy - limit information sent in referrer header
@@ -58,13 +63,23 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         response["Permissions-Policy"] = permissions_policy
 
         # Cross-Origin Embedder Policy
-        response["Cross-Origin-Embedder-Policy"] = "require-corp"
+        # In development, use unsafe-none to avoid static file loading issues
+        # In production, use require-corp for security
+        if settings.DEBUG:
+            response["Cross-Origin-Embedder-Policy"] = "unsafe-none"
+        else:
+            response["Cross-Origin-Embedder-Policy"] = "require-corp"
 
         # Cross-Origin Opener Policy
         response["Cross-Origin-Opener-Policy"] = "same-origin"
 
-        # Note: Cross-Origin-Resource-Policy removed to allow external font loading
-        # External resources like FontAwesome set their own CORP headers
+        # Cross-Origin Resource Policy
+        # In development, use cross-origin to avoid static file loading issues
+        # In production, use same-origin for stricter security
+        if settings.DEBUG:
+            response["Cross-Origin-Resource-Policy"] = "cross-origin"
+        else:
+            response["Cross-Origin-Resource-Policy"] = "same-origin"
 
         # Additional security headers
         response["X-Content-Type-Options"] = "nosniff"

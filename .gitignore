@@ -10,3 +10,6 @@ staticfiles/db.sqlite3
 .vscode/*
 staticfiles/*
 phone-translator-*.json
+# FontAwesome files (too large for git)
+fontawesome-free-6.7.2-web.zip
+fontawesome-free-6.7.2-web/
