@@ -14,8 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import os
+
+from django.conf import settings
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import include, path
+from django.utils import timezone
 
 from mainwebsite.custom_passkey_views import (
     custom_auth_complete,
@@ -25,7 +30,53 @@ from mainwebsite.custom_passkey_views import (
 )
 from mainwebsite.views import custom_logout
 
+
+def robots_txt(request):
+    """Serve robots.txt file"""
+    robots_path = os.path.join(settings.BASE_DIR, "robots.txt")
+    try:
+        with open(robots_path, "r") as f:
+            content = f.read()
+        return HttpResponse(content, content_type="text/plain")
+    except FileNotFoundError:
+        return HttpResponse("User-agent: *\nAllow: /", content_type="text/plain")
+
+
+def sitemap_xml(request):
+    """Generate XML sitemap dynamically"""
+    base_url = f"https://{request.get_host()}"
+    current_date = timezone.now().strftime("%Y-%m-%d")
+
+    # Define your main pages with their priorities and change frequencies
+    urls = [
+        {"loc": "/", "priority": "1.0", "changefreq": "weekly"},
+        {"loc": "/graduation/", "priority": "0.8", "changefreq": "monthly"},
+        {"loc": "/translator/", "priority": "0.7", "changefreq": "monthly"},
+        {"loc": "/url-shortener/", "priority": "0.6", "changefreq": "monthly"},
+        {"loc": "/cube-wallpaper/", "priority": "0.5", "changefreq": "monthly"},
+    ]
+
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
+
+    for url_info in urls:
+        xml_content += f"""
+    <url>
+        <loc>{base_url}{url_info['loc']}</loc>
+        <lastmod>{current_date}</lastmod>
+        <changefreq>{url_info['changefreq']}</changefreq>
+        <priority>{url_info['priority']}</priority>
+    </url>"""
+
+    xml_content += """
+</urlset>"""
+
+    return HttpResponse(xml_content, content_type="application/xml")
+
+
 urlpatterns = [
+    path("robots.txt", robots_txt, name="robots_txt"),
+    path("sitemap.xml", sitemap_xml, name="sitemap_xml"),
     path("admin/", admin.site.urls),
     path("", include("mainwebsite.urls")),
     # Override django-passkeys URLs with our custom dynamic views

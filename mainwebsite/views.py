@@ -45,24 +45,53 @@ def page_not_found_view(request, exception):
 
 
 def homepage(request):
-    context = {"title": "Home Page", "content": "homepage"}
+    context = {
+        "title": "Home Page",
+        "content": "homepage",
+        "page_title": "Home",
+        "meta_description": "Welcome to Atilano Garcia's portfolio. Explore innovative software engineering projects, machine learning experiments, and professional development work. View resume, projects, and contact information.",
+        "meta_keywords": "Atilano Garcia, software engineer, portfolio, projects, machine learning, web development, Django, Python, resume, contact",
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
     return render(request, "homepage.html", context)
 
 
 def graduation(request):
-    context = {"title": "Graduation", "content": "graduation"}
+    context = {
+        "title": "Graduation",
+        "content": "graduation",
+        "page_title": "Graduation",
+        "meta_description": "View Atilano Garcia's graduation photos and memories from university. Celebrating academic achievements and milestones in software engineering education.",
+        "meta_keywords": "Atilano Garcia, graduation, university, academic achievements, software engineering education, college",
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
     return render(request, "graduation.html", context)
 
 
 def cube_wallpaper(request):
     context = {
         "title": "Cube Wallpaper",
+        "page_title": "3D Cube Wallpaper Generator",
+        "meta_description": "Interactive 3D cube wallpaper generator created by Atilano Garcia. Generate custom geometric wallpapers with dynamic cube animations and patterns.",
+        "meta_keywords": "3D cube wallpaper, wallpaper generator, geometric patterns, interactive design, web graphics, CSS animations",
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
     }
     return render(request, "cube_wallpaper.html", context)
 
 
 def resume(request):
-    context = {"title": "Resume", "content": "resume"}
+    context = {
+        "title": "Resume",
+        "content": "resume",
+        "page_title": "Resume & CV",
+        "meta_description": "Download Atilano Garcia's professional resume and CV. View experience in software engineering, web development, machine learning, and technical skills.",
+        "meta_keywords": "Atilano Garcia resume, CV, software engineer resume, web developer CV, technical skills, professional experience",
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
     return render(request, "base.html", context)
 
 
@@ -71,16 +100,30 @@ def linkedin(request):
 
 
 def calendar_webpage(request):
-    return render(request, "calendar.html")
+    context = {
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
+    return render(request, "calendar.html", context)
 
 
 def kky_acceptance_page(request):
-    context = {}
+    context = {
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
     return render(request, "kky.html", context)
 
 
 def url_shortener(request):
-    return render(request, "url_shortener.html")
+    context = {
+        "page_title": "URL Shortener Tool",
+        "meta_description": "Free URL shortener tool built by Atilano Garcia. Create short, custom links for easy sharing. Fast, reliable, and secure link shortening service.",
+        "meta_keywords": "URL shortener, link shortener, custom links, web tools, link management, short URLs",
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
+    return render(request, "url_shortener.html", context)
 
 
 def url_shortener_submit(request):
@@ -112,7 +155,15 @@ def redirect_url(request, shortened_url):
 
 
 def translator(request):
-    context = {"title": "Translator", "content": "translator"}
+    context = {
+        "title": "Translator",
+        "content": "translator",
+        "page_title": "Language Translator",
+        "meta_description": "Real-time language translator tool built by Atilano Garcia. Translate text between multiple languages using advanced translation APIs.",
+        "meta_keywords": "language translator, real-time translation, multilingual tool, text translation, language conversion, translation API",
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
     return render(request, "translator.html", context)
 
 
@@ -376,7 +427,9 @@ class MagicLinkVerifyView(View):
                 request,
                 "magic_link_invalid.html",
                 {
-                    "error_message": "Account is locked due to excessive failed attempts."
+                    "error_message": "Account is locked due to excessive failed attempts.",
+                    "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+                    "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
                 },
             )
 
@@ -426,13 +479,24 @@ class MagicLinkVerifyView(View):
                     f"Magic link verification failed - user not found: uidb64={uidb64}, ip={client_ip}"
                 )
 
-            return render(request, "magic_link_invalid.html")
+            return render(
+                request,
+                "magic_link_invalid.html",
+                {
+                    "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+                    "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+                },
+            )
 
 
 @passkey_login_required
 def personal_ai(request):
     """Renders the personal AI page, which is accessible after login."""
-    return render(request, "personal_ai.html")
+    context = {
+        "google_analytics_id": settings.GOOGLE_ANALYTICS_ID,
+        "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
+    }
+    return render(request, "personal_ai.html", context)
 
 
 def custom_logout(request):
