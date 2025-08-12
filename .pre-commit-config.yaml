@@ -38,7 +38,7 @@ repos:
         pass_filenames: false
     -   id: integration-tests
         name: Run Integration Tests
-        entry: ./venv/bin/python manage.py test integration_tests
+        entry: ./venv/bin/python manage.py test mainwebsite.integration_tests
         language: system
         types: [python]
         pass_filenames: false
