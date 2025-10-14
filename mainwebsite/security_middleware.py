@@ -76,11 +76,8 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
 
         # Cross-Origin Resource Policy
         # In development, use cross-origin to avoid static file loading issues
-        # In production, use same-origin for stricter security
-        if settings.DEBUG:
-            response["Cross-Origin-Resource-Policy"] = "cross-origin"
-        else:
-            response["Cross-Origin-Resource-Policy"] = "same-origin"
+        # In production, use cross-origin to allow content from subdomains like content.atilanogarcia.com
+        response["Cross-Origin-Resource-Policy"] = "cross-origin"
 
         # Additional security headers
         response["X-Content-Type-Options"] = "nosniff"
