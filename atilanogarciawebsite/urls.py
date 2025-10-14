@@ -53,6 +53,7 @@ def sitemap_xml(request):
         {"loc": "/graduation/", "priority": "0.8", "changefreq": "monthly"},
         {"loc": "/translator/", "priority": "0.7", "changefreq": "monthly"},
         {"loc": "/url-shortener/", "priority": "0.6", "changefreq": "monthly"},
+        {"loc": "/intro/", "priority": "0.5", "changefreq": "monthly"},
         {"loc": "/cube-wallpaper/", "priority": "0.5", "changefreq": "monthly"},
     ]
 

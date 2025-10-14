@@ -1,0 +1,353 @@
+{% extends "new_base.html" %}
+
+{% block content %}
+<style>
+    /* Remove default margins and padding from the container */
+    .container {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Make the content block take full viewport */
+    #content-block {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        z-index: 1000;
+        background: black;
+    }
+
+    /* Hide the navbar and hr for full-screen experience */
+    nav, hr {
+        display: none !important;
+    }
+
+    /* Full-screen video styling */
+    #intro-video {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+        background: black;
+    }
+
+    /* Interactive landing screen styling */
+    .intro-landing {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1002;
+        transition: opacity 0.5s ease-out;
+    }
+
+    .intro-landing.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .intro-title {
+        color: white;
+        font-size: 3rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 2rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .intro-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        line-height: 1.6;
+        animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .shiny-button {
+        background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+        background-size: 400% 400%;
+        border: none;
+        padding: 20px 40px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        border-radius: 50px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        animation: gradient 3s ease infinite, fadeInUp 1s ease-out 0.6s both, pulse 2s infinite;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .shiny-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        animation: gradient 1s ease infinite, pulse 1s infinite;
+    }
+
+    .shiny-button:active {
+        transform: translateY(-2px);
+    }
+
+    .shiny-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.5s;
+    }
+
+    .shiny-button:hover::before {
+        left: 100%;
+    }
+
+    @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    /* Loading message styling */
+    .loading-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 1.5rem;
+        z-index: 1001;
+        text-align: center;
+        display: none;
+    }
+
+    /* Error message styling */
+    .error-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 1.2rem;
+        z-index: 1001;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 80%;
+        display: none;
+    }
+</style>
+
+<!-- Interactive Landing Screen -->
+<div class="intro-landing" id="intro-landing">
+    <h1 class="intro-title">Learn More About Tilo Garcia</h1>
+    <p class="intro-subtitle">
+        Discover the journey of a passionate software engineer, innovative developer, and creative problem solver.
+        Click below to explore what makes Tilo's approach to technology unique and inspiring.
+    </p>
+    <button class="shiny-button" id="start-button">
+        <i class="fas fa-arrow-right"></i> Get Started
+    </button>
+</div>
+
+<div class="loading-message" id="loading-message">
+    <i class="fas fa-spinner fa-spin"></i><br>
+    Loading video...
+</div>
+
+<div class="error-message" id="error-message">
+    <i class="fas fa-exclamation-triangle"></i><br>
+    Unable to load video. Please check your connection and try again.
+</div>
+
+<video
+    id="intro-video"
+    autoplay
+    loop
+    preload="metadata"
+    style="display: none;"
+>
+    <source src="{{ video_url }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('intro-video');
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const introLanding = document.getElementById('intro-landing');
+    const startButton = document.getElementById('start-button');
+    let loadingTimeout;
+    let userInteracted = false;
+
+    // Update loading message with progress
+    function updateLoadingMessage(message) {
+        loadingMessage.innerHTML = '<i class="fas fa-spinner fa-spin"></i><br>' + message;
+    }
+
+    // Handle start button click
+    startButton.addEventListener('click', function() {
+        userInteracted = true;
+
+        // Hide the landing screen with animation
+        introLanding.classList.add('hidden');
+
+        // Show loading message
+        loadingMessage.style.display = 'block';
+
+        // Start video loading process
+        setTimeout(function() {
+            startVideoLoading();
+        }, 500); // Small delay for smooth transition
+    });
+
+    // Function to start video loading after user interaction
+    function startVideoLoading() {
+        // Set up video event listeners
+        video.addEventListener('loadstart', function() {
+            if (userInteracted) {
+                updateLoadingMessage('Starting to load video...');
+                console.log('Video loading started');
+            }
+        });
+
+        video.addEventListener('progress', function() {
+            if (userInteracted && video.buffered.length > 0) {
+                const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+                const duration = video.duration;
+                if (duration > 0) {
+                    const percent = Math.round((bufferedEnd / duration) * 100);
+                    updateLoadingMessage(`Loading video... ${percent}%`);
+                }
+            }
+        });
+
+        video.addEventListener('loadedmetadata', function() {
+            if (userInteracted) {
+                updateLoadingMessage('Video metadata loaded, buffering...');
+                console.log('Video metadata loaded');
+            }
+        });
+
+        // Start playing when enough data is available
+        video.addEventListener('canplay', function() {
+            if (userInteracted) {
+                loadingMessage.style.display = 'none';
+                video.style.display = 'block';
+
+                // Clear any existing timeout
+                if (loadingTimeout) {
+                    clearTimeout(loadingTimeout);
+                }
+
+                // Since user interacted, we can play with sound immediately
+                video.muted = false;
+                video.volume = 0.8; // Set volume to 80%
+
+                // Play the video with sound
+                const playPromise = video.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(function() {
+                        console.log('Video playing with sound after user interaction');
+                    }).catch(function(error) {
+                        console.log('Video play failed:', error);
+                        // Fallback to muted if there's still an issue
+                        video.muted = true;
+                        video.play();
+                    });
+                }
+            }
+        });
+
+        // Handle video errors
+        video.addEventListener('error', function(e) {
+            if (userInteracted) {
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                console.error('Video failed to load:', e);
+                if (loadingTimeout) {
+                    clearTimeout(loadingTimeout);
+                }
+            }
+        });
+
+        // Handle network state changes
+        video.addEventListener('stalled', function() {
+            if (userInteracted) {
+                updateLoadingMessage('Video loading stalled, retrying...');
+                console.log('Video loading stalled');
+            }
+        });
+
+        video.addEventListener('waiting', function() {
+            if (userInteracted) {
+                updateLoadingMessage('Buffering more video data...');
+                console.log('Video waiting for more data');
+            }
+        });
+
+        // Extended timeout for large video file (150MB)
+        loadingTimeout = setTimeout(function() {
+            if (userInteracted && video.readyState < 3) {
+                loadingMessage.style.display = 'none';
+                errorMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i><br>' +
+                    'Video loading timeout. The file is large (150MB) and may take longer on slower connections.<br><br>' +
+                    '<button onclick="location.reload()" class="btn btn-primary">Try Again</button>';
+                errorMessage.style.display = 'block';
+                console.error('Video loading timeout after 60 seconds');
+            }
+        }, 60000); // 60 second timeout for large file
+
+        // Start loading the video
+        video.load();
+    }
+
+    // Prevent right-click context menu on video
+    video.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Additional JavaScript can go here if needed -->
+{% endblock %}

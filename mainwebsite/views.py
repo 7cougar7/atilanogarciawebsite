@@ -518,3 +518,14 @@ def custom_logout(request):
 
     # Redirect to the unified login page
     return redirect(reverse("mainwebsite:login"))
+
+
+def intro(request):
+    """Intro page with Rick Roll video from Cloudflare R2"""
+    context = {
+        "title": "Introduction",
+        "page_title": "Introduction",
+        "meta_description": "Welcome to Atilano Garcia's introduction page",
+        "video_url": "https://atilanogarcia.com/Rick%20Roll.mp4",
+    }
+    return render(request, "intro.html", context)

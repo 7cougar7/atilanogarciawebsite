@@ -58,6 +58,7 @@ urlpatterns = [
         name="establish_language_menu",
     ),
     path("personal-ai/", views.personal_ai, name="personal_ai"),
+    path("intro/", views.intro, name="intro"),
     path("passkeys-register/", views.passkey_register, name="passkey_register"),
     # Custom Passkey URLs
     path(
