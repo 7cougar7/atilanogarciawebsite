@@ -526,6 +526,6 @@ def intro(request):
         "title": "Introduction",
         "page_title": "Introduction",
         "meta_description": "Welcome to Atilano Garcia's introduction page",
-        "video_url": "https://atilanogarcia.com/Rick%20Roll.mp4",
+        "video_url": "https://content.atilanogarcia.com/Rick%20Roll.mp4",
     }
     return render(request, "intro.html", context)
