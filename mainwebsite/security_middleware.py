@@ -64,12 +64,9 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         response["Permissions-Policy"] = permissions_policy
 
         # Cross-Origin Embedder Policy
-        # In development, use unsafe-none to avoid static file loading issues
-        # In production, use require-corp for security
-        if settings.DEBUG:
-            response["Cross-Origin-Embedder-Policy"] = "unsafe-none"
-        else:
-            response["Cross-Origin-Embedder-Policy"] = "require-corp"
+        # Use unsafe-none to allow cross-origin media content from content.atilanogarcia.com
+        # require-corp would block the video even with CORS headers
+        response["Cross-Origin-Embedder-Policy"] = "unsafe-none"
 
         # Cross-Origin Opener Policy
         response["Cross-Origin-Opener-Policy"] = "same-origin"
