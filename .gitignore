@@ -15,3 +15,9 @@ mainwebsite/static/fontawesome/*
 # FontAwesome extracted files (keep only the zip)
 mainwebsite/static/fontawesome/
 !mainwebsite/static/fontawesome-free-6.7.2.zip
+
+# Node / Vite. node_modules is rebuilt via `npm install`. The built bundle in
+# mainwebsite/static/dist/ (including .vite/manifest.json) IS committed, because
+# production has no Node and relies on collectstatic picking up the prebuilt assets.
+node_modules/
+npm-debug.log*

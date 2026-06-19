@@ -50,6 +50,12 @@ ALLOWED_HOSTS = [
 GOOGLE_ANALYTICS_ID = os.environ.get("GOOGLE_ANALYTICS_ID", "")
 GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "")
 
+# Vite / React islands. In production the {% vite_asset %} tag reads the built
+# manifest. Set VITE_DEV_MODE=true (with `npm run dev` running) to load from the Vite
+# dev server for hot module reloading during local development.
+VITE_DEV_MODE = os.environ.get("VITE_DEV_MODE", "False").lower() == "true"
+VITE_DEV_SERVER_URL = os.environ.get("VITE_DEV_SERVER_URL", "http://localhost:5173")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "mainwebsite:login"
 
