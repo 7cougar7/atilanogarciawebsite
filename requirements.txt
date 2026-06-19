@@ -29,7 +29,7 @@ aurora-dsql-django @ git+https://github.com/7cougar7/aurora-dsql-django.git@5bfb
     # via -r requirements.in
 babel==2.17.0
     # via -r requirements.in
-black==25.1.0
+black==26.5.1
     # via
     #   -r requirements.in
     #   flake8-black
@@ -44,7 +44,7 @@ build==1.3.0
     # via pip-tools
 cachetools==5.5.2
     # via google-auth
-cbor2==5.6.5
+cbor2==6.1.2
     # via -r requirements.in
 certifi==2025.8.3
     # via
@@ -89,8 +89,11 @@ fido2==2.2.0
     # via
     #   -r requirements.in
     #   django-passkeys
-filelock==3.18.0
-    # via virtualenv
+filelock==3.29.4
+    # via
+    #   -r requirements.in
+    #   python-discovery
+    #   virtualenv
 flake8==7.3.0
     # via
     #   -r requirements.in
@@ -131,8 +134,10 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
-h2==4.2.0
-    # via googletrans-py
+h2==4.3.0
+    # via
+    #   -r requirements.in
+    #   googletrans-py
 hpack==4.1.0
     # via h2
 httpcore==1.0.9
@@ -174,7 +179,8 @@ packaging==25.0
     #   build
     #   gunicorn
     #   pytest
-pathspec==0.12.1
+    #   wheel
+pathspec==1.1.1
     # via black
 phonenumbers==9.0.10
     # via
@@ -185,6 +191,7 @@ pip-tools==7.5.0
 platformdirs==4.3.8
     # via
     #   black
+    #   python-discovery
     #   virtualenv
 pluggy==1.6.0
     # via pytest
@@ -199,7 +206,7 @@ proto-plus==1.26.1
     #   -r requirements.in
     #   google-api-core
     #   google-cloud-speech
-protobuf==5.29.5
+protobuf==5.29.6
     # via
     #   -r requirements.in
     #   google-api-core
@@ -209,8 +216,9 @@ protobuf==5.29.5
     #   proto-plus
 psycopg2-binary==2.9.10
     # via -r requirements.in
-pyasn1==0.6.1
+pyasn1==0.6.3
     # via
+    #   -r requirements.in
     #   pyasn1-modules
     #   rsa
 pyasn1-modules==0.4.2
@@ -221,8 +229,10 @@ pycparser==2.22
     # via cffi
 pyflakes==3.4.0
     # via flake8
-pygments==2.19.2
-    # via pytest
+pygments==2.20.0
+    # via
+    #   -r requirements.in
+    #   pytest
 pyjwt==2.13.0
     # via
     #   -r requirements.in
@@ -235,11 +245,15 @@ pytest==9.1.1
     # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via botocore
+python-discovery==1.4.2
+    # via virtualenv
 python-dotenv==1.2.2
     # via -r requirements.in
+pytokens==0.4.1
+    # via black
 pyyaml==6.0.2
     # via pre-commit
-requests==2.32.4
+requests==2.34.2
     # via
     #   -r requirements.in
     #   google-api-core
@@ -252,7 +266,7 @@ six==1.17.0
     # via python-dateutil
 sniffio==1.3.1
     # via anyio
-sqlparse==0.5.3
+sqlparse==0.5.5
     # via
     #   -r requirements.in
     #   django
@@ -275,14 +289,16 @@ user-agents==2.2.0
     # via django-passkeys
 uvicorn==0.35.0
     # via -r requirements.in
-virtualenv==20.33.1
+virtualenv==21.5.1
     # via
     #   -r requirements.in
     #   pre-commit
 websockets==15.0.1
     # via -r requirements.in
-wheel==0.45.1
-    # via pip-tools
+wheel==0.47.0
+    # via
+    #   -r requirements.in
+    #   pip-tools
 whitenoise==6.9.0
     # via -r requirements.in
 yarl==1.20.1
