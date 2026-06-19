@@ -71,7 +71,7 @@ cryptography==48.0.1
     #   fido2
 distlib==0.4.0
     # via virtualenv
-django==5.2.15
+django==6.0.6
     # via
     #   -r requirements.in
     #   channels
