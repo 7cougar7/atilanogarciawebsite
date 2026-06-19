@@ -174,6 +174,27 @@ npm run dev        # optional: Vite dev server with hot reload
 - Islands progressively enhance server-rendered markup: each mount point contains a
   fallback rendered from Django context, so content stays present for SEO and no-JS.
 
+### Theming
+
+Light/dark mode is driven by a `data-theme` attribute on `<html>` plus CSS custom
+properties in `mainwebsite/static/mainwebsite/css/color_layout.css`. A small inline
+script in `new_base.html` applies the saved theme before paint; the React `ThemeToggle`
+island flips it and persists the `dark_mode` choice. (There is no per-element class
+swapping — the historical `.dark-color` / `.*-fill` classes read theme tokens.)
+
+### Visual verification (screenshots)
+
+`tools/screenshots/` is an isolated Playwright project (kept out of the build
+`package.json` so its browser download never touches deploys) for capturing pages in
+both themes:
+
+```bash
+cd tools/screenshots && npm install && npx playwright install chromium
+# in another shell: python manage.py runserver
+node screenshot.mjs            # default pages, light + dark -> tools/screenshots/out/
+node screenshot.mjs / /resume/ # specific paths
+```
+
 ## Contact
 
 - **Email:** tilogarcia1@gmail.com

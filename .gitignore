@@ -22,3 +22,6 @@ npm-debug.log*
 mainwebsite/static/dist/
 # Node downloaded into the build environment by build_server.sh
 .render-node/
+
+# Headless-browser screenshot output (tools/screenshots)
+tools/screenshots/out/
