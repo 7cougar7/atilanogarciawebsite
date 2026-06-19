@@ -1,114 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        {% load static %}
-        <meta charset="UTF-8">
-        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
-        <title>{{ title }}</title>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-                integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <script type="text/javascript" src="{% static "mainwebsite/js/kky.js" %}"></script>
-    </head>
-    <body class="container" style="background: rgba(43,43,43,0.87);">
-        <nav style="width: auto">
-            <div class="nav-wrapper orange darken-2">
-                <div class="col s12">
-                    <a href="#" class="breadcrumb">Hendrickson High School</a>
-                    <a href="#" class="breadcrumb">UT Austin</a>
-                    <a href="#" class="breadcrumb">Longhorn Band</a>
-                    <a href="#" class="breadcrumb" style="font-weight: bold">Kappa Kappa Psi</a>
-                </div>
-            </div>
+{% extends 'new_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="glass-card mb-0" style="opacity: 0;">
+    <div class="card-body p-3 p-md-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item dark-color">Hendrickson High School</li>
+                <li class="breadcrumb-item dark-color">UT Austin</li>
+                <li class="breadcrumb-item dark-color">Longhorn Band</li>
+                <li class="breadcrumb-item active fw-bold dark-color" aria-current="page">Kappa Kappa Psi</li>
+            </ol>
         </nav>
-        {% load static %}
-        <div class="parallax-container" style="width: 100%">
-          <div class="parallax"><img src="{% static "mainwebsite/img/kky/kkycrest.png" %}" alt="Kappa Kappa Psi fraternity crest and official logo"></div>
-        </div>
-        <div class="section white">
-            <div class="row container">
-                <h2 class="header">The Office</h2>
-                <p class="grey-text text-darken-3 lighten-3">
-                    Dwight: Hello, this is Dwight Schrute from the Dunder Mifflin Paper Company.
-                    Jim: Wow, that’s great, because <span style="font-weight: bolder; color:#f57c00;font-size:250%">I</span> need paper.
-                    Dwight: Excellent, then you are in luck, because we are having a limited-time offer only on everything.
-                    Jim: Wow, this is my lucky day.
-                    Michael: [whispers] Ask him his name.
-                    Dwight: What is your name, sir?
-                    Jim: I am Bill Buttlicker.
-                    Dwight: Really, that’s your real name?
-                    Jim: How dare you? My family built this country, by the way.
-                    Michael: Be respectful, Dwight.
-                    Dwight: Yes, Mich<span style="font-weight: bolder; color:#f57c00;font-size:250%">a</span>el.
-                    Jim: Would you hold on one second? That’s my other line.
-                    Dwight: What? No, but I —
-                    Jim: Hello? [laughs] No, I’m just on the phone with this stupid salesman. He’s so dumb. Probably just gonna keep him on the line forever and not buy anything. Yeah, OK. [punches button on phone]
-                    Michael: It’s up to you to change his mind.
-                    Jim: Sorry. That was a family emergency.
-                    Dwight: Oh, no. What’s wrong?
-                    Jim: You know what? That’s private.
-                    Mi<span style="font-weight: bolder; color:#f57c00;font-size:250%">c</span>hael: Boundaries, Dwight. Come on!
-                    Dwight: Sorry, Mr. Buttlicker. As I was saying, we’re having a limited–
-                    Jim: Sorry, you’re going to have to speak up a little bit louder. I’m hard of hearing.
-                    Michael: He’s hard of — he’s an old man. Let’s go.
-                    Dwight: OK, as I was saying, right now we are having —
-                    Jim: You’re gonna have to talk louder.
-                    Dwight: OK, our prices have never been lower.
-                    Jim: Son, you have to talk louder.
-                    Dwight: …never been lower!
-                    Jim: Louder, son!
-                    Dwight: [shouting] Buttli<span style="font-weight: bolder; color:#f57c00;font-size:250%">c</span>ker! Our prices have never been lower!
-                    Michael: Stop it! Stop it!
-                    Dwight: He —
-                    Michael: That is totally inappropriate. You never yell at the client. You never yell at the client.
-                </p>
-            </div>
-        </div>
-        <div class="parallax-container">
-          <div class="parallax"><img src="{% static "mainwebsite/img/kky/TiloPlayingTrom.JPG" %}" alt="Atilano Garcia playing trombone in the university band"></div>
-        </div>
-        <div class="section white">
-            <div class="row container">
-                <h2 class="header">Million Dollar Sale</h2>
-                <p class="grey-text text-darken-3 lighten-3">
-                    Jim: Now, you listen to me, sir.
-                    Michael: Here we go.
-                    Jim: The three words I would describe you as is aggressive, hostile and definitely difficult.
-                    Michael: Give m<span style="font-weight: bolder; color:#f57c00;font-size:250%">e</span> the phone.
-                    Dwight: Please, Mr. Buttlicker —
-                    Jim: I’m irate right now.
-                    Michael: Give me the phone.
-                    Dwight: Please give me another chance. Mr. Buttlicker.
-                    Michael: Give me the phone. Give me the <span style="font-weight: bolder; color:#f57c00;font-size:250%">p</span>hone.
-                    Dwight: I have to put you on with my boss.
-                    Jim: Well, I should hope so. [Michael takes phone] Who is this?
-                    Michael: Hello, this is Michael Scott, regional manager.
-                    Jim: Well, this is William M. Buttlicker.
-                    Michael: Hello, Mr. Buttlicker. How may we help you?
-                    Jim: Michael, I like the sound of your voice. You know what I’m going to do? I’m going to buy one million dollars worth of paper products today.
-                    Dwight: [shakes fist, whispers] Yeah!
-                    Michael: [covers phone, whispers to Dwight] See how it’s done? [into phone] Thank you very much, sir. I don’t think you’ll regret it. [to Dwight] See what I did?
-                    Dwight: You are the master.
-                    Jim: There is one condition, Michael.
-                    Michael: Yes.
-                    Jim: You have to fire <span style="font-weight: bolder; color:#f57c00;font-size:250%">t</span>he salesman that treated me so terribly.
-                    Dwight: Don’t do it, Michael.
-                    Michael: … [whispers] It’s a million-dollar sale
-                </p>
-            </div>
-        </div>
-        <div class="parallax-container">
-          <div class="parallax"><img src="{% static "mainwebsite/img/kky/SectionPic.png" %}" alt="Kappa Kappa Psi fraternity section group photo with members"></div>
-        </div>
-        <div class="section white">
-            <div class="row container">
-                <h2 class="header">Hook 'em</h2>
-                <p class="grey-text text-darken-3 lighten-3">
-                    I Accept :)
-                </p>
-            </div>
-        </div>
-    </body>
-</html>
+    </div>
+</div>
+
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body text-center p-3">
+        <img src="{% static 'mainwebsite/img/kky/kkycrest.png' %}"
+             class="img-fluid rounded"
+             style="max-height: 40vh; object-fit: contain;"
+             alt="Kappa Kappa Psi fraternity crest and official logo">
+    </div>
+</div>
+
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body p-3 p-md-4">
+        <h2 class="dark-color">The Office</h2>
+        <p class="dark-color">
+            Dwight: Hello, this is Dwight Schrute from the Dunder Mifflin Paper Company.
+            Jim: Wow, that's great, because <span style="font-weight: bolder; color:#f57c00; font-size:250%">I</span> need paper.
+            Dwight: Excellent, then you are in luck, because we are having a limited-time offer only on everything.
+            Jim: Wow, this is my lucky day.
+            Michael: [whispers] Ask him his name.
+            Dwight: What is your name, sir?
+            Jim: I am Bill Buttlicker.
+            Dwight: Really, that's your real name?
+            Jim: How dare you? My family built this country, by the way.
+            Michael: Be respectful, Dwight.
+            Dwight: Yes, Mich<span style="font-weight: bolder; color:#f57c00; font-size:250%">a</span>el.
+            Jim: Would you hold on one second? That's my other line.
+            Dwight: What? No, but I —
+            Jim: Hello? [laughs] No, I'm just on the phone with this stupid salesman. He's so dumb. Probably just gonna keep him on the line forever and not buy anything. Yeah, OK. [punches button on phone]
+            Michael: It's up to you to change his mind.
+            Jim: Sorry. That was a family emergency.
+            Dwight: Oh, no. What's wrong?
+            Jim: You know what? That's private.
+            Mi<span style="font-weight: bolder; color:#f57c00; font-size:250%">c</span>hael: Boundaries, Dwight. Come on!
+            Dwight: Sorry, Mr. Buttlicker. As I was saying, we're having a limited–
+            Jim: Sorry, you're going to have to speak up a little bit louder. I'm hard of hearing.
+            Michael: He's hard of — he's an old man. Let's go.
+            Dwight: OK, as I was saying, right now we are having —
+            Jim: You're gonna have to talk louder.
+            Dwight: OK, our prices have never been lower.
+            Jim: Son, you have to talk louder.
+            Dwight: …never been lower!
+            Jim: Louder, son!
+            Dwight: [shouting] Buttli<span style="font-weight: bolder; color:#f57c00; font-size:250%">c</span>ker! Our prices have never been lower!
+            Michael: Stop it! Stop it!
+            Dwight: He —
+            Michael: That is totally inappropriate. You never yell at the client. You never yell at the client.
+        </p>
+    </div>
+</div>
+
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body text-center p-3">
+        <img src="{% static 'mainwebsite/img/kky/TiloPlayingTrom.JPG' %}"
+             class="img-fluid rounded"
+             style="max-height: 50vh; object-fit: cover; width: 100%;"
+             alt="Atilano Garcia playing trombone in the university band">
+    </div>
+</div>
+
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body p-3 p-md-4">
+        <h2 class="dark-color">Million Dollar Sale</h2>
+        <p class="dark-color">
+            Jim: Now, you listen to me, sir.
+            Michael: Here we go.
+            Jim: The three words I would describe you as is aggressive, hostile and definitely difficult.
+            Michael: Give m<span style="font-weight: bolder; color:#f57c00; font-size:250%">e</span> the phone.
+            Dwight: Please, Mr. Buttlicker —
+            Jim: I'm irate right now.
+            Michael: Give me the phone.
+            Dwight: Please give me another chance. Mr. Buttlicker.
+            Michael: Give me the phone. Give me the <span style="font-weight: bolder; color:#f57c00; font-size:250%">p</span>hone.
+            Dwight: I have to put you on with my boss.
+            Jim: Well, I should hope so. [Michael takes phone] Who is this?
+            Michael: Hello, this is Michael Scott, regional manager.
+            Jim: Well, this is William M. Buttlicker.
+            Michael: Hello, Mr. Buttlicker. How may we help you?
+            Jim: Michael, I like the sound of your voice. You know what I'm going to do? I'm going to buy one million dollars worth of paper products today.
+            Dwight: [shakes fist, whispers] Yeah!
+            Michael: [covers phone, whispers to Dwight] See how it's done? [into phone] Thank you very much, sir. I don't think you'll regret it. [to Dwight] See what I did?
+            Dwight: You are the master.
+            Jim: There is one condition, Michael.
+            Michael: Yes.
+            Jim: You have to fire <span style="font-weight: bolder; color:#f57c00; font-size:250%">t</span>he salesman that treated me so terribly.
+            Dwight: Don't do it, Michael.
+            Michael: … [whispers] It's a million-dollar sale
+        </p>
+    </div>
+</div>
+
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body text-center p-3">
+        <img src="{% static 'mainwebsite/img/kky/SectionPic.png' %}"
+             class="img-fluid rounded"
+             style="max-height: 50vh; object-fit: cover; width: 100%;"
+             alt="Kappa Kappa Psi fraternity section group photo with members">
+    </div>
+</div>
+
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body p-3 p-md-4">
+        <h2 class="dark-color">Hook 'em</h2>
+        <p class="dark-color">I Accept :)</p>
+    </div>
+</div>
+{% endblock %}
