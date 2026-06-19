@@ -1,10 +1,8 @@
-import { colorClass } from "../theme.js";
-
 // Renders the social icon row. Mirrors the server-rendered fallback in
 // templates/partials/_socials.html. Fires the global GA helper on click (defined as a
-// stub in new_base.html, real implementation when analytics is configured).
+// stub in new_base.html, real implementation when analytics is configured). The
+// `dark-color` class is theme-driven via CSS variables (color_layout.css).
 export default function SocialLinks({ socials = [] }) {
-  const cls = colorClass();
   return (
     <div className="row w-100">
       <div className="col text-center my-2">
@@ -15,7 +13,7 @@ export default function SocialLinks({ socials = [] }) {
             aria-label={s.platform}
             onClick={() => window.trackSocialClick?.(s.platform)}
           >
-            <i className={`${s.icon} ${cls} fa-2x mx-3`}></i>
+            <i className={`${s.icon} dark-color fa-2x mx-3`}></i>
           </a>
         ))}
       </div>
