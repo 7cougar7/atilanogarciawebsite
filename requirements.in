@@ -4,8 +4,8 @@ black>=24.3.0
 cbor2
 certifi>=2024.07.04
 channels
-Django>=5.1.10
-django-passkeys
+Django>=5.2.14,<6
+django-passkeys>=2.1
 django-phonenumber-field
 git+https://github.com/rdegges/django-twilio.git@v0.14.3.4-a1
 flake8
@@ -15,23 +15,29 @@ googletrans-py
 google-cloud-speech
 gunicorn>=22.0.0
 grpcio==1.69.0
-idna>=3.7
+idna>=3.15
 numpy==2.2.6
 pip-tools
 proto-plus>=1.25.0
 protobuf>=4.25.5
 phonenumbers
 pre-commit
-python-dotenv
-pytest
+python-dotenv>=1.2.2
+pytest>=9.0.3
 requests>=2.32.0
 sqlparse>=0.5.0
 twilio
-urllib3>=2.2.2
+urllib3>=2.7.0
 uvicorn
 virtualenv
 websockets
 whitenoise
+
+# Security: pin transitive deps to patched versions
+aiohttp>=3.14.1
+cryptography>=48.0.1
+fido2>=2.1.0
+PyJWT>=2.13.0
 
 # For postgres
 psycopg2-binary
