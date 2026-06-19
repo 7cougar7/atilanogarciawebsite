@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 pip install -r requirements.txt
-python scripts/setup_fontawesome.py
 
 # Build the React/Vite frontend. Render's Python runtime ships an ancient default Node
 # (14, EOL) whose npm cannot read our lockfile, so check the MAJOR version and fetch a

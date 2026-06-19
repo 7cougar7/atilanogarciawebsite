@@ -5,6 +5,5 @@ if [ -d "../venv" ]; then
 fi
 
 pip install -r ../requirements.txt
-python ./setup_fontawesome.py
 python ../manage.py migrate
 python ../manage.py collectstatic --noinput --clear

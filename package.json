@@ -6,10 +6,11 @@
   "description": "Vite + React frontend islands for the Django site",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-fontawesome.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
