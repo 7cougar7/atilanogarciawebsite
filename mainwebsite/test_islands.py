@@ -3,11 +3,24 @@ Tests for the Vite/React islands integration: the {% vite_asset %} template tag 
 homepage's progressive-enhancement mount points + server-rendered fallback.
 """
 
+import os
+from unittest import skipUnless
+
+from django.conf import settings
 from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from mainwebsite.site_content import PROJECTS, SOCIALS
+
+# The Vite bundle is built on demand (not committed), so tests that assert the real
+# bundle renders only run when a build is present. Everything else (dev mode, fail-soft,
+# server-rendered fallback, mount points) is build-independent and always runs.
+_MANIFEST = os.path.join(
+    settings.BASE_DIR, "mainwebsite", "static", "dist", ".vite", "manifest.json"
+)
+_HAS_BUILD = os.path.exists(_MANIFEST)
+_NEEDS_BUILD = skipUnless(_HAS_BUILD, "frontend not built (run `npm run build`)")
 
 
 def render_tag(snippet, context=None):
@@ -15,6 +28,7 @@ def render_tag(snippet, context=None):
 
 
 class ViteAssetTagTests(TestCase):
+    @_NEEDS_BUILD
     def test_production_emits_hashed_bundle_script(self):
         html = render_tag("{% vite_asset %}")
         self.assertIn('<script type="module"', html)
@@ -42,6 +56,7 @@ class HomepageIslandsTests(TestCase):
     def test_page_ok(self):
         self.assertEqual(self.response.status_code, 200)
 
+    @_NEEDS_BUILD
     def test_bundle_loaded(self):
         self.assertRegex(
             self.html,

@@ -158,16 +158,19 @@ bundle.
 
 ```bash
 npm install        # install frontend deps (requires Node)
-npm run build      # build to mainwebsite/static/dist/ (commit the result, see below)
+npm run build      # build to mainwebsite/static/dist/ (for local prod-style testing)
 npm run dev        # optional: Vite dev server with hot reload
 ```
 
-- **The built bundle in `mainwebsite/static/dist/` is committed to git.** Production has
-  no Node step — `collectstatic` serves the prebuilt assets. So whenever you change
-  anything under `frontend/`, run `npm run build` and commit the updated `dist/` before
-  deploying.
-- For hot reloading during development, run `npm run dev` and start Django with
-  `VITE_DEV_MODE=true`; the tag will load from the Vite dev server instead of the build.
+- **The build output (`mainwebsite/static/dist/`) is NOT committed** — it is gitignored
+  and produced fresh at deploy time. `deployment_scripts/build_server.sh` fetches a
+  pinned Node into the build environment (Render's Python runtime has no Node), runs
+  `npm ci && npm run build`, and `collectstatic` publishes the result.
+- For local development you usually don't need a build: if `dist/` is absent the
+  `{% vite_asset %}` tag no-ops and the server-rendered fallback shows. Run `npm run build`
+  when you want to exercise the actual React islands locally, then `collectstatic`.
+- For hot reloading, run `npm run dev` and start Django with `VITE_DEV_MODE=true`; the tag
+  loads from the Vite dev server instead of the build.
 - Islands progressively enhance server-rendered markup: each mount point contains a
   fallback rendered from Django context, so content stays present for SEO and no-JS.
 
