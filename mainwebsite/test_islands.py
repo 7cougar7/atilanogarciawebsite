@@ -82,3 +82,28 @@ class HomepageIslandsTests(TestCase):
     def test_analytics_hooks_preserved(self):
         self.assertIn("trackProjectView(", self.html)
         self.assertIn("trackSocialClick(", self.html)
+
+
+class ThemeSystemTests(TestCase):
+    """The CSS-variable theme: data-theme attribute + React ThemeToggle, no jQuery swap."""
+
+    def setUp(self):
+        self.html = self.client.get(reverse("mainwebsite:homepage")).content.decode()
+
+    def test_no_flicker_theme_setter_present(self):
+        # The inline script applies the saved theme before paint.
+        self.assertIn(
+            'document.documentElement.setAttribute("data-theme", "dark")', self.html
+        )
+
+    def test_theme_toggle_mount_point_present(self):
+        self.assertIn('data-react-component="ThemeToggle"', self.html)
+
+    def test_body_has_themed_fill(self):
+        self.assertRegex(self.html, r"<body[^>]*\bclass=\"[^\"]*light-fill")
+
+    def test_old_jquery_swap_removed(self):
+        # The class-swapping theme engine and its global switch must be gone.
+        self.assertNotIn("switchMode", self.html)
+        self.assertNotIn("temp-fill", self.html)
+        self.assertNotIn('id="switchButton"', self.html)

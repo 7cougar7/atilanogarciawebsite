@@ -6,24 +6,44 @@
     --middle-blue: #2D9CDB;
     --light-blue: #00B9F4;
     --orange-accent: #F87605;
+
+    /*
+     * Theme tokens. The class names below are historical: ".dark-color" is the color
+     * that is DARK in the light theme and inverts in the dark theme; ".light-fill" is
+     * the background that is LIGHT in the light theme and inverts, etc. The old code
+     * achieved that inversion by swapping class names in jQuery on every element. We now
+     * drive it here by flipping these tokens on [data-theme="dark"] — the classes stay
+     * put and the colors follow the theme.
+     */
+    --darkname-color: var(--dark);
+    --lightname-color: var(--light);
+    --lightname-fill: var(--light);
+    --darkname-fill: var(--dark);
+}
+
+[data-theme="dark"] {
+    --darkname-color: var(--light);
+    --lightname-color: var(--dark);
+    --lightname-fill: var(--dark);
+    --darkname-fill: var(--light);
 }
 
 .light-fill {
-    background: var(--light)!important;
+    background: var(--lightname-fill)!important;
 }
 
 .light-color {
-    color: var(--light);
-    border-color: var(--light);
+    color: var(--lightname-color);
+    border-color: var(--lightname-color);
 }
 
 .dark-fill {
-    background: var(--dark)!important;
+    background: var(--darkname-fill)!important;
 }
 
 .dark-color {
-    color: var(--dark);
-    border-color: var(--dark);
+    color: var(--darkname-color);
+    border-color: var(--darkname-color);
 }
 
 .accent-blue-fill {
@@ -83,14 +103,14 @@
 }
 
 .nohover-light:hover {
-    border-color: var(--light) !important;
-    color: var(--light) !important;
+    border-color: var(--lightname-color) !important;
+    color: var(--lightname-color) !important;
     text-decoration: none;
 }
 
 .nohover-dark:hover {
-    border-color: var(--dark) !important;
-    color: var(--dark) !important;
+    border-color: var(--darkname-color) !important;
+    color: var(--darkname-color) !important;
     text-decoration: none;
 }
 
@@ -106,26 +126,23 @@
 .center-elements {
 }
 
+/*
+ * Theme toggle button: dark background + light icon in the light theme, inverting in
+ * the dark theme (same as the old body.light-fill / body.dark-fill rules, now token-
+ * driven so no class swap is needed).
+ */
 .switch-button {
-    background: var(--dark) !important;
-    color: var(--light) !important;
-    border-color: var(--dark) !important;
+    background: var(--darkname-fill) !important;
+    color: var(--lightname-color) !important;
+    border-color: var(--darkname-fill) !important;
 }
 
 .switch-button:hover {
     opacity: 0.8;
 }
 
-/* Light mode - dark button */
-body.light-fill .switch-button {
-    background: var(--dark) !important;
-    color: var(--light) !important;
-    border-color: var(--dark) !important;
-}
-
-/* Dark mode - light button */
-body.dark-fill .switch-button {
-    background: var(--light) !important;
-    color: var(--dark) !important;
-    border-color: var(--light) !important;
+/* Bootstrap's navbar-light hamburger icon is dark; flip it so it stays visible on the
+ * dark background in the dark theme. */
+[data-theme="dark"] .navbar-toggler-icon {
+    filter: invert(1);
 }

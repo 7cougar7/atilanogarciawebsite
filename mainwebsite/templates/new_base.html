@@ -143,90 +143,28 @@
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
     {% csrf_token %}
     <script type="text/javascript">
-        // Change class names in css file then replace here using document to avoid flicker
-        let dark_mode = localStorage.getItem("dark_mode");
-        if (dark_mode == null) {
-            localStorage.setItem("dark_mode", "false");
-            dark_mode = "false";
-        }
-        if (dark_mode === "true") {
-            document.getElementsByTagName("body")[0].classList.add("dark-fill");
-            for (let i = 0; i < document.getElementsByTagName("a").length; i++) {
-                document.getElementsByTagName("a")[i].classList.add("dark-fill");
-            }
-        } else {
-            document.getElementsByTagName("body")[0].classList.add("light-fill");
-            for (let i = 0; i < document.getElementsByTagName("a").length; i++) {
-                document.getElementsByTagName("a")[i].classList.add("light-fill");
-            }
-        }
-        function switchMode(setStorage, pageLoad) {
-            let selectorModifer = pageLoad ? ":not(body)" : "";
-
-            $('.dark-color' + selectorModifer).addClass('temp-color').removeClass('dark-color')
-            $('.light-color' + selectorModifer).addClass('dark-color').removeClass('light-color')
-            $('.temp-color' + selectorModifer).addClass('light-color').removeClass('temp-color')
-
-            $('.dark-fill' + selectorModifer).addClass('temp-fill').removeClass('dark-fill')
-            $('.light-fill' + selectorModifer).addClass('dark-fill').removeClass('light-fill')
-            $('.temp-fill' + selectorModifer).addClass('light-fill').removeClass('temp-fill')
-
-            $('.nohover-dark' + selectorModifer).addClass('nohover-temp').removeClass('nohover-dark')
-            $('.nohover-light' + selectorModifer).addClass('nohover-dark').removeClass('nohover-light')
-            $('.nohover-temp' + selectorModifer).addClass('nohover-light').removeClass('nohover-temp')
-
-            $('.carousel-dark' + selectorModifer).addClass('carousel-temp').removeClass('carousel-dark')
-            $('.carousel' + selectorModifer).addClass('carousel-dark').removeClass('carousel')
-            $('.carousel-temp' + selectorModifer).addClass('carousel').removeClass('carousel-temp')
-
-            $('.navbar-dark' + selectorModifer).addClass('navbar-temp').removeClass('navbar-dark')
-            $('.navbar-light' + selectorModifer).addClass('navbar-dark').removeClass('navbar-light')
-            $('.navbar-temp' + selectorModifer).addClass('navbar-light').removeClass('navbar-temp')
-            if (setStorage) {
-                const dark_mode = localStorage.getItem("dark_mode");
-                if (dark_mode === "true") {
-                    localStorage.setItem("dark_mode", "false");
-                } else {
-                    localStorage.setItem("dark_mode", "true");
-                }
-            }
+        // Apply the saved theme before paint to avoid a flash of the wrong colors.
+        // The React ThemeToggle island (in the navbar) flips this and persists it.
+        if (localStorage.getItem("dark_mode") === "true") {
+            document.documentElement.setAttribute("data-theme", "dark");
         }
 
-        $(document).ready(function () {
-            const dark_mode = localStorage.getItem("dark_mode");
-            if (dark_mode == null) {
-                localStorage.setItem("dark_mode", "false");
-            }
-            if (dark_mode === "true") {
-                switchMode(false, true);
-            }
-
-            let cards = $.find('.glass-card');
-            const delayAmount = 100;//250;
-            setTimeout(function () {
-                for (let i = 0; i < cards.length; i += 2) {
-                    setTimeout(function () {
-                        $(cards[i]).animate({ opacity: 1 });
-                    }, delayAmount * i);
-                }
-                for (let i = 1; i < cards.length; i += 2) {
-                    setTimeout(function () {
-                        $(cards[i]).animate({ opacity: 1 });
-                    }, delayAmount * (i + 3));
-                }
-            }, 500);
-
-            $("#switchButton").click(function () {
-                switchMode(true, false);
+        // Fade the glass cards in (they start at opacity:0 in the templates). Vanilla
+        // replacement for the old jQuery animation, staggered like before.
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".glass-card").forEach(function (card, i) {
+                setTimeout(function () {
+                    card.style.transition = "opacity 0.4s ease";
+                    card.style.opacity = 1;
+                }, 150 + i * 80);
             });
-        })
-
+        });
     </script>
     {% block js %}
     {% endblock %}
 </head>
 
-<body>
+<body class="light-fill">
     <div class="container my-auto">
         <div>
             <nav class="navbar navbar-light navbar-expand-lg mt-2">
@@ -260,8 +198,8 @@
                             <li class="nav-item ms-auto mr-1">
                                 <a class="dark-color fs-4 navbar-link" href="{% url 'mainwebsite:urlShortener' %}">URL Shortener</a>
                             </li>
-                            <li class="nav-item ms-auto mr-1">
-                                <button class="btn switch-button" id="switchButton">
+                            <li class="nav-item ms-auto mr-1" data-react-component="ThemeToggle">
+                                <button class="btn switch-button" aria-label="Toggle dark mode">
                                     <i class="fas fa-sun"></i>
                                 </button>
                             </li>

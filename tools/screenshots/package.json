@@ -1,0 +1,13 @@
+{
+  "name": "screenshots",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless-browser screenshots for visual verification. Isolated from the root build package.json so Playwright's browser download never touches the Render deploy.",
+  "scripts": {
+    "shoot": "node screenshot.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
+}
