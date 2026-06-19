@@ -22,11 +22,25 @@ from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
-# Django versions this module's _meta patching has been validated against. A version
-# outside this range may have restructured the private internals we depend on; we still
-# attempt the patch (and verify it took effect) but emit a loud warning so the mismatch
-# is obvious in logs before anything subtle breaks.
-VALIDATED_DJANGO = (5, 2)
+# Django (major, minor) releases whose django.db.models.options.Options internals this
+# module's _meta patching has been verified against by reading the source directly:
+#
+#   * patch_user_pk_field() depends on `Options.fields` (a @cached_property),
+#     `Options.pk` (a plain attribute), and `Options._forward_fields_map`
+#     (a @cached_property feeding get_field()).
+#   * Diffing options.py between 5.2.x and 6.0.x: these three are unchanged --
+#     identical FORWARD_PROPERTIES/REVERSE_PROPERTIES sets, same _forward_fields_map
+#     and _expire_cache() definitions. Django 6.0 did NOT restructure them.
+#
+# A release outside this set may have moved these internals, so we still attempt the
+# patch, verify it took effect (post-condition below), and emit a loud warning so the
+# mismatch is obvious in logs. To extend the set, diff Options in the new release's
+# django/db/models/options.py against a known-good version before adding it here.
+#
+# Note: this set tracks the _meta STRUCTURE only. The Aurora DSQL *runtime* path
+# (raw-SQL User.save, migration consolidation) is exercised only against a real Aurora
+# DSQL database, never by the SQLite test suite -- validate that separately on staging.
+VALIDATED_DJANGO = {(5, 2), (6, 0)}
 
 
 def is_aurora_dsql_environment():
@@ -140,13 +154,13 @@ def patch_user_pk_field():
             f"Django {django.get_version()}. Revalidate the UUID primary-key patch."
         )
 
-    if django.VERSION[:2] != VALIDATED_DJANGO:
+    if django.VERSION[:2] not in VALIDATED_DJANGO:
         logger.warning(
-            "Aurora DSQL: Django %s is outside the validated range %s for the User "
-            "primary-key patch. Proceeding, but verify _meta internals on a staging "
-            "Aurora DSQL database.",
+            "Aurora DSQL: Django %s has not had its _meta internals verified for the "
+            "User primary-key patch (validated: %s). Proceeding, but diff "
+            "django/db/models/options.py for this release before relying on it.",
             django.get_version(),
-            ".".join(map(str, VALIDATED_DJANGO)),
+            ", ".join(".".join(map(str, v)) for v in sorted(VALIDATED_DJANGO)),
         )
 
     # Create a new UUIDField to replace the AutoField
@@ -171,18 +185,23 @@ def patch_user_pk_field():
     # Update the model class to use the new field
     setattr(User, "id", uuid_field)
 
-    # Clear field caches but let Django rebuild them naturally. These attributes are
-    # private and may not all exist on every version; guard each one individually.
-    if hasattr(meta, "_field_cache"):
-        meta._field_cache = {}
-    if hasattr(meta, "_field_name_cache"):
-        meta._field_name_cache = []
-
-    # Don't set these to None - let Django rebuild them when needed.
-    # This prevents the "NoneType object is not subscriptable" error.
-    for attr in ("_name_map", "_forward_fields_map", "_fields_map"):
-        if hasattr(meta, attr):
-            delattr(meta, attr)
+    # Drop the cached forward-field lookup so it is rebuilt lazily. NOTE: this does NOT
+    # make get_field("id") return the UUIDField -- _forward_fields_map rebuilds from
+    # _get_fields()/local_fields, which the patch deliberately leaves untouched, so it
+    # still resolves the AutoField (verified empirically on 5.2.x and 6.0.x). What the
+    # rest of the system relies on is `meta.pk` being the UUIDField (set above) and the
+    # raw-SQL User.save() override; the cache pop just preserves the original patch's
+    # behavior of not leaving a stale map object cached. Verified _forward_fields_map is
+    # a @cached_property in both 5.2.x and 6.0.x; pop() is a safe no-op if it is dropped.
+    #
+    # We must NOT call the broad Options._expire_cache() here: `fields` is in
+    # FORWARD_PROPERTIES, so expiring would delete our `fields` override and rebuild it
+    # from the unchanged local_fields, undoing the patch.
+    #
+    # The previously-cleared _field_cache / _field_name_cache / _name_map / _fields_map
+    # do not exist on Options in either 5.2 or 6.0 (pre-2.0 legacy), so clearing them
+    # was always a no-op; dropped to keep this honest about what it actually touches.
+    meta.__dict__.pop("_forward_fields_map", None)
 
     # --- Post-condition: confirm the patch actually took effect. If the pk did not
     # become our UUIDField, the model is in an inconsistent state — fail loud. ---

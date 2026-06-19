@@ -105,11 +105,25 @@ class PatchUserPkFieldGuardTests(SimpleTestCase):
         # Non-id fields are preserved and order is maintained.
         self.assertEqual([f.name for f in meta.fields], ["id", "username", "email"])
 
+    @patch("mainwebsite.aurora_dsql_fixes.User")
+    def test_invalidates_forward_fields_map_cache(self, mock_user):
+        # A stale cached forward-field map must be dropped so it is rebuilt lazily
+        # rather than left pointing at the pre-patch field objects.
+        meta = SimpleNamespace(
+            fields=[_field("id"), _field("username")], pk=_field("id")
+        )
+        meta._forward_fields_map = {"id": _field("id")}  # stale cache
+        mock_user._meta = meta
+
+        fx.patch_user_pk_field()
+
+        self.assertNotIn("_forward_fields_map", meta.__dict__)
+
     @patch("mainwebsite.aurora_dsql_fixes.logger")
     @patch("mainwebsite.aurora_dsql_fixes.User")
     def test_warns_when_outside_validated_django_range(self, mock_user, mock_logger):
         mock_user._meta = SimpleNamespace(fields=[_field("id")], pk=_field("id"))
-        with patch.object(fx, "VALIDATED_DJANGO", (99, 99)):
+        with patch.object(fx, "VALIDATED_DJANGO", {(99, 99)}):
             fx.patch_user_pk_field()
         self.assertTrue(
             mock_logger.warning.called,
@@ -120,6 +134,6 @@ class PatchUserPkFieldGuardTests(SimpleTestCase):
     @patch("mainwebsite.aurora_dsql_fixes.User")
     def test_no_warning_when_inside_validated_range(self, mock_user, mock_logger):
         mock_user._meta = SimpleNamespace(fields=[_field("id")], pk=_field("id"))
-        with patch.object(fx, "VALIDATED_DJANGO", django.VERSION[:2]):
+        with patch.object(fx, "VALIDATED_DJANGO", {django.VERSION[:2]}):
             fx.patch_user_pk_field()
         self.assertFalse(mock_logger.warning.called)
