@@ -1,0 +1,37 @@
+{% extends 'new_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="glass-card" style="opacity: 0;">
+    <div class="card-body p-4">
+        <div class="row mb-3">
+            <div class="col text-center">
+                <h1 class="dark-color">Resume</h1>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col text-center">
+                <a href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}"
+                   target="_blank"
+                   class="btn btn-primary me-2"
+                   onclick="trackResumeDownload()">
+                    Download PDF
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <iframe
+                    src="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}"
+                    style="width: 100%; height: 80vh; border: none; border-radius: 10px;"
+                    title="Atilano Garcia Resume">
+                    <p class="dark-color text-center">
+                        Your browser doesn't support embedded PDFs.
+                        <a href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" target="_blank">Download the resume here.</a>
+                    </p>
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
