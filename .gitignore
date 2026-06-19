@@ -15,3 +15,12 @@ mainwebsite/static/fontawesome/*
 # FontAwesome extracted files (keep only the zip)
 mainwebsite/static/fontawesome/
 !mainwebsite/static/fontawesome-free-6.7.2.zip
+
+# Node / Vite. node_modules is rebuilt via `npm install`. The Vite build output is NOT
+# committed — it is produced fresh during deploy by build_server.sh (which fetches Node
+# on Render) and locally via `npm run build`.
+node_modules/
+npm-debug.log*
+mainwebsite/static/dist/
+# Node downloaded into the build environment by build_server.sh
+.render-node/

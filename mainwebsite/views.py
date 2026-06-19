@@ -34,6 +34,7 @@ from mainwebsite.rate_limiting import (
     get_user_agent,
     magic_link_rate_limiter,
 )
+from mainwebsite.site_content import homepage_content_context
 
 from .forms import UsernameForm
 
@@ -52,6 +53,7 @@ def homepage(request):
         "meta_description": "Welcome to Atilano Garcia's portfolio. Explore innovative software engineering projects, machine learning experiments, and professional development work. View resume, projects, and contact information.",
         "meta_keywords": "Atilano Garcia, software engineer, portfolio, projects, machine learning, web development, Django, Python, resume, contact",
     }
+    context.update(homepage_content_context())
     return render(request, "homepage.html", context)
 
 
