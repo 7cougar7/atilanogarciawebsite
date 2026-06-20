@@ -8,7 +8,8 @@ from unittest import skipUnless
 
 from django.conf import settings
 from django.template import Context, Template
-from django.test import TestCase, override_settings
+from django.template.loader import render_to_string
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
 from mainwebsite.site_content import PROJECTS, SOCIALS
@@ -180,3 +181,24 @@ class GraduationIslandTests(TestCase):
         self.assertIn('data-react-component="Graduation"', self.html)
         self.assertIn("data-ut-seal=", self.html)
         self.assertIn("data-venmo-logo=", self.html)
+
+
+class UtilityPagesTests(TestCase):
+    def test_404_renders_notfound_island(self):
+        # Django runs tests with DEBUG=False, so the handler404 template is used.
+        response = self.client.get("/definitely-not-a-real-url/")
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('data-react-component="NotFound"', response.content.decode())
+
+    def _render(self, template):
+        return render_to_string(template, request=RequestFactory().get("/"))
+
+    def test_logged_out_uses_message_card(self):
+        html = self._render("logged_out.html")
+        self.assertIn('data-react-component="MessageCard"', html)
+        self.assertIn("You have been logged out.", html)
+
+    def test_invalid_link_uses_message_card(self):
+        html = self._render("magic_link_invalid.html")
+        self.assertIn('data-react-component="MessageCard"', html)
+        self.assertIn("Invalid Link", html)
