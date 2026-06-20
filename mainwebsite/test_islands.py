@@ -107,3 +107,26 @@ class ThemeSystemTests(TestCase):
         self.assertNotIn("switchMode", self.html)
         self.assertNotIn("temp-fill", self.html)
         self.assertNotIn('id="switchButton"', self.html)
+
+
+class UrlShortenerPageTests(TestCase):
+    def setUp(self):
+        self.html = self.client.get(
+            reverse("mainwebsite:urlShortener")
+        ).content.decode()
+
+    def test_mounts_react_island_with_submit_url(self):
+        self.assertIn('data-react-component="UrlShortener"', self.html)
+        self.assertIn(
+            'data-submit-url="%s"' % reverse("mainwebsite:urlShortenerSubmit"),
+            self.html,
+        )
+
+    def test_server_rendered_fallback_present(self):
+        # The form is in the server HTML so the page isn't blank before React mounts.
+        self.assertIn("URL To Shorten", self.html)
+        self.assertIn("Shorten URL", self.html)
+
+    def test_old_jquery_handlers_removed(self):
+        self.assertNotIn("submitForm()", self.html)
+        self.assertNotIn("$.ajax", self.html)
