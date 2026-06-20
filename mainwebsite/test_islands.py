@@ -202,3 +202,15 @@ class UtilityPagesTests(TestCase):
         html = self._render("magic_link_invalid.html")
         self.assertIn('data-react-component="MessageCard"', html)
         self.assertIn("Invalid Link", html)
+
+
+class KkyIslandTests(TestCase):
+    def setUp(self):
+        self.response = self.client.get(reverse("mainwebsite:kky_acceptance_page"))
+        self.html = self.response.content.decode()
+
+    def test_mounts_kky_island_with_image_urls(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertIn('data-react-component="Kky"', self.html)
+        self.assertIn("data-crest-img=", self.html)
+        self.assertIn("data-section-img=", self.html)

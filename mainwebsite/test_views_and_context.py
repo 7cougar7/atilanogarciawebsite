@@ -62,10 +62,11 @@ class KkyPageTests(TestCase):
         self.assertTemplateUsed(response, "kky.html")
         self.assertTemplateUsed(response, "new_base.html")
 
-    def test_contains_breadcrumb_navigation(self):
+    def test_mounts_kky_react_island(self):
+        # The breadcrumb + content are now rendered by the Kky React island, so the
+        # server HTML carries the mount point rather than the markup itself.
         response = self.client.get(self.url)
-        self.assertContains(response, "breadcrumb")
-        self.assertContains(response, "Kappa Kappa Psi")
+        self.assertContains(response, 'data-react-component="Kky"')
 
 
 class AnalyticsStubTests(TestCase):
