@@ -2,26 +2,40 @@ import { createRoot } from "react-dom/client";
 import ProjectList from "./components/ProjectList.jsx";
 import SocialLinks from "./components/SocialLinks.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
+import UrlShortener from "./components/UrlShortener.jsx";
 
-// Island registry. A DOM node opts in with data-react-component="<name>" and gets its
-// props from a {% ... |json_script:"id" %} element referenced via data-props-id.
+// Island registry. A DOM node opts in with data-react-component="<name>". Props come
+// from a {% ... |json_script:"id" %} element referenced via data-props-id (for
+// structured data) and/or plain data-* attributes (for simple scalar values).
 const COMPONENTS = {
   ProjectList,
   SocialLinks,
   ThemeToggle,
+  UrlShortener,
 };
 
 function readProps(el) {
+  const props = {};
+
+  // Structured props from a json_script element.
   const id = el.dataset.propsId;
-  if (!id) return {};
-  const node = document.getElementById(id);
-  if (!node) return {};
-  try {
-    return JSON.parse(node.textContent);
-  } catch (e) {
-    console.error(`[islands] bad props JSON in #${id}:`, e);
-    return {};
+  if (id) {
+    const node = document.getElementById(id);
+    if (node) {
+      try {
+        Object.assign(props, JSON.parse(node.textContent));
+      } catch (e) {
+        console.error(`[islands] bad props JSON in #${id}:`, e);
+      }
+    }
   }
+
+  // Scalar props from data-* attributes (camelCased), excluding the control ones.
+  for (const [key, value] of Object.entries(el.dataset)) {
+    if (key !== "reactComponent" && key !== "propsId") props[key] = value;
+  }
+
+  return props;
 }
 
 function mountIslands() {
