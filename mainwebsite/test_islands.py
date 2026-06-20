@@ -130,3 +130,25 @@ class UrlShortenerPageTests(TestCase):
     def test_old_jquery_handlers_removed(self):
         self.assertNotIn("submitForm()", self.html)
         self.assertNotIn("$.ajax", self.html)
+
+
+class TranslatorPageTests(TestCase):
+    def setUp(self):
+        self.response = self.client.get(reverse("mainwebsite:translator"))
+        self.html = self.response.content.decode()
+
+    def test_page_renders(self):
+        # Regression: the old template used a non-namespaced {% url 'start_two_way' %}
+        # which raised NoReverseMatch (500). It must reverse and render now.
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_mounts_react_island_with_namespaced_submit_url(self):
+        self.assertIn('data-react-component="Translator"', self.html)
+        self.assertIn(
+            'data-submit-url="%s"' % reverse("mainwebsite:start_two_way"),
+            self.html,
+        )
+
+    def test_old_jquery_handler_removed(self):
+        self.assertNotIn("submitForm()", self.html)
+        self.assertNotIn("$.ajax", self.html)
