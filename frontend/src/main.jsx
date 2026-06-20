@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import ProjectList from "./components/ProjectList.jsx";
 import SocialLinks from "./components/SocialLinks.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
+import Translator from "./components/Translator.jsx";
 import UrlShortener from "./components/UrlShortener.jsx";
 
 // Island registry. A DOM node opts in with data-react-component="<name>". Props come
@@ -11,6 +12,7 @@ const COMPONENTS = {
   ProjectList,
   SocialLinks,
   ThemeToggle,
+  Translator,
   UrlShortener,
 };
 
