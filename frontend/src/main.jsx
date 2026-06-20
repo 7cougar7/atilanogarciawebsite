@@ -3,6 +3,7 @@ import Graduation from "./components/Graduation.jsx";
 import Kky from "./components/Kky.jsx";
 import MessageCard from "./components/MessageCard.jsx";
 import NotFound from "./components/NotFound.jsx";
+import PersonalAi from "./components/PersonalAi.jsx";
 import ProjectList from "./components/ProjectList.jsx";
 import Resume from "./components/Resume.jsx";
 import SocialLinks from "./components/SocialLinks.jsx";
@@ -18,6 +19,7 @@ const COMPONENTS = {
   Kky,
   MessageCard,
   NotFound,
+  PersonalAi,
   ProjectList,
   Resume,
   SocialLinks,

@@ -1,21 +1,8 @@
 {% extends 'new_base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h2 class="card-title">Welcome to Your Personal AI Page</h2>
-                    <p>This is your personal space. More features will be added soon!</p>
-                    <p>You are logged in as: <strong>{{ user.username }}</strong></p>
-                    <form action="{% url 'logout' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Log Out</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+<div data-react-component="PersonalAi"
+     data-username="{{ user.username }}"
+     data-logout-url="{% url 'mainwebsite:logout' %}">
 </div>
 {% endblock %}
