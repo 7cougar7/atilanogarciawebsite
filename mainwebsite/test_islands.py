@@ -168,3 +168,15 @@ class ResumeIslandTests(TestCase):
         # Heading + embedded PDF remain in the server HTML for SEO / no-JS.
         self.assertIn("<iframe", self.html)
         self.assertIn(".pdf", self.html)
+
+
+class GraduationIslandTests(TestCase):
+    def setUp(self):
+        self.response = self.client.get(reverse("mainwebsite:graduation"))
+        self.html = self.response.content.decode()
+
+    def test_mounts_graduation_island_with_image_urls(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertIn('data-react-component="Graduation"', self.html)
+        self.assertIn("data-ut-seal=", self.html)
+        self.assertIn("data-venmo-logo=", self.html)
