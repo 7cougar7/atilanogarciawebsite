@@ -214,3 +214,15 @@ class KkyIslandTests(TestCase):
         self.assertIn('data-react-component="Kky"', self.html)
         self.assertIn("data-crest-img=", self.html)
         self.assertIn("data-section-img=", self.html)
+
+
+class PersonalAiIslandTests(TestCase):
+    def test_personal_ai_template_mounts_island(self):
+        # Rendered directly (the view itself is passkey-gated); we check the template.
+        request = RequestFactory().get("/")
+        request.user = type("U", (), {"username": "tilo", "is_authenticated": True})()
+        html = render_to_string("personal_ai.html", request=request)
+        self.assertIn('data-react-component="PersonalAi"', html)
+        self.assertIn("data-username=", html)
+        # Regression: must use the namespaced logout URL (bare name raised NoReverseMatch).
+        self.assertIn('data-logout-url="%s"' % reverse("mainwebsite:logout"), html)
