@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import ProjectList from "./components/ProjectList.jsx";
+import Resume from "./components/Resume.jsx";
 import SocialLinks from "./components/SocialLinks.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
 import Translator from "./components/Translator.jsx";
@@ -10,6 +11,7 @@ import UrlShortener from "./components/UrlShortener.jsx";
 // structured data) and/or plain data-* attributes (for simple scalar values).
 const COMPONENTS = {
   ProjectList,
+  Resume,
   SocialLinks,
   ThemeToggle,
   Translator,

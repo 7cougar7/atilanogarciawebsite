@@ -152,3 +152,19 @@ class TranslatorPageTests(TestCase):
     def test_old_jquery_handler_removed(self):
         self.assertNotIn("submitForm()", self.html)
         self.assertNotIn("$.ajax", self.html)
+
+
+class ResumeIslandTests(TestCase):
+    def setUp(self):
+        self.response = self.client.get(reverse("mainwebsite:resume"))
+        self.html = self.response.content.decode()
+
+    def test_mounts_resume_island_with_pdf_url(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertIn('data-react-component="Resume"', self.html)
+        self.assertIn("data-pdf-url=", self.html)
+
+    def test_server_rendered_fallback_present(self):
+        # Heading + embedded PDF remain in the server HTML for SEO / no-JS.
+        self.assertIn("<iframe", self.html)
+        self.assertIn(".pdf", self.html)
