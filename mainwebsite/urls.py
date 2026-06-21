@@ -1,6 +1,6 @@
 from django.urls import path
 
-from mainwebsite import translator_calls, twilio_views, views, views_dnd
+from mainwebsite import e2e_support, translator_calls, twilio_views, views, views_dnd
 from mainwebsite.custom_passkey_views import (
     custom_auth_complete,
     dynamic_auth_begin,
@@ -87,5 +87,9 @@ urlpatterns = [
         name="logout",
     ),
 ]
+
+# Dev-only passkey E2E hook (gated behind DEBUG + E2E_TESTING; never present in prod).
+if e2e_support.e2e_enabled():
+    urlpatterns += [path("_e2e/auth_setup/", e2e_support.auth_setup)]
 
 handler404 = "mainwebsite.views.page_not_found_view"

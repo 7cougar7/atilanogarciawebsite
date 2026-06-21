@@ -3,12 +3,14 @@ import Graduation from "./components/Graduation.jsx";
 import Kky from "./components/Kky.jsx";
 import MessageCard from "./components/MessageCard.jsx";
 import NotFound from "./components/NotFound.jsx";
+import PasskeyRegister from "./components/PasskeyRegister.jsx";
 import PersonalAi from "./components/PersonalAi.jsx";
 import ProjectList from "./components/ProjectList.jsx";
 import Resume from "./components/Resume.jsx";
 import SocialLinks from "./components/SocialLinks.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
 import Translator from "./components/Translator.jsx";
+import UnifiedLogin from "./components/UnifiedLogin.jsx";
 import UrlShortener from "./components/UrlShortener.jsx";
 
 // Island registry. A DOM node opts in with data-react-component="<name>". Props come
@@ -19,12 +21,14 @@ const COMPONENTS = {
   Kky,
   MessageCard,
   NotFound,
+  PasskeyRegister,
   PersonalAi,
   ProjectList,
   Resume,
   SocialLinks,
   ThemeToggle,
   Translator,
+  UnifiedLogin,
   UrlShortener,
 };
 

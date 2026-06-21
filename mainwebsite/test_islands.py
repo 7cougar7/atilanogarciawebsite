@@ -226,3 +226,25 @@ class PersonalAiIslandTests(TestCase):
         self.assertIn("data-username=", html)
         # Regression: must use the namespaced logout URL (bare name raised NoReverseMatch).
         self.assertIn('data-logout-url="%s"' % reverse("mainwebsite:logout"), html)
+
+
+class AuthPagesTests(TestCase):
+    def test_login_mounts_unified_login_island(self):
+        html = self.client.get(reverse("mainwebsite:login")).content.decode()
+        self.assertIn('data-react-component="UnifiedLogin"', html)
+        self.assertIn(
+            'data-auth-begin-url="%s"'
+            % reverse("mainwebsite:custom_passkey_auth_begin"),
+            html,
+        )
+
+    def test_passkey_register_template_mounts_island(self):
+        # The view is magic-link-gated; check the template renders the island.
+        html = render_to_string(
+            "passkey_register.html", request=RequestFactory().get("/")
+        )
+        self.assertIn('data-react-component="PasskeyRegister"', html)
+        self.assertIn(
+            'data-reg-begin-url="%s"' % reverse("mainwebsite:custom_passkey_reg_begin"),
+            html,
+        )
