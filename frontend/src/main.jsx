@@ -1,36 +1,21 @@
 import { createRoot } from "react-dom/client";
-import Graduation from "./components/Graduation.jsx";
-import Kky from "./components/Kky.jsx";
-import MessageCard from "./components/MessageCard.jsx";
-import NotFound from "./components/NotFound.jsx";
-import PasskeyRegister from "./components/PasskeyRegister.jsx";
-import PersonalAi from "./components/PersonalAi.jsx";
-import ProjectList from "./components/ProjectList.jsx";
-import Resume from "./components/Resume.jsx";
-import SocialLinks from "./components/SocialLinks.jsx";
-import ThemeToggle from "./components/ThemeToggle.jsx";
-import Translator from "./components/Translator.jsx";
-import UnifiedLogin from "./components/UnifiedLogin.jsx";
-import UrlShortener from "./components/UrlShortener.jsx";
 
-// Island registry. A DOM node opts in with data-react-component="<name>". Props come
-// from a {% ... |json_script:"id" %} element referenced via data-props-id (for
-// structured data) and/or plain data-* attributes (for simple scalar values).
-const COMPONENTS = {
-  Graduation,
-  Kky,
-  MessageCard,
-  NotFound,
-  PasskeyRegister,
-  PersonalAi,
-  ProjectList,
-  Resume,
-  SocialLinks,
-  ThemeToggle,
-  Translator,
-  UnifiedLogin,
-  UrlShortener,
-};
+// Island registry, built automatically from every component file. A DOM node opts in
+// with data-react-component="<Name>", where <Name> is the component file's basename
+// (e.g. components/ProjectList.jsx -> "ProjectList"). Adding a page is now just dropping
+// a new file in components/ — no manual registration here, so this file stops being a
+// merge-conflict magnet. Props come from a {% ... |json_script:"id" %} element
+// referenced via data-props-id (structured) and/or plain data-* attributes (scalars).
+const COMPONENTS = {};
+const modules = import.meta.glob("./components/*.jsx", { eager: true });
+for (const [path, module] of Object.entries(modules)) {
+  const name = path.split("/").pop().replace(/\.jsx$/, "");
+  if (!module.default) {
+    console.warn(`[islands] ${path} has no default export; skipping`);
+    continue;
+  }
+  COMPONENTS[name] = module.default;
+}
 
 function readProps(el) {
   const props = {};
