@@ -77,11 +77,14 @@
                 els.forEach(function (el) { el.classList.add("is-visible"); });
                 return;
             }
+            // threshold 0 so anything already on screen at load reveals immediately
+            // (tall sections never reach a high visible fraction); the negative bottom
+            // margin gives below-the-fold sections a small lead-in as they scroll up.
             var io = new IntersectionObserver(function (entries) {
                 entries.forEach(function (e) {
                     if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
                 });
-            }, { threshold: 0.18 });
+            }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
             els.forEach(function (el) { io.observe(el); });
         })();
     </script>
