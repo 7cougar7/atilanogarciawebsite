@@ -178,31 +178,7 @@
   }
 }
 
-/* Settled state: returning visitors (session flag) and reduced-motion users skip the
-   build and see the finished hero immediately. */
-.hero--static .hero-grid,
-.hero--static .hero-eyebrow,
-.hero--static .hero-rule,
-.hero--static .hero-tag,
-.hero--static .hero-tick,
-.hero--static .hero-coord,
-.hero--static .hero-glyph {
-  animation: none;
-  opacity: 1;
-  transform: none;
-  clip-path: none;
-}
-.hero--static .hero-rule {
-  transform: scaleX(1);
-}
-.hero--static .hero-tick {
-  transform: scale(1);
-}
-.hero--static .hero-glyph {
-  fill-opacity: 1;
-  stroke-dashoffset: 0;
-}
-
+/* Settled state for reduced-motion users: skip the build, show the finished hero. */
 @media (prefers-reduced-motion: reduce) {
   .hero-grid,
   .hero-eyebrow,

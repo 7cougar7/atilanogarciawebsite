@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import "./Hero.css";
 
-// "It builds itself" hero. On first view per session the page constructs — a faint
-// grid wipes in, the name draws letter-by-letter (each glyph's outline traces, then
-// fills), then the eyebrow/rule/tagline/tick settle. Returning within the same
-// session (or with prefers-reduced-motion) shows the finished state immediately.
+// "It builds itself" hero. On every load the page constructs — a faint grid wipes in,
+// the name draws letter-by-letter (each glyph's outline traces, then fills), then the
+// eyebrow/rule/tagline/tick settle. prefers-reduced-motion shows the finished state
+// immediately (handled in CSS).
 //
 // Responsive: the name renders one SVG per word in a flex-wrap row, each measured to
 // its exact text width. Words sit on one line when they fit and wrap to stacked lines
@@ -38,8 +38,6 @@ function letterTimings(n) {
   return out;
 }
 
-const SEEN_KEY = "hero_built"; // session flag so the build animation plays once per visit
-
 export default function Hero(props = {}) {
   const name = props.name || DEFAULTS.name;
   const eyebrow = props.eyebrow || DEFAULTS.eyebrow;
@@ -48,17 +46,6 @@ export default function Hero(props = {}) {
   const words = name.split(" ");
   const totalLetters = words.reduce((sum, w) => sum + w.length, 0);
   const times = letterTimings(totalLetters);
-
-  // Animate only the first view per session; otherwise render the settled state.
-  const [animate] = useState(() => {
-    try {
-      if (sessionStorage.getItem(SEEN_KEY)) return false;
-      sessionStorage.setItem(SEEN_KEY, "1");
-    } catch {
-      /* private mode / unavailable — just animate */
-    }
-    return true;
-  });
 
   // Measure each word's rendered text so its SVG viewBox hugs the glyphs exactly.
   // Runs before paint (useLayoutEffect), so the estimate is never visible.
@@ -78,7 +65,7 @@ export default function Hero(props = {}) {
   let gi = 0; // running global letter index across all words (continuous cascade)
 
   return (
-    <section className={animate ? "hero" : "hero hero--static"}>
+    <section className="hero">
       <div className="hero-grid" aria-hidden="true" />
       <div className="hero-stage">
         <p className="hero-eyebrow">{eyebrow}</p>
