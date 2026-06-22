@@ -11,27 +11,15 @@ const NAME = "Atilano Garcia";
 // "accelerates" into place. easeOut(t) front-loads the delay so increments
 // between letters shrink toward the end.
 const START = 0.9; // s — after the grid/eyebrow settle
-const DUR_FIRST = 0.95; // s — first letter's draw
-const DUR_LAST = 0.82; // s — last letter's draw (stays appreciable, no whip)
-const GAP_FIRST = 0.3; // s — gap between the first letters (slow, sequential)
-const GAP_LAST = 0.13; // s — gap between the last letters (overlapping cascade, floored)
+const GAP = 0.17; // s — even cadence between letter starts
+const DUR = 0.82; // s — each letter's draw (constant, so every one is watchable)
 
-// Per-letter delay + draw duration. Acceleration comes from the gaps shrinking
-// (GAP_FIRST -> GAP_LAST) so the next letter begins as the previous is finishing;
-// the gap floors at GAP_LAST so the end cascades smoothly instead of popping. The
-// draw duration barely changes, keeping every letter — including the last — watchable.
+// Steady cascade: a constant gap and a constant draw duration keep the same number
+// of letters drawing at every instant (~DUR/GAP at once), so the motion density is
+// flat end-to-end — no acceleration into a busy "pop", no uneven stutter. The fill
+// trails the pen by a fixed amount the whole way across.
 function letterTimings(n) {
-  const out = [];
-  let delay = START;
-  for (let i = 0; i < n; i++) {
-    const t = n > 1 ? i / (n - 1) : 0;
-    if (i > 0) {
-      const gt = (i - 1) / Math.max(1, n - 2); // 0..1 across the gaps
-      delay += GAP_FIRST + (GAP_LAST - GAP_FIRST) * gt;
-    }
-    out.push({ delay, dur: DUR_FIRST + (DUR_LAST - DUR_FIRST) * t });
-  }
-  return out;
+  return Array.from({ length: n }, (_, i) => ({ delay: START + i * GAP, dur: DUR }));
 }
 
 export default function BuildItself() {
