@@ -19,6 +19,8 @@ import os
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.templatetags.static import static
 from django.urls import include, path
 from django.utils import timezone
 
@@ -29,6 +31,12 @@ from mainwebsite.custom_passkey_views import (
     dynamic_reg_complete,
 )
 from mainwebsite.views import custom_logout
+
+
+def favicon_ico(request):
+    """Redirect the browser's default /favicon.ico request to the static icon
+    (resolved per-request so it picks up the hashed name in production)."""
+    return redirect(static("mainwebsite/img/logo/new/favicon.ico"))
 
 
 def robots_txt(request):
@@ -76,6 +84,7 @@ def sitemap_xml(request):
 
 
 urlpatterns = [
+    path("favicon.ico", favicon_ico, name="favicon_ico"),
     path("robots.txt", robots_txt, name="robots_txt"),
     path("sitemap.xml", sitemap_xml, name="sitemap_xml"),
     path("admin/", admin.site.urls),
