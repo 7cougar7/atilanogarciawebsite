@@ -18,6 +18,7 @@
   --grid: rgba(23, 25, 30, 0.05); /* construction grid lines */
   --accent: #2f4bff; /* the one bold note: blue */
   --accent-ink: #ffffff; /* text/!marks on accent fills */
+  --danger: #c0392b; /* error/validation feedback */
 
   /* Type */
   --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
@@ -63,6 +64,7 @@
   --grid: rgba(255, 255, 255, 0.055);
   --accent: #5b72ff; /* lifted for contrast on dark */
   --accent-ink: #0b0c0f;
+  --danger: #ff6b5e; /* lifted for contrast on dark */
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -113,6 +113,32 @@ def homepage_v2(request):
     return render(request, "homepage_v2.html", context)
 
 
+def translator_v2(request):
+    """v2-styled two-way translator tool. Parallel to /translator/; reuses the same
+    start_two_way backend."""
+    context = {
+        "page_title": "Translator",
+        "meta_description": (
+            "Two-way phone translator by Atilano Garcia — bridge a live, translated call "
+            "between two people who don't share a language."
+        ),
+    }
+    return render(request, "translator_v2.html", context)
+
+
+def url_shortener_v2(request):
+    """v2-styled URL shortener. Parallel to /url_shortener/; reuses the same
+    url_shortener_submit backend."""
+    context = {
+        "page_title": "URL Shortener",
+        "meta_description": (
+            "URL shortener by Atilano Garcia — turn a long link into a short, shareable "
+            "redirect."
+        ),
+    }
+    return render(request, "url_shortener_v2.html", context)
+
+
 def resume_v2(request):
     """Résumé rendered in the v2 design language (not a PDF embed). Lives at
     /v2/resume/; the PDF stays available as a download link."""

@@ -576,6 +576,127 @@ body.v2-resume-page::before {
   color: var(--accent);
 }
 
+/* ---- Tools (/v2/translator, /v2/url-shortener) -------------------------- */
+.v2-tool {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 9vw, 5.5rem) clamp(1rem, 4vw, 2.5rem) var(--space-6);
+}
+.v2-tool-title {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--fs-section);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-tool-desc {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-body);
+  color: var(--muted);
+  max-width: 52ch;
+}
+.v2-tool-panel {
+  padding: clamp(1.4rem, 4vw, 2.2rem);
+  background: var(--surface);
+  border: var(--rule) solid var(--line);
+  border-radius: 4px;
+}
+.v2-tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.v2-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.v2-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  background: var(--paper);
+  border: var(--rule) solid var(--line);
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  transition: border-color 0.2s ease;
+}
+.v2-input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+.v2-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.v2-input[readonly] {
+  color: var(--muted);
+}
+.v2-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border: var(--rule) solid var(--accent);
+  border-radius: 3px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.v2-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.v2-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+/* Secondary (outline) button — e.g. the copy action */
+.v2-btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+.v2-btn--ghost:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  opacity: 1;
+}
+.v2-tool-msg {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.v2-tool-msg--ok {
+  color: var(--ink);
+}
+.v2-tool-msg--err {
+  color: var(--danger);
+}
+.v2-tool-result {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.v2-tool-result .v2-input {
+  flex: 1;
+}
+.v2-tool-result .v2-btn {
+  align-self: stretch;
+  flex: none;
+}
+
 /* ---- Scroll reveal ------------------------------------------------------ */
 .reveal {
   opacity: 0;
