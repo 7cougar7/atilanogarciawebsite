@@ -36,10 +36,18 @@ body.v2 a {
   position: relative;
   z-index: 10;
 }
-/* On the homepage the nav waits offscreen and flies in from the top once the hero
-   finishes building (JS adds .v2-nav--in on the "hero:done" event). Other v2 pages
-   have no hero, so their nav is shown normally (this state is scoped to .v2-home). */
+/* On the homepage the nav floats over the hero (out of flow + transparent) so the
+   construction grid fills the viewport to the very top while the nav is hidden. It
+   waits offscreen and flies in from the top once the hero finishes building (JS adds
+   .v2-nav--in on the "hero:done" event). Other v2 pages have no hero, so their nav is
+   the normal in-flow bar (this state is scoped to .v2-home). */
 .v2-home .v2-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-bottom: none;
   transform: translateY(-110%);
   opacity: 0;
   transition:
@@ -49,6 +57,11 @@ body.v2 a {
 .v2-home .v2-nav.v2-nav--in {
   transform: none;
   opacity: 1;
+}
+/* The brand now owns the top-left corner, so drop the hero's clashing tl coordinate
+   (the bottom-right "build 001" and the footer coords still carry the motif). */
+.v2-home .hero-coord--tl {
+  display: none;
 }
 
 .v2-brand {
