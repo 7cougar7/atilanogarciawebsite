@@ -1,21 +1,23 @@
 {% extends 'base_design.html' %}
 {% load static %}
 
+{% block body_class %} v2-resume-page{% endblock %}
+
 {% block content %}
 <header class="v2-resume-header">
-    <div class="v2-resume-header-grid" aria-hidden="true"></div>
     <div class="v2-resume-header-inner">
         <p class="v2-eyebrow">Résumé</p>
         <h1 class="v2-resume-name">Atilano <span>(Tilo)</span> Garcia</h1>
+        <p class="v2-resume-credential">B.S. Electrical &amp; Computer Engineering — Software Engineering &amp; Design Track</p>
         <p class="v2-resume-contact">
             <a href="mailto:tilogarcia1@gmail.com">tilogarcia1@gmail.com</a>
-            · (512) 965-6777 · Austin, Texas
+            · Austin, Texas
         </p>
         <p class="v2-resume-contact">
             <a href="https://www.linkedin.com/in/atilano-garcia" target="_blank" rel="noopener">linkedin.com/in/atilano-garcia</a>
             · <a href="https://github.com/7cougar7" target="_blank" rel="noopener">github.com/7cougar7</a>
         </p>
-        <a class="v2-resume-download" href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" target="_blank" rel="noopener">Download PDF ↓</a>
+        <a class="v2-resume-download" href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" download>Download PDF ↓</a>
     </div>
 </header>
 
@@ -144,20 +146,23 @@
         <h2 class="v2-resume-section-label" id="skills-h">Skills</h2>
         <div class="v2-resume-skills">
             <div class="v2-skill-group">
-                <p class="v2-skill-label">AWS</p>
+                <p class="v2-skill-label">Engineering &amp; AI</p>
                 <ul class="v2-skill-tags">
-                    <li>Athena</li><li>ElastiCache</li><li>EMR</li><li>Firehose</li><li>IAM</li>
-                    <li>Iceberg</li><li>S3</li><li>S3 Tables</li><li>SNS</li>
+                    <li>Artificial Intelligence (AI)</li><li>Large Language Models (LLM)</li>
+                    <li>MCP</li><li>Security</li><li>Full-Stack Development</li><li>Backend</li>
+                    <li>Front-end Coding</li><li>React.js</li><li>Django</li>
+                    <li>Python</li><li>Kotlin</li><li>Unity</li><li>Software Development</li>
                 </ul>
             </div>
             <div class="v2-skill-group">
-                <p class="v2-skill-label">Languages &amp; Tools</p>
+                <p class="v2-skill-label">Leadership &amp; Collaboration</p>
                 <ul class="v2-skill-tags">
-                    <li>Python</li><li>Java</li><li>Kotlin</li><li>C</li><li>C++</li><li>JavaScript</li>
-                    <li>TypeScript</li><li>R</li><li>Assembly</li><li>Spark</li><li>Django</li>
-                    <li>Spring</li><li>gRPC</li><li>React</li><li>jQuery</li><li>Bootstrap</li>
-                    <li>HTML</li><li>CSS</li><li>Soy</li><li>MySQL</li><li>RabbitMQ</li>
-                    <li>Terraform</li><li>Jira</li>
+                    <li>Cross-functional Team Leadership</li><li>Cross-functional Communication</li>
+                    <li>Team Management</li><li>Team Leadership</li><li>Product Management</li>
+                    <li>Project Management</li><li>Software Project Management</li>
+                    <li>Operational Excellence</li><li>Collaborative Problem Solving</li>
+                    <li>Communication</li><li>Teamwork</li><li>Remote Teamwork</li>
+                    <li>Time Management</li>
                 </ul>
             </div>
         </div>

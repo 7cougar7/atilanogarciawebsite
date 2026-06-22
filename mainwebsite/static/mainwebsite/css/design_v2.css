@@ -267,19 +267,22 @@ body.v2 a {
 }
 
 /* ---- Résumé (/v2/resume) ------------------------------------------------ */
-.v2-resume-header {
-  position: relative;
-  overflow: hidden;
-  border-bottom: var(--rule) solid var(--line);
-}
-.v2-resume-header-grid {
-  position: absolute;
+/* Faint construction grid behind the whole page (fixed, so it holds as you scroll
+   — "all the way down"). Sits above the paper canvas, below the content. */
+body.v2-resume-page::before {
+  content: "";
+  position: fixed;
   inset: 0;
+  z-index: -1;
   background-image:
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
   pointer-events: none;
+}
+.v2-resume-header {
+  position: relative;
+  border-bottom: var(--rule) solid var(--line);
 }
 .v2-resume-header-inner {
   position: relative;
@@ -295,6 +298,13 @@ body.v2 a {
 }
 .v2-resume-name span {
   color: var(--muted);
+}
+.v2-resume-credential {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.18rem);
+  line-height: 1.4;
+  color: var(--ink);
+  max-width: 44ch;
 }
 .v2-resume-contact {
   margin: 0 0 0.4rem;
