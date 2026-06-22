@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "./Hero.css";
 
 // "It builds itself" hero. On every load the page constructs — a faint grid wipes in,
@@ -46,6 +46,20 @@ export default function Hero(props = {}) {
   const words = name.split(" ");
   const totalLetters = words.reduce((sum, w) => sum + w.length, 0);
   const times = letterTimings(totalLetters);
+
+  // Signal "hero:done" once the build sequence settles, so chrome outside React (the
+  // nav) can fly in afterward. Synced to React mount, so it tracks the actual
+  // animation start regardless of when the bundle loaded. Fires immediately under
+  // reduced motion (the hero shows its settled state right away).
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const HERO_TOTAL_MS = 5400; // just after the last element (corner coords) settles
+    const t = setTimeout(
+      () => document.dispatchEvent(new CustomEvent("hero:done")),
+      reduce ? 0 : HERO_TOTAL_MS,
+    );
+    return () => clearTimeout(t);
+  }, []);
 
   // Measure each word's rendered text so its SVG viewBox hugs the glyphs exactly.
   // Runs before paint (useLayoutEffect), so the estimate is never visible.

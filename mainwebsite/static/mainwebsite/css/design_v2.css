@@ -36,6 +36,21 @@ body.v2 a {
   position: relative;
   z-index: 10;
 }
+/* On the homepage the nav waits offscreen and flies in from the top once the hero
+   finishes building (JS adds .v2-nav--in on the "hero:done" event). Other v2 pages
+   have no hero, so their nav is shown normally (this state is scoped to .v2-home). */
+.v2-home .v2-nav {
+  transform: translateY(-110%);
+  opacity: 0;
+  transition:
+    transform 0.7s var(--ease-build),
+    opacity 0.7s var(--ease-build);
+}
+.v2-home .v2-nav.v2-nav--in {
+  transform: none;
+  opacity: 1;
+}
+
 .v2-brand {
   font-family: var(--font-display);
   font-weight: 600;
@@ -255,6 +270,11 @@ body.v2 a {
   .reveal {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+  .v2-home .v2-nav {
+    transform: none;
+    opacity: 1;
     transition: none;
   }
   .v2-work-item,

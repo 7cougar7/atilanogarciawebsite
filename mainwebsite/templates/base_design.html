@@ -43,7 +43,7 @@
     {% block js %}{% endblock %}
 </head>
 
-<body class="v2">
+<body class="v2{% block body_class %}{% endblock %}">
     <header class="v2-nav">
         <a class="v2-brand" href="{% url 'mainwebsite:concept_preview' %}">Atilano Garcia</a>
         <nav class="v2-nav-links" aria-label="Primary">

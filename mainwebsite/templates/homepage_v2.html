@@ -1,6 +1,8 @@
 {% extends 'base_design.html' %}
 {% load static %}
 
+{% block body_class %} v2-home{% endblock %}
+
 {% block content %}
 {# Hero island — the "It builds itself" construction sequence. Uses component defaults. #}
 <div data-react-component="Hero"></div>
@@ -59,4 +61,18 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // The nav starts hidden (CSS, .v2-home) and flies in once the hero signals it's
+    // finished building. Listener is registered before the React bundle mounts the hero.
+    (function () {
+        var nav = document.querySelector(".v2-nav");
+        if (!nav) return;
+        document.addEventListener("hero:done", function () {
+            nav.classList.add("v2-nav--in");
+        }, { once: true });
+    })();
+</script>
 {% endblock %}
