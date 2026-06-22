@@ -14,6 +14,7 @@ app_name = "mainwebsite"
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
+    path("lab/build/", views.concept_preview, name="concept_preview"),
     path("login/", UnifiedLoginView.as_view(), name="login"),
     path(
         "magic-link-verify/<uidb64>/<token>/",

@@ -93,6 +93,11 @@ def linkedin(request):
     return redirect("https://www.linkedin.com/in/atilano-garcia/")
 
 
+def concept_preview(request):
+    """Isolated design-concept prototype (not linked from the site)."""
+    return render(request, "concept_preview.html")
+
+
 def calendar_webpage(request):
     return render(request, "calendar.html")
 
