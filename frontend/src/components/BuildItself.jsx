@@ -10,11 +10,12 @@ const NAME = "Atilano Garcia";
 // follow each stroke, then the gaps collapse and each draw quickens — the name
 // "accelerates" into place. easeOut(t) front-loads the delay so increments
 // between letters shrink toward the end.
-const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+const EASE = 1.8; // ease-out exponent; higher = more front-loaded acceleration
+const easeOut = (t) => 1 - Math.pow(1 - t, EASE);
 const START = 1.0; // s — after the grid/eyebrow settle
-const SPREAD = 1.5; // s — total time the letters are spread across
-const DUR_FIRST = 1.25; // s — slow, savorable first draws
-const DUR_LAST = 0.5; // s — quick final draws
+const SPREAD = 1.55; // s — total time the letters are spread across
+const DUR_FIRST = 0.95; // s — first draws (savorable but not sluggish)
+const DUR_LAST = 0.6; // s — final draws (a touch quicker, not a rush)
 
 export default function BuildItself() {
   const chars = NAME.split("");
