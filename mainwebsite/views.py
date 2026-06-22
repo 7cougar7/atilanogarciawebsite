@@ -113,6 +113,21 @@ def homepage_v2(request):
     return render(request, "homepage_v2.html", context)
 
 
+def resume_v2(request):
+    """Résumé rendered in the v2 design language (not a PDF embed). Lives at
+    /v2/resume/; the PDF stays available as a download link."""
+    context = {
+        "title": "Résumé",
+        "page_title": "Résumé",
+        "meta_description": (
+            "Résumé of Atilano (Tilo) Garcia — Software Engineer II at Indeed in Austin, "
+            "TX. Experience in large-scale data pipelines, AWS, distributed systems, and "
+            "full-stack product launches."
+        ),
+    }
+    return render(request, "resume_v2.html", context)
+
+
 def calendar_webpage(request):
     return render(request, "calendar.html")
 

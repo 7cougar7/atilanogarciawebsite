@@ -266,6 +266,211 @@ body.v2 a {
   color: var(--muted);
 }
 
+/* ---- Résumé (/v2/resume) ------------------------------------------------ */
+.v2-resume-header {
+  position: relative;
+  overflow: hidden;
+  border-bottom: var(--rule) solid var(--line);
+}
+.v2-resume-header-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  pointer-events: none;
+}
+.v2-resume-header-inner {
+  position: relative;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 8vw, 4.5rem) clamp(1rem, 4vw, 2.5rem) var(--space-4);
+}
+.v2-resume-name {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: clamp(2rem, 1rem + 5vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-resume-name span {
+  color: var(--muted);
+}
+.v2-resume-contact {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.v2-resume-contact a {
+  color: var(--ink);
+  border-bottom: var(--rule) solid var(--line);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.v2-resume-contact a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.v2-resume-download {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-resume-download:hover {
+  color: var(--ink);
+}
+
+.v2-resume {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2.5rem) var(--space-6);
+}
+.v2-resume-section {
+  padding-top: var(--space-5);
+}
+.v2-resume-section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-resume-section-label::after {
+  content: "";
+  flex: 1;
+  height: var(--rule);
+  background: var(--line);
+}
+.v2-resume-company {
+  margin: var(--space-4) 0 var(--space-2);
+  padding-bottom: var(--space-1);
+  font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  border-bottom: var(--rule) solid var(--line);
+}
+.v2-resume-entry + .v2-resume-entry {
+  margin-top: var(--space-4);
+}
+.v2-resume-role {
+  margin-top: var(--space-3);
+}
+.v2-resume-role-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem var(--space-2);
+}
+.v2-resume-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.v2-resume-dates {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.v2-resume-group {
+  margin-top: var(--space-2);
+}
+.v2-resume-lead {
+  margin: 0 0 0.4rem;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.v2-resume-lead strong {
+  font-weight: 600;
+}
+.v2-resume-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.v2-resume-points li {
+  position: relative;
+  padding-left: 1.1rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.v2-resume-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: var(--rule);
+  background: var(--accent);
+}
+.v2-resume-edu-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem var(--space-2);
+}
+.v2-resume-edu-school {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-resume-edu-degree {
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.v2-resume-skills {
+  display: grid;
+  gap: var(--space-3);
+}
+.v2-skill-label {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.v2-skill-tags li {
+  padding: 0.25rem 0.6rem;
+  border: var(--rule) solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.v2-skill-tags li:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ---- Scroll reveal ------------------------------------------------------ */
 .reveal {
   opacity: 0;
