@@ -11,15 +11,26 @@ const NAME = "Atilano Garcia";
 // "accelerates" into place. easeOut(t) front-loads the delay so increments
 // between letters shrink toward the end.
 const START = 0.9; // s — after the grid/eyebrow settle
-const GAP = 0.17; // s — even cadence between letter starts
-const DUR = 0.82; // s — each letter's draw (constant, so every one is watchable)
+const DUR = 0.82; // s — each letter's draw (constant, so every one stays watchable)
+const GAP_FIRST = 0.21; // s — gap between the first letters
+const GAP_LAST = 0.15; // s — gap between the last letters
 
-// Steady cascade: a constant gap and a constant draw duration keep the same number
-// of letters drawing at every instant (~DUR/GAP at once), so the motion density is
-// flat end-to-end — no acceleration into a busy "pop", no uneven stutter. The fill
-// trails the pen by a fixed amount the whole way across.
+// Gentle acceleration: the gap shrinks slightly across the word (GAP_FIRST ->
+// GAP_LAST) so the cascade subtly picks up, but the draw duration stays constant.
+// The small gap range keeps the increase in motion density modest — enough to feel
+// alive, not so much that the end bunches into a "pop". Verified on the motion
+// curve (tools/screenshots/filmstrip.mjs): a slight upward slope, no end spike.
 function letterTimings(n) {
-  return Array.from({ length: n }, (_, i) => ({ delay: START + i * GAP, dur: DUR }));
+  const out = [];
+  let delay = START;
+  for (let i = 0; i < n; i++) {
+    if (i > 0) {
+      const gt = (i - 1) / Math.max(1, n - 2); // 0..1 across the gaps
+      delay += GAP_FIRST + ((GAP_LAST - GAP_FIRST) * gt);
+    }
+    out.push({ delay, dur: DUR });
+  }
+  return out;
 }
 
 export default function BuildItself() {
