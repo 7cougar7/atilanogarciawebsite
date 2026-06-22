@@ -126,6 +126,11 @@ export default function Hero(props = {}) {
       </div>
       <span className="hero-coord hero-coord--tl">grid · 48</span>
       <span className="hero-coord hero-coord--br">build 001</span>
+      {/* Scroll cue — fades in just after the build settles. */}
+      <div className="hero-scroll" aria-hidden="true">
+        <span className="hero-scroll-label">Scroll</span>
+        <span className="hero-scroll-line" />
+      </div>
     </section>
   );
 }

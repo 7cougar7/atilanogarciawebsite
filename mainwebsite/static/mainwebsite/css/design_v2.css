@@ -23,6 +23,44 @@ body.v2 a {
   text-decoration: none;
 }
 
+/* ---- Homepage construction grid ----------------------------------------- */
+/* One faint grid behind the whole scrolling page (fixed, so it runs all the way
+   down). Wipes in left-to-right on load — this replaces the hero's own grid so the
+   scaffolding is continuous past the hero rather than stopping at the fold. */
+body.v2-home::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  animation: v2-grid-in 1s var(--ease-build) forwards;
+}
+@keyframes v2-grid-in {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+/* Hero sits over the page grid on the homepage: go transparent and drop the hero's
+   own (now redundant) grid so the lines don't double up. */
+.v2-home .hero {
+  background: transparent;
+}
+.v2-home .hero-grid {
+  display: none;
+}
+
 /* ---- Nav ---------------------------------------------------------------- */
 .v2-nav {
   display: flex;
@@ -514,6 +552,11 @@ body.v2-resume-page::before {
     transform: none;
     opacity: 1;
     transition: none;
+  }
+  body.v2-home::before {
+    animation: none;
+    clip-path: none;
+    opacity: 1;
   }
   .v2-work-item,
   .v2-work-meta .arrow {

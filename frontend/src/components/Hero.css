@@ -128,6 +128,51 @@
   right: var(--space-3);
 }
 
+/* Scroll cue: centered at the bottom of the hero, fades in just after the build
+   settles (~5.6s). A blue segment travels down the hairline as a "scroll" signal. */
+.hero-scroll {
+  position: absolute;
+  bottom: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  animation: hero-fade var(--dur-med) ease forwards 5.6s;
+}
+.hero-scroll-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hero-scroll-line {
+  position: relative;
+  width: 1px;
+  height: 34px;
+  background: var(--line);
+  overflow: hidden;
+}
+.hero-scroll-line::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  background: var(--accent);
+  animation: hero-scroll-bob 1.7s var(--ease-build) infinite;
+}
+@keyframes hero-scroll-bob {
+  0% {
+    transform: translateY(-110%);
+  }
+  100% {
+    transform: translateY(245%);
+  }
+}
+
 @keyframes hero-grid-in {
   0% {
     clip-path: inset(0 100% 0 0);
@@ -186,11 +231,18 @@
   .hero-tag,
   .hero-tick,
   .hero-coord,
+  .hero-scroll,
   .hero-glyph {
     animation: none;
     opacity: 1;
     transform: none;
     clip-path: none;
+  }
+  .hero-scroll {
+    transform: translateX(-50%);
+  }
+  .hero-scroll-line::after {
+    animation: none;
   }
   .hero-rule {
     transform: scaleX(1);
