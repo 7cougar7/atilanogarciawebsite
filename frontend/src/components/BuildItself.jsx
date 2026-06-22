@@ -6,7 +6,19 @@ import "./BuildItself.css";
 // gets the finished state with no animation.
 const NAME = "Atilano Garcia";
 
+// Ease-out reveal: the first letters draw slowly and far apart so the eye can
+// follow each stroke, then the gaps collapse and each draw quickens — the name
+// "accelerates" into place. easeOut(t) front-loads the delay so increments
+// between letters shrink toward the end.
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+const START = 1.0; // s — after the grid/eyebrow settle
+const SPREAD = 1.5; // s — total time the letters are spread across
+const DUR_FIRST = 1.25; // s — slow, savorable first draws
+const DUR_LAST = 0.5; // s — quick final draws
+
 export default function BuildItself() {
+  const chars = NAME.split("");
+  const n = chars.length;
   return (
     <main className="bi">
       <div className="bi-grid" aria-hidden="true" />
@@ -21,11 +33,20 @@ export default function BuildItself() {
           aria-label={NAME}
         >
           <text x="600" y="155" textAnchor="middle" className="bi-name-text">
-            {NAME.split("").map((ch, i) => (
-              <tspan key={i} className="bi-glyph" style={{ "--d": `${1 + i * 0.06}s` }}>
-                {ch === " " ? " " : ch}
-              </tspan>
-            ))}
+            {chars.map((ch, i) => {
+              const t = n > 1 ? i / (n - 1) : 0;
+              const delay = START + SPREAD * easeOut(t);
+              const dur = DUR_FIRST + (DUR_LAST - DUR_FIRST) * t;
+              return (
+                <tspan
+                  key={i}
+                  className="bi-glyph"
+                  style={{ "--d": `${delay.toFixed(3)}s`, "--dur": `${dur.toFixed(3)}s` }}
+                >
+                  {ch === " " ? " " : ch}
+                </tspan>
+              );
+            })}
           </text>
         </svg>
         <div className="bi-rule" aria-hidden="true" />
