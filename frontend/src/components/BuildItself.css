@@ -44,7 +44,8 @@
   text-transform: uppercase;
   color: var(--muted);
   opacity: 0;
-  animation: bi-fade 0.6s ease forwards 0.9s;
+  /* Appears after the name finishes filling (~4.05s), before the bottom block. */
+  animation: bi-fade 0.6s ease forwards 4.2s;
 }
 
 .bi-name {
@@ -80,7 +81,7 @@
   margin: 1.6rem auto;
   background: var(--line);
   transform: scaleX(0);
-  animation: bi-draw-x 0.6s cubic-bezier(0.6, 0, 0.2, 1) forwards 3.95s;
+  animation: bi-draw-x 0.6s cubic-bezier(0.6, 0, 0.2, 1) forwards 4.9s;
 }
 
 .bi-tag {
@@ -91,7 +92,7 @@
   color: var(--muted);
   opacity: 0;
   clip-path: inset(0 0 100% 0);
-  animation: bi-rise 0.75s cubic-bezier(0.5, 0.05, 0.2, 1) forwards 4.1s;
+  animation: bi-rise 0.75s cubic-bezier(0.5, 0.05, 0.2, 1) forwards 5.05s;
 }
 
 .bi-tick {
@@ -101,7 +102,7 @@
   margin: 2.2rem auto 0;
   background: var(--accent);
   transform: scale(0);
-  animation: bi-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) forwards 4.4s;
+  animation: bi-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) forwards 5.35s;
 }
 
 .bi-coord {
@@ -111,7 +112,7 @@
   letter-spacing: 0.1em;
   color: var(--muted);
   opacity: 0;
-  animation: bi-fade 0.6s ease forwards 4.5s;
+  animation: bi-fade 0.6s ease forwards 5.45s;
 }
 .bi-coord--tl {
   top: 1.5rem;
