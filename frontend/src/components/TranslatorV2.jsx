@@ -1,9 +1,5 @@
 import { useState } from "react";
-
-function csrfToken() {
-  const el = document.querySelector("[name=csrfmiddlewaretoken]");
-  return el ? el.value : "";
-}
+import { csrfToken } from "../csrf";
 
 // v2-styled two-way translator-call form. Same backend behavior as the original
 // Translator (POST to submitUrl with caller/callee/access code, loading + result

@@ -105,8 +105,8 @@ def homepage_v2(request):
         "title": "Home",
         "page_title": "Home",
         "meta_description": (
-            "Atilano Garcia — software engineer in Austin, TX. I build systems that move "
-            "and make sense of data at scale, plus the occasional experiment."
+            "Atilano Garcia, a software engineer in Austin, TX. I build full-stack web "
+            "apps for a living and side projects for the fun of it."
         ),
     }
     context.update(homepage_content_context())
@@ -119,7 +119,7 @@ def translator_v2(request):
     context = {
         "page_title": "Translator",
         "meta_description": (
-            "Two-way phone translator by Atilano Garcia — bridge a live, translated call "
+            "Two-way phone translator by Atilano Garcia. Bridge a live, translated call "
             "between two people who don't share a language."
         ),
     }
@@ -132,7 +132,7 @@ def url_shortener_v2(request):
     context = {
         "page_title": "URL Shortener",
         "meta_description": (
-            "URL shortener by Atilano Garcia — turn a long link into a short, shareable "
+            "URL shortener by Atilano Garcia. Turn a long link into a short, shareable "
             "redirect."
         ),
     }
@@ -146,9 +146,9 @@ def resume_v2(request):
         "title": "Résumé",
         "page_title": "Résumé",
         "meta_description": (
-            "Résumé of Atilano (Tilo) Garcia — Software Engineer II at Indeed in Austin, "
-            "TX. Experience in large-scale data pipelines, AWS, distributed systems, and "
-            "full-stack product launches."
+            "Résumé of Atilano (Tilo) Garcia, Software Engineer II at Indeed in Austin, "
+            "TX. Experience in full-stack web apps, AWS, data pipelines, and product "
+            "launches."
         ),
     }
     return render(request, "resume_v2.html", context)

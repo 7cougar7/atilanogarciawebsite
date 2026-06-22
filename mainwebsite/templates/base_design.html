@@ -8,17 +8,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO -->
-    <title>{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia — Software Engineer</title>
-    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia — software engineer in Austin, TX. Systems that move data at scale, plus the occasional experiment.{% endif %}">
+    <title>{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia, Software Engineer</title>
+    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia, a software engineer in Austin, TX. I build full-stack web apps for a living and side projects for the fun of it.{% endif %}">
     {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}">{% endif %}
     <meta name="author" content="Atilano Garcia">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+
+    <!-- Open Graph / Twitter -->
     <meta property="og:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
     <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    <meta property="og:site_name" content="Atilano Garcia">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
+    <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
+    <meta name="twitter:image" content="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
     {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}" />{% endif %}
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Atilano Garcia",
+        "alternateName": "Tilo Garcia",
+        "jobTitle": "Software Engineer",
+        "url": "{{ request.build_absolute_uri }}",
+        "sameAs": [
+            "https://www.linkedin.com/in/atilano-garcia/",
+            "https://github.com/7cougar7"
+        ]
+    }
+    </script>
 
     <!-- Favicons (new img/favicon/ path — fresh URLs after the icon redesign) -->
     <link rel="icon" type="image/x-icon" href="{% static 'mainwebsite/img/favicon/favicon.ico' %}">
@@ -41,7 +65,28 @@
         if (localStorage.getItem("dark_mode") === "true") {
             document.documentElement.setAttribute("data-theme", "dark");
         }
+        // Tracking stub — always defined so trackToolUsage() never throws; GA below
+        // overrides it when an analytics ID is configured.
+        function trackToolUsage(toolName) {}
     </script>
+
+    <!-- Google Analytics 4 -->
+    {% if google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ google_analytics_id }}');
+      function trackToolUsage(toolName) {
+        gtag('event', 'tool_usage', {
+          'event_category': 'engagement',
+          'event_label': toolName,
+          'value': 1
+        });
+      }
+    </script>
+    {% endif %}
     {% block js %}{% endblock %}
 </head>
 

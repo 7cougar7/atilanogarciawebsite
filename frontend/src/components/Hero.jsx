@@ -97,7 +97,9 @@ export default function Hero(props = {}) {
                 aria-hidden="true"
               >
                 <text
-                  ref={(el) => (textRefs.current[wi] = el)}
+                  ref={(el) => {
+                    textRefs.current[wi] = el;
+                  }}
                   x={vw / 2}
                   y="155"
                   textAnchor="middle"

@@ -1,9 +1,5 @@
 import { useState } from "react";
-
-function csrfToken() {
-  const el = document.querySelector("[name=csrfmiddlewaretoken]");
-  return el ? el.value : "";
-}
+import { csrfToken } from "../csrf";
 
 // v2-styled URL shortener. Same backend behavior as the original UrlShortener (POST
 // to submitUrl, loading + error + copy states); restyled with the v2 design system.
