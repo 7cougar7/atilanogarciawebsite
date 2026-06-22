@@ -68,7 +68,9 @@
   stroke-width: 1.2px;
   stroke-dasharray: 3000;
   stroke-dashoffset: 3000;
-  animation: bi-draw var(--dur, 0.95s) cubic-bezier(0.6, 0.05, 0.2, 1) forwards;
+  /* Linear: the "pen" traces at a constant speed so overlapping letters flow
+     continuously instead of each easing in/out (which reads as stutter). */
+  animation: bi-draw var(--dur, 0.95s) linear forwards;
   animation-delay: var(--d, 1s);
 }
 
