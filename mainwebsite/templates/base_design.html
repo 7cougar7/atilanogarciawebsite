@@ -20,11 +20,12 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}" />{% endif %}
 
-    <!-- Favicons (?v=2 busts the browser cache after the icon redesign) -->
-    <link rel="icon" type="image/x-icon" href="{% static 'mainwebsite/img/logo/new/favicon.ico' %}?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mainwebsite/img/logo/new/favicon-32x32.png' %}?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'mainwebsite/img/logo/new/favicon-16x16.png' %}?v=2">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mainwebsite/img/logo/new/apple-touch-icon.png' %}?v=2">
+    <!-- Favicons (new img/favicon/ path — fresh URLs after the icon redesign) -->
+    <link rel="icon" type="image/x-icon" href="{% static 'mainwebsite/img/favicon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mainwebsite/img/favicon/favicon-32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'mainwebsite/img/favicon/favicon-16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'mainwebsite/img/favicon/site.webmanifest' %}">
 
     <!-- Fonts + design system -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

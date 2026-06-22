@@ -35,8 +35,11 @@ from mainwebsite.views import custom_logout
 
 def favicon_ico(request):
     """Redirect the browser's default /favicon.ico request to the static icon
-    (resolved per-request so it picks up the hashed name in production)."""
-    return redirect(static("mainwebsite/img/logo/new/favicon.ico"))
+    (resolved per-request so it picks up the hashed name in production). Marked
+    no-cache so a stale icon is never pinned at the root path."""
+    response = redirect(static("mainwebsite/img/favicon/favicon.ico"))
+    response["Cache-Control"] = "no-cache, max-age=0"
+    return response
 
 
 def robots_txt(request):
