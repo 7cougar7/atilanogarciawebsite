@@ -282,7 +282,6 @@ body.v2-resume-page::before {
 }
 .v2-resume-header {
   position: relative;
-  border-bottom: var(--rule) solid var(--line);
 }
 .v2-resume-header-inner {
   position: relative;
@@ -345,9 +344,6 @@ body.v2-resume-page::before {
   padding-top: var(--space-5);
 }
 .v2-resume-section-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
   margin: 0 0 var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--fs-eyebrow);
@@ -356,19 +352,11 @@ body.v2-resume-page::before {
   text-transform: uppercase;
   color: var(--muted);
 }
-.v2-resume-section-label::after {
-  content: "";
-  flex: 1;
-  height: var(--rule);
-  background: var(--line);
-}
 .v2-resume-company {
   margin: var(--space-4) 0 var(--space-2);
-  padding-bottom: var(--space-1);
   font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
   font-weight: 600;
   letter-spacing: var(--tracking-tight);
-  border-bottom: var(--rule) solid var(--line);
 }
 .v2-resume-entry + .v2-resume-entry {
   margin-top: var(--space-4);
