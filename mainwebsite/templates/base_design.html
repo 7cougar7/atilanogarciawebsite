@@ -1,0 +1,158 @@
+{% load static %}
+{% load vite %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia, Software Engineer</title>
+    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia, a software engineer in Austin, TX. I build full-stack web apps for a living and side projects for the fun of it.{% endif %}">
+    {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}">{% endif %}
+    <meta name="author" content="Atilano Garcia">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
+    <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    <meta property="og:site_name" content="Atilano Garcia">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
+    <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
+    <meta name="twitter:image" content="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}" />{% endif %}
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Atilano Garcia",
+        "alternateName": "Tilo Garcia",
+        "jobTitle": "Software Engineer",
+        "url": "{{ request.build_absolute_uri }}",
+        "sameAs": [
+            "https://www.linkedin.com/in/atilano-garcia/",
+            "https://github.com/7cougar7"
+        ]
+    }
+    </script>
+
+    <!-- Favicons (new img/favicon/ path — fresh URLs after the icon redesign) -->
+    <link rel="icon" type="image/x-icon" href="{% static 'mainwebsite/img/favicon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mainwebsite/img/favicon/favicon-32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'mainwebsite/img/favicon/favicon-16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'mainwebsite/img/favicon/site.webmanifest' %}">
+
+    <!-- Fonts + design system -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'mainwebsite/css/tokens.css' %}">
+    <link rel="stylesheet" href="{% static 'mainwebsite/css/design_v2.css' %}">
+
+    <script>
+        // Apply saved theme before paint to avoid a flash of the wrong colors.
+        // The ThemeToggle island flips data-theme and persists it.
+        if (localStorage.getItem("dark_mode") === "true") {
+            document.documentElement.setAttribute("data-theme", "dark");
+        }
+        // Tracking stub — always defined so trackToolUsage() never throws; GA below
+        // overrides it when an analytics ID is configured.
+        function trackToolUsage(toolName) {}
+    </script>
+
+    <!-- Google Analytics 4 -->
+    {% if google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ google_analytics_id }}');
+      function trackToolUsage(toolName) {
+        gtag('event', 'tool_usage', {
+          'event_category': 'engagement',
+          'event_label': toolName,
+          'value': 1
+        });
+      }
+    </script>
+    {% endif %}
+    {% block js %}{% endblock %}
+</head>
+
+<body class="v2{% block body_class %}{% endblock %}">
+    <header class="v2-nav">
+        <a class="v2-brand" href="{% url 'mainwebsite:homepage_v2' %}">Atilano Garcia</a>
+        <nav class="v2-nav-links" aria-label="Primary">
+            <a href="{% url 'mainwebsite:resume_v2' %}">Resume</a>
+            <details class="v2-nav-group">
+                <summary>Tools</summary>
+                <div class="v2-nav-menu">
+                    <a href="{% url 'mainwebsite:translator_v2' %}">Translator</a>
+                    <a href="{% url 'mainwebsite:url_shortener_v2' %}">URL Shortener</a>
+                </div>
+            </details>
+            <a href="https://www.linkedin.com/in/atilano-garcia/" target="_blank" rel="noopener">LinkedIn</a>
+            <span class="v2-theme" data-react-component="ThemeToggle">
+                <button class="btn switch-button" aria-label="Toggle dark mode"><i class="fas fa-sun"></i></button>
+            </span>
+        </nav>
+    </header>
+
+    <main id="content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="v2-footer">
+        <span class="v2-foot-coord">build 001 · Austin, TX</span>
+        <span class="v2-foot-name">© {% now "Y" %} Atilano Garcia</span>
+        <span class="v2-foot-coord">grid · 48</span>
+    </footer>
+
+    <script>
+        // Scroll reveals: fade/rise sections in as they enter the viewport, once.
+        (function () {
+            var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var els = document.querySelectorAll(".reveal");
+            if (reduce || !("IntersectionObserver" in window)) {
+                els.forEach(function (el) { el.classList.add("is-visible"); });
+                return;
+            }
+            // threshold 0 so anything already on screen at load reveals immediately
+            // (tall sections never reach a high visible fraction); the negative bottom
+            // margin gives below-the-fold sections a small lead-in as they scroll up.
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
+                });
+            }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
+            els.forEach(function (el) { io.observe(el); });
+        })();
+
+        // Close the nav "Tools" dropdown when clicking outside or pressing Escape.
+        (function () {
+            var group = document.querySelector(".v2-nav-group");
+            if (!group) return;
+            document.addEventListener("click", function (e) {
+                if (group.open && !group.contains(e.target)) group.open = false;
+            });
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && group.open) group.open = false;
+            });
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+    {% vite_asset %}
+</body>
+
+</html>

@@ -1,0 +1,259 @@
+/* "It builds itself" hero. Tokens come from tokens.css (loaded globally in the base
+   template), so colors flip automatically in dark mode. */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: hidden;
+  font-family: var(--font-display);
+}
+
+/* Construction scaffold: wipes in left-to-right, then stays as a faint grid. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  /* Center each cell on the viewport center (a grid box is centered, not a line). */
+  background-position: center;
+  opacity: 0;
+  animation: hero-grid-in 1s var(--ease-build) forwards;
+}
+
+.hero-stage {
+  position: relative;
+  max-width: min(94vw, var(--maxw));
+  padding: var(--space-4) var(--space-2);
+  text-align: center;
+}
+
+.hero-eyebrow {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  /* Appears just after the name finishes filling (~3.9s). */
+  animation: hero-fade var(--dur-med) ease forwards 3.95s;
+}
+
+/* The name: one SVG per word, wrapping when the line doesn't fit. */
+.hero-name {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: clamp(0.6rem, 2.4vw, 1.8rem);
+  row-gap: clamp(0.1rem, 1vw, 0.5rem);
+  margin: 0;
+  font-weight: 600;
+}
+.hero-word {
+  display: block;
+  height: var(--fs-display);
+  width: auto; /* derived from viewBox aspect ratio — keeps glyph size consistent */
+  overflow: visible;
+}
+.hero-name-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 150px; /* user units; the SVG scales to --fs-display */
+  letter-spacing: -3px;
+}
+
+/* Each glyph: outline traces on (stroke-dashoffset), then fills (fill-opacity).
+   Linear so the "pen" moves at constant speed and overlapping letters flow. */
+.hero-glyph {
+  fill: var(--ink);
+  fill-opacity: 0;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: hero-draw var(--dur, 0.95s) linear forwards;
+  animation-delay: var(--d, 1s);
+}
+
+.hero-rule {
+  width: 4rem;
+  height: var(--rule);
+  margin: var(--space-3) auto;
+  background: var(--line);
+  transform: scaleX(0);
+  animation: hero-draw-x var(--dur-med) var(--ease-build) forwards 4.25s;
+}
+
+.hero-tag {
+  max-width: 34rem;
+  margin: 0 auto;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--muted);
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  animation: hero-rise 0.75s var(--ease-rise) forwards 4.35s;
+}
+
+.hero-tick {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: var(--space-4) auto 0;
+  background: var(--accent);
+  transform: scale(0);
+  animation: hero-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) forwards 4.65s;
+}
+
+.hero-coord {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  opacity: 0;
+  animation: hero-fade var(--dur-med) ease forwards 4.75s;
+}
+.hero-coord--tl {
+  top: var(--space-3);
+  left: var(--space-3);
+}
+.hero-coord--br {
+  bottom: var(--space-3);
+  right: var(--space-3);
+}
+
+/* Scroll cue: centered at the bottom of the hero, fades in just after the build
+   settles (~5.6s). A blue segment travels down the hairline as a "scroll" signal. */
+.hero-scroll {
+  position: absolute;
+  bottom: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  animation: hero-fade var(--dur-med) ease forwards 5.6s;
+}
+.hero-scroll-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hero-scroll-line {
+  position: relative;
+  width: 1px;
+  height: 34px;
+  background: var(--line);
+  overflow: hidden;
+}
+.hero-scroll-line::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  background: var(--accent);
+  animation: hero-scroll-bob 1.7s var(--ease-build) infinite;
+}
+@keyframes hero-scroll-bob {
+  0% {
+    transform: translateY(-110%);
+  }
+  100% {
+    transform: translateY(245%);
+  }
+}
+
+@keyframes hero-grid-in {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+@keyframes hero-rise {
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes hero-draw-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes hero-fade {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes hero-pop {
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes hero-draw {
+  0% {
+    stroke-dashoffset: 3000;
+    fill-opacity: 0;
+  }
+  60% {
+    stroke-dashoffset: 0;
+    fill-opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+  }
+}
+
+/* Settled state for reduced-motion users: skip the build, show the finished hero. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-grid,
+  .hero-eyebrow,
+  .hero-rule,
+  .hero-tag,
+  .hero-tick,
+  .hero-coord,
+  .hero-scroll,
+  .hero-glyph {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+  .hero-scroll {
+    transform: translateX(-50%);
+  }
+  .hero-scroll-line::after {
+    animation: none;
+  }
+  .hero-rule {
+    transform: scaleX(1);
+  }
+  .hero-tick {
+    transform: scale(1);
+  }
+  .hero-glyph {
+    fill-opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}

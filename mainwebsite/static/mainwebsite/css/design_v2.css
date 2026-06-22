@@ -1,0 +1,741 @@
+/*
+ * v2 design system — layout, nav, footer, and homepage sections for the "It builds
+ * itself" language. Only loaded by base_design.html, so rules can target body.v2
+ * and the section classes directly. Colors/space/type come from tokens.css.
+ */
+
+body.v2 {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body.v2 *,
+body.v2 *::before,
+body.v2 *::after {
+  box-sizing: border-box;
+}
+/* Link reset — kept deliberately low-specificity (.v2 a, not body.v2 a) so component
+   link colors like .v2-nav-links a win by source order instead of being overridden. */
+.v2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- Homepage construction grid ----------------------------------------- */
+/* One faint grid behind the whole scrolling page (fixed, so it runs all the way
+   down). Wipes in left-to-right on load — this replaces the hero's own grid so the
+   scaffolding is continuous past the hero rather than stopping at the fold. */
+body.v2-home::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  /* Horizontally box-centered (a cell straddles the viewport center); vertically
+     shifted so a whole cell is centered on the nav — the nav sits inside a grid box
+     rather than on a line. Offset = (nav height − cell) / 2. */
+  background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
+  animation: v2-grid-in 1s var(--ease-build) forwards;
+}
+@keyframes v2-grid-in {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+/* Hero sits over the page grid on the homepage: go transparent and drop the hero's
+   own (now redundant) grid so the lines don't double up. */
+.v2-home .hero {
+  background: transparent;
+}
+.v2-home .hero-grid {
+  display: none;
+}
+
+/* ---- Nav ---------------------------------------------------------------- */
+.v2-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) clamp(1rem, 4vw, 2.5rem);
+  border-bottom: var(--rule) solid var(--line);
+  background: var(--paper);
+  position: relative;
+  z-index: 10;
+}
+/* On the homepage the nav floats over the hero (out of flow + transparent) so the
+   construction grid fills the viewport to the very top while the nav is hidden. It
+   waits offscreen and flies in from the top once the hero finishes building (JS adds
+   .v2-nav--in on the "hero:done" event). Other v2 pages have no hero, so their nav is
+   the normal in-flow bar (this state is scoped to .v2-home). */
+.v2-home .v2-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-bottom: none;
+  transform: translateY(-110%);
+  opacity: 0;
+  transition:
+    transform 0.7s var(--ease-build),
+    opacity 0.7s var(--ease-build);
+}
+.v2-home .v2-nav.v2-nav--in {
+  transform: none;
+  opacity: 1;
+}
+/* The brand now owns the top-left corner, so drop the hero's clashing tl coordinate
+   (the bottom-right "build 001" and the footer coords still carry the motif). */
+.v2-home .hero-coord--tl {
+  display: none;
+}
+
+.v2-brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(0.8rem, 2vw, 1.8rem);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.v2-nav-links a {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-nav-links a:hover,
+.v2-nav-links a:focus-visible {
+  color: var(--ink);
+}
+
+/* Tools dropdown: a <details> grouping styled to match the nav links. The summary is
+   the toggle; the menu drops below it. No JS needed (a small outside-click closer is
+   added in the base template for polish). */
+.v2-nav-group {
+  position: relative;
+}
+.v2-nav-group summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none; /* hide default marker */
+  transition: color 0.2s ease;
+}
+.v2-nav-group summary::-webkit-details-marker {
+  display: none;
+}
+.v2-nav-group summary::after {
+  content: "▾";
+  font-size: 0.85em;
+  transition: transform 0.2s ease;
+}
+.v2-nav-group[open] summary::after {
+  transform: rotate(180deg);
+}
+.v2-nav-group summary:hover,
+.v2-nav-group summary:focus-visible,
+.v2-nav-group[open] summary {
+  color: var(--ink);
+}
+.v2-nav-menu {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: max-content;
+  padding: 0.9rem 1.1rem;
+  background: var(--surface);
+  border: var(--rule) solid var(--line);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+}
+.v2-theme {
+  display: inline-flex;
+}
+.v2-theme .switch-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.v2-theme .switch-button:hover,
+.v2-theme .switch-button:focus-visible {
+  color: var(--ink);
+}
+
+/* ---- Section scaffolding ------------------------------------------------ */
+.v2-section {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--space-6) clamp(1rem, 4vw, 2.5rem);
+}
+.v2-section + .v2-section {
+  padding-top: 0;
+}
+.v2-eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@media (min-width: 820px) {
+  .v2-cols {
+    grid-template-columns: 12rem 1fr;
+    gap: var(--space-5);
+  }
+}
+
+/* ---- Intro -------------------------------------------------------------- */
+.v2-lead {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-lead);
+  line-height: 1.32;
+  letter-spacing: var(--tracking-tight);
+  max-width: 24ch;
+}
+.v2-body {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-body);
+  color: var(--muted);
+  max-width: 60ch;
+}
+.v2-body a {
+  color: var(--ink);
+  border-bottom: var(--rule) solid var(--line);
+  transition: border-color 0.2s ease;
+}
+.v2-body a:hover {
+  border-color: var(--accent);
+}
+
+/* ---- Selected work ------------------------------------------------------ */
+.v2-section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-section);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-work {
+  border-top: var(--rule) solid var(--line);
+}
+.v2-work-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: var(--rule) solid var(--line);
+  transition: padding-left 0.25s var(--ease-build);
+}
+.v2-work-item:hover {
+  padding-left: var(--space-2);
+}
+.v2-work-name {
+  font-size: clamp(1.3rem, 1rem + 1.6vw, 2rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  transition: color 0.2s ease;
+}
+.v2-work-item:hover .v2-work-name {
+  color: var(--accent);
+}
+.v2-work-meta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-work-meta .arrow {
+  display: inline-block;
+  transition: transform 0.25s var(--ease-build);
+}
+.v2-work-item:hover .v2-work-meta {
+  color: var(--accent);
+}
+.v2-work-item:hover .v2-work-meta .arrow {
+  transform: translate(4px, -4px);
+}
+.v2-work-more {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-work-more:hover {
+  color: var(--ink);
+}
+
+/* ---- Contact ------------------------------------------------------------ */
+.v2-contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+.v2-contact-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.3rem, 1rem + 1.6vw, 2rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  transition: color 0.2s ease;
+}
+.v2-contact-links a i {
+  font-size: 0.8em;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-contact-links a:hover,
+.v2-contact-links a:hover i {
+  color: var(--accent);
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+.v2-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3) clamp(1rem, 4vw, 2.5rem);
+  border-top: var(--rule) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---- Résumé (/v2/resume) ------------------------------------------------ */
+/* Faint construction grid behind the whole page (fixed, so it holds as you scroll
+   — "all the way down"). Sits above the paper canvas, below the content. */
+body.v2-resume-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  /* Horizontally box-centered; vertically shifted so a cell is centered on the nav. */
+  background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
+  pointer-events: none;
+}
+.v2-resume-header {
+  position: relative;
+}
+.v2-resume-header-inner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 8vw, 4.5rem) clamp(1rem, 4vw, 2.5rem) var(--space-3);
+}
+.v2-resume-header-main {
+  min-width: 0;
+}
+.v2-resume-name {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: clamp(2rem, 1rem + 5vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-resume-name span {
+  color: var(--muted);
+}
+.v2-resume-credential {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.18rem);
+  line-height: 1.4;
+  color: var(--ink);
+  max-width: 44ch;
+}
+.v2-resume-contact {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.v2-resume-contact a {
+  color: var(--ink);
+  border-bottom: var(--rule) solid var(--line);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.v2-resume-contact a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.v2-resume-download {
+  flex: none;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem; /* nudge down to sit beside the eyebrow/name */
+  padding: 0.6rem 1.1rem;
+  border: var(--rule) solid var(--line);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.v2-resume-download:hover,
+.v2-resume-download:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.v2-resume {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2.5rem) var(--space-6);
+}
+.v2-resume-section {
+  padding-top: var(--space-5);
+}
+.v2-resume > .v2-resume-section:first-child {
+  padding-top: var(--space-3);
+}
+.v2-resume-section-label {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-resume-company {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-resume-entry + .v2-resume-entry {
+  margin-top: var(--space-4);
+}
+.v2-resume-role {
+  margin-top: var(--space-3);
+}
+.v2-resume-role-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem var(--space-2);
+}
+.v2-resume-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.v2-resume-dates {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.v2-resume-group {
+  margin-top: var(--space-2);
+}
+.v2-resume-lead {
+  margin: 0 0 0.4rem;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.v2-resume-lead strong {
+  font-weight: 600;
+}
+.v2-resume-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.v2-resume-points li {
+  position: relative;
+  padding-left: 1.1rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.v2-resume-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: var(--rule);
+  background: var(--accent);
+}
+.v2-resume-edu-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem var(--space-2);
+}
+.v2-resume-edu-school {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-resume-edu-degree {
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.v2-resume-skills {
+  display: grid;
+  gap: var(--space-3);
+}
+.v2-skill-label {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.v2-skill-tags li {
+  padding: 0.25rem 0.6rem;
+  border: var(--rule) solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.v2-skill-tags li:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- Tools (/v2/translator, /v2/url-shortener) -------------------------- */
+.v2-tool {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 9vw, 5.5rem) clamp(1rem, 4vw, 2.5rem) var(--space-6);
+}
+.v2-tool-title {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--fs-section);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-tool-desc {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-body);
+  color: var(--muted);
+  max-width: 52ch;
+}
+.v2-tool-panel {
+  padding: clamp(1.4rem, 4vw, 2.2rem);
+  background: var(--surface);
+  border: var(--rule) solid var(--line);
+  border-radius: 4px;
+}
+.v2-tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.v2-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.v2-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  background: var(--paper);
+  border: var(--rule) solid var(--line);
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  transition: border-color 0.2s ease;
+}
+.v2-input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+.v2-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.v2-input[readonly] {
+  color: var(--muted);
+}
+.v2-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border: var(--rule) solid var(--accent);
+  border-radius: 3px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.v2-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.v2-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+/* Secondary (outline) button — e.g. the copy action */
+.v2-btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+.v2-btn--ghost:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  opacity: 1;
+}
+.v2-tool-msg {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.v2-tool-msg--ok {
+  color: var(--ink);
+}
+.v2-tool-msg--err {
+  color: var(--danger);
+}
+.v2-tool-result {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.v2-tool-result .v2-input {
+  flex: 1;
+}
+.v2-tool-result .v2-btn {
+  align-self: stretch;
+  flex: none;
+}
+
+/* ---- Scroll reveal ------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s var(--ease-rise),
+    transform 0.7s var(--ease-rise);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .v2-home .v2-nav {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+  body.v2-home::before {
+    animation: none;
+    clip-path: none;
+    opacity: 1;
+  }
+  .v2-work-item,
+  .v2-work-meta .arrow {
+    transition: none;
+  }
+}

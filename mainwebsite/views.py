@@ -93,6 +93,67 @@ def linkedin(request):
     return redirect("https://www.linkedin.com/in/atilano-garcia/")
 
 
+def concept_preview(request):
+    """Isolated hero test (not linked from the site). Production page is /v2/."""
+    return render(request, "concept_preview.html")
+
+
+def homepage_v2(request):
+    """New 'It builds itself' homepage. Lives at /v2/ in parallel with the old site;
+    cutover later is just pointing the homepage view here."""
+    context = {
+        "title": "Home",
+        "page_title": "Home",
+        "meta_description": (
+            "Atilano Garcia, a software engineer in Austin, TX. I build full-stack web "
+            "apps for a living and side projects for the fun of it."
+        ),
+    }
+    context.update(homepage_content_context())
+    return render(request, "homepage_v2.html", context)
+
+
+def translator_v2(request):
+    """v2-styled two-way translator tool. Parallel to /translator/; reuses the same
+    start_two_way backend."""
+    context = {
+        "page_title": "Translator",
+        "meta_description": (
+            "Two-way phone translator by Atilano Garcia. Bridge a live, translated call "
+            "between two people who don't share a language."
+        ),
+    }
+    return render(request, "translator_v2.html", context)
+
+
+def url_shortener_v2(request):
+    """v2-styled URL shortener. Parallel to /url_shortener/; reuses the same
+    url_shortener_submit backend."""
+    context = {
+        "page_title": "URL Shortener",
+        "meta_description": (
+            "URL shortener by Atilano Garcia. Turn a long link into a short, shareable "
+            "redirect."
+        ),
+    }
+    return render(request, "url_shortener_v2.html", context)
+
+
+def resume_v2(request):
+    """Résumé rendered in the v2 design language (not a PDF embed). Lives at
+    /v2/resume/; the PDF stays available as a download link."""
+    context = {
+        "title": "Résumé",
+        "page_title": "Résumé",
+        "meta_description": (
+            "Résumé of Atilano (Tilo) Garcia, Software Engineer II at Indeed in Austin, "
+            "TX. Experience in full-stack web apps, AWS, data pipelines, and product "
+            "launches."
+        ),
+    }
+    return render(request, "resume_v2.html", context)
+
+
 def calendar_webpage(request):
     return render(request, "calendar.html")
 

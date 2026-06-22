@@ -47,13 +47,8 @@ SOCIALS = [
     },
     {
         "platform": "Instagram",
-        "url": "https://www.instagram.com/tilo.g_",
+        "url": "https://www.instagram.com/tilo.g__/",
         "icon": "fa-brands fa-instagram",
-    },
-    {
-        "platform": "X",
-        "url": "https://twitter.com/tilo_g__",
-        "icon": "fa-brands fa-x-twitter",
     },
 ]
 

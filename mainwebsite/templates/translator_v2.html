@@ -1,0 +1,34 @@
+{% extends 'base_design.html' %}
+
+{% block content %}
+<section class="v2-tool reveal" aria-labelledby="tool-h">
+    {% csrf_token %}
+    <p class="v2-eyebrow">Tools · Translator</p>
+    <h1 class="v2-tool-title" id="tool-h">Two-way phone translator</h1>
+    <p class="v2-tool-desc">
+        Bridge a call between two people who don't share a language. Enter both numbers and
+        an access code, and the system places a live, translated two-way call.
+    </p>
+    <div data-react-component="TranslatorV2"
+         data-submit-url="{% url 'mainwebsite:start_two_way' %}">
+        {# Server-rendered fallback (non-interactive without JS); React replaces it on mount. #}
+        <div class="v2-tool-panel">
+            <form class="v2-tool-form">
+                <div class="v2-field">
+                    <label class="v2-label">Caller phone number</label>
+                    <input type="tel" class="v2-input" placeholder="+1 555 123 4567">
+                </div>
+                <div class="v2-field">
+                    <label class="v2-label">Callee phone number</label>
+                    <input type="tel" class="v2-input" placeholder="+1 555 765 4321">
+                </div>
+                <div class="v2-field">
+                    <label class="v2-label">Access code</label>
+                    <input type="text" class="v2-input" placeholder="Access code">
+                </div>
+                <button type="button" class="v2-btn">Initiate call</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

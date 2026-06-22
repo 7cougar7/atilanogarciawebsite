@@ -1,0 +1,173 @@
+{% extends 'base_design.html' %}
+{% load static %}
+
+{% block body_class %} v2-resume-page{% endblock %}
+
+{% block content %}
+<header class="v2-resume-header">
+    <div class="v2-resume-header-inner">
+        <div class="v2-resume-header-main">
+            <p class="v2-eyebrow">Résumé</p>
+            <h1 class="v2-resume-name">Atilano Garcia</h1>
+            <p class="v2-resume-credential">B.S. Electrical &amp; Computer Engineering, Software Engineering &amp; Design Track</p>
+            <p class="v2-resume-contact">
+                <a href="mailto:tilogarcia1@gmail.com">tilogarcia1@gmail.com</a>
+                · Austin, Texas
+            </p>
+            <p class="v2-resume-contact">
+                <a href="https://www.linkedin.com/in/atilano-garcia" target="_blank" rel="noopener">linkedin.com/in/atilano-garcia</a>
+                · <a href="https://github.com/7cougar7" target="_blank" rel="noopener">github.com/7cougar7</a>
+            </p>
+        </div>
+        <a class="v2-resume-download" href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" download>Download PDF ↓</a>
+    </div>
+</header>
+
+<div class="v2-resume">
+    <section class="v2-resume-section reveal" aria-labelledby="exp-h">
+        <h2 class="v2-resume-section-label" id="exp-h">Technical Experience</h2>
+
+        <article class="v2-resume-entry">
+            <h3 class="v2-resume-company">Indeed</h3>
+
+            <div class="v2-resume-role">
+                <div class="v2-resume-role-head">
+                    <h4 class="v2-resume-title">Software Engineer II</h4>
+                    <span class="v2-resume-dates">April 2026 – Present</span>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>AI-Powered Screening Launch</strong>: Led the production rollout of AI-generated candidate screening, enabling automated screening questions and credential checks across the hiring workflow.</p>
+                    <ul class="v2-resume-points">
+                        <li>Integrated backend services, frontend application flows, scoring pipelines, feature-flagged rollout, and observability tooling to support a safe end-to-end launch.</li>
+                        <li>Improved launch safety and debugging by adding rollout controls and structured logging for new AI-driven flows.</li>
+                    </ul>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>Premium Recruiting Product Launch</strong>: Drove launch work for premium recruiting features by aligning entitlement logic, frontend flows, and product instrumentation, contributing to a product expansion tied to $6M in incremental committed revenue.</p>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>AI Screening Reliability Improvements</strong>: Improved the reliability of AI-powered screening and scoring systems by preserving user edits, separating automated and manual data paths, and mitigating model rate limits through platform-level traffic and capacity controls.</p>
+                </div>
+            </div>
+
+            <div class="v2-resume-role">
+                <div class="v2-resume-role-head">
+                    <h4 class="v2-resume-title">Software Engineer I</h4>
+                    <span class="v2-resume-dates">July 2024 – April 2026</span>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>Litigation Hold Data Capture &amp; Processing</strong>: Spearheaded the implementation of data capture for non-email communication channels, fulfilling critical legal requests for user communications and decreasing overhead by 2000%.</p>
+                    <ul class="v2-resume-points">
+                        <li>Configured AWS infrastructure and IAM using Terraform, including an AWS Firehose pipeline that ingests messages from an SNS topic and dynamically separates communications into prefixes by date and type for streamlined data management.</li>
+                        <li>Used Spark to process and store millions of communications in AWS S3 tables for later indexing.</li>
+                        <li>Implemented retrieval and storage for 5 communication mediums (Email, SMS, Native Mobile Push Notifications, WhatsApp, Line, Messenger).</li>
+                        <li>Researched bloom filters and z-ordering to optimize what would become a multi-petabyte database.</li>
+                    </ul>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>Messaging Operational Improvements</strong>: Investigated, experimented with, and implemented deployment pipeline changes that resulted in a 37% runtime improvement across 5 separate code repositories, enhancing CI/CD efficiency and reducing time to deploy.</p>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>Notification Deduplication</strong>: Implemented core deduplication logic and a robust key-generation function to prevent duplicate notifications from being sent to end users.</p>
+                    <ul class="v2-resume-points">
+                        <li>Integrated deduplication across multiple channels including email, SMS, in-application notifications, and browser push.</li>
+                        <li>Refactored the deduplication information service to improve understandability and maintainability.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="v2-resume-role">
+                <div class="v2-resume-role-head">
+                    <h4 class="v2-resume-title">Software Developer II</h4>
+                    <span class="v2-resume-dates">July 2023 – July 2024</span>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>Asynchronous GraphQL Refactoring</strong>: Converted synchronous GraphQL mutations and dataloaders to operate asynchronously, improving system responsiveness and efficiency.</p>
+                    <ul class="v2-resume-points">
+                        <li>Resolved asynchronous unit-test failures across multiple critical test suites.</li>
+                        <li>Removed caching from dataloaders and documented how to reintroduce it safely in the future.</li>
+                    </ul>
+                </div>
+                <div class="v2-resume-group">
+                    <p class="v2-resume-lead"><strong>Functional Test &amp; System Reliability</strong></p>
+                    <ul class="v2-resume-points">
+                        <li>Optimized functional tests to complete in 1 minute 6 seconds, a 96% reduction in suite run time.</li>
+                        <li>Implemented Datadog performance monitoring, analysis, and rollback procedures for the call-to-interview service and mosaic provider deploy pipelines, improving deployment safety and reliability.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="v2-resume-role">
+                <div class="v2-resume-role-head">
+                    <h4 class="v2-resume-title">Software Engineer Intern</h4>
+                    <span class="v2-resume-dates">Summers 2018, 2019, 2021, 2022</span>
+                </div>
+                <ul class="v2-resume-points">
+                    <li>Expanded the virtual interview platform's communications into 15 new global markets, collaborating with cross-functional teams to localize features.</li>
+                    <li>Improved the "good interview" metric by 89% by designing scalable database tables and leveraging Firebase, enhancing responsiveness and satisfaction for thousands of candidates and interviewers.</li>
+                    <li>Led end-to-end development of a web application that automated company-wide quarterly review planning, replacing 22 spreadsheets, reducing manual planning time by 100+ hours per cycle and improving accuracy and transparency for leadership.</li>
+                    <li>Built a real-time statistics dashboard for a moderation platform using Java and RabbitMQ, enabling fraud detection through employer messaging analytics and candidate export data; implemented asynchronous API calls and JUnit tests for reliability and scalability.</li>
+                </ul>
+            </div>
+        </article>
+
+        <article class="v2-resume-entry">
+            <h3 class="v2-resume-company">Code2College</h3>
+            <div class="v2-resume-role">
+                <div class="v2-resume-role-head">
+                    <h4 class="v2-resume-title">Labs Team Lead, Software Engineer Intern</h4>
+                    <span class="v2-resume-dates">Summer 2020</span>
+                </div>
+                <ul class="v2-resume-points">
+                    <li>Architected and built a custom learning-management and CRM system for member information and program curriculum, enabling the expansion of the organization's programs and reach.</li>
+                    <li>Directly managed a team of 5 interns while coordinating with the organization's senior leadership to deliver the product on schedule.</li>
+                </ul>
+            </div>
+            <div class="v2-resume-role">
+                <div class="v2-resume-role-head">
+                    <h4 class="v2-resume-title">Technical Consultant</h4>
+                    <span class="v2-resume-dates">Sept. 2020 – May 2021</span>
+                </div>
+                <ul class="v2-resume-points">
+                    <li>Provided technical guidance and hands-on development to enhance the learning-management system, maintaining existing solutions for greater efficiency while designing and launching new features that increased value and usability for all users.</li>
+                </ul>
+            </div>
+        </article>
+    </section>
+
+    <section class="v2-resume-section reveal" aria-labelledby="edu-h">
+        <h2 class="v2-resume-section-label" id="edu-h">Education</h2>
+        <div class="v2-resume-edu-head">
+            <h3 class="v2-resume-edu-school">The University of Texas at Austin</h3>
+            <span class="v2-resume-dates">2019 – 2023</span>
+        </div>
+        <p class="v2-resume-edu-degree">B.S. Electrical and Computer Engineering, Software Engineering and Design Track</p>
+    </section>
+
+    <section class="v2-resume-section reveal" aria-labelledby="skills-h">
+        <h2 class="v2-resume-section-label" id="skills-h">Skills</h2>
+        <div class="v2-resume-skills">
+            <div class="v2-skill-group">
+                <p class="v2-skill-label">Engineering &amp; AI</p>
+                <ul class="v2-skill-tags">
+                    <li>Artificial Intelligence (AI)</li><li>Large Language Models (LLM)</li>
+                    <li>MCP</li><li>Security</li><li>Full-Stack Development</li><li>Backend</li>
+                    <li>Front-end Coding</li><li>React.js</li><li>Django</li>
+                    <li>Python</li><li>Kotlin</li><li>Unity</li><li>Software Development</li>
+                </ul>
+            </div>
+            <div class="v2-skill-group">
+                <p class="v2-skill-label">Leadership &amp; Collaboration</p>
+                <ul class="v2-skill-tags">
+                    <li>Cross-functional Team Leadership</li><li>Cross-functional Communication</li>
+                    <li>Team Management</li><li>Team Leadership</li><li>Product Management</li>
+                    <li>Project Management</li><li>Software Project Management</li>
+                    <li>Operational Excellence</li><li>Collaborative Problem Solving</li>
+                    <li>Communication</li><li>Teamwork</li><li>Remote Teamwork</li>
+                    <li>Time Management</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

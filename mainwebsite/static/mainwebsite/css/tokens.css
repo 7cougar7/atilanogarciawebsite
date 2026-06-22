@@ -1,0 +1,77 @@
+/*
+ * Design tokens — single source of truth for the v2 "It builds itself" design
+ * language. Extracted from the /lab/build/ prototype. These are global CSS custom
+ * properties on :root, so they're shared by both the static section CSS
+ * (design_v2.css) and the Vite-bundled Hero component CSS (Hero.css).
+ *
+ * Dark mode flips the values under [data-theme="dark"] (set pre-paint in the base
+ * template and toggled by the ThemeToggle island).
+ */
+
+:root {
+  /* Color — light (the "paper & ink" base) */
+  --paper: #f6f6f4; /* page background */
+  --surface: #fbfbf9; /* raised panels / cards */
+  --ink: #17191e; /* primary text + drawn glyphs */
+  --muted: #6e7178; /* secondary text, labels */
+  --line: #c9c9c4; /* hairline rules, borders */
+  --grid: rgba(23, 25, 30, 0.05); /* construction grid lines */
+  --accent: #2f4bff; /* the one bold note: blue */
+  --accent-ink: #ffffff; /* text/!marks on accent fills */
+  --danger: #c0392b; /* error/validation feedback */
+
+  /* Type */
+  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  --fs-eyebrow: 0.72rem; /* mono labels */
+  --fs-body: clamp(1rem, 0.95rem + 0.4vw, 1.18rem);
+  --fs-lead: clamp(1.15rem, 1rem + 0.9vw, 1.5rem);
+  --fs-section: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+  --fs-display: clamp(2.75rem, 1rem + 9vw, 9.4rem); /* the name */
+
+  --tracking-label: 0.24em; /* eyebrow / mono labels */
+  --tracking-tight: -0.03em; /* display headings */
+
+  /* Space — 8px-ish scale */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6rem;
+  --space-7: 9rem;
+
+  /* Layout */
+  --maxw: 72rem; /* content max width */
+  --grid-size: 48px; /* construction grid pitch */
+  --rule: 1px; /* hairline weight */
+  --nav-h: 57px; /* measured nav height — used to vertically center the grid on the nav */
+
+  /* Motion */
+  --ease-build: cubic-bezier(0.6, 0.05, 0.2, 1);
+  --ease-rise: cubic-bezier(0.5, 0.05, 0.2, 1);
+  --dur-fast: 0.4s;
+  --dur-med: 0.6s;
+  --dur-slow: 0.95s;
+}
+
+[data-theme="dark"] {
+  --paper: #0e0f12;
+  --surface: #16181d;
+  --ink: #f2f2ef;
+  --muted: #9a9da4;
+  --line: #2a2d34;
+  --grid: rgba(255, 255, 255, 0.055);
+  --accent: #5b72ff; /* lifted for contrast on dark */
+  --accent-ink: #0b0c0f;
+  --danger: #ff6b5e; /* lifted for contrast on dark */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0.001s;
+    --dur-med: 0.001s;
+    --dur-slow: 0.001s;
+  }
+}
