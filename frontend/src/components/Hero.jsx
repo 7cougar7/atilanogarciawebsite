@@ -14,7 +14,7 @@ const DEFAULTS = {
   name: "Atilano Garcia",
   eyebrow: "Software Engineer · Austin, TX",
   tagline:
-    "I build data infrastructure for a living, and side projects for the fun of it.",
+    "I build full-stack web apps for a living, and side projects for the fun of it.",
 };
 
 // Per-letter draw timing. A constant draw duration keeps every letter watchable; the
