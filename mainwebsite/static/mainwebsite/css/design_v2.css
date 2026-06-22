@@ -285,9 +285,17 @@ body.v2-resume-page::before {
 }
 .v2-resume-header-inner {
   position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
   max-width: 52rem;
   margin: 0 auto;
-  padding: clamp(2.5rem, 8vw, 4.5rem) clamp(1rem, 4vw, 2.5rem) var(--space-4);
+  padding: clamp(2.5rem, 8vw, 4.5rem) clamp(1rem, 4vw, 2.5rem) var(--space-3);
+}
+.v2-resume-header-main {
+  min-width: 0;
 }
 .v2-resume-name {
   margin: var(--space-1) 0 var(--space-2);
@@ -322,17 +330,28 @@ body.v2-resume-page::before {
   border-color: var(--accent);
 }
 .v2-resume-download {
-  display: inline-block;
-  margin-top: var(--space-3);
+  flex: none;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem; /* nudge down to sit beside the eyebrow/name */
+  padding: 0.6rem 1.1rem;
+  border: var(--rule) solid var(--line);
+  border-radius: 3px;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
-  transition: color 0.2s ease;
-}
-.v2-resume-download:hover {
   color: var(--ink);
+  white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.v2-resume-download:hover,
+.v2-resume-download:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent);
 }
 
 .v2-resume {
@@ -342,6 +361,9 @@ body.v2-resume-page::before {
 }
 .v2-resume-section {
   padding-top: var(--space-5);
+}
+.v2-resume > .v2-resume-section:first-child {
+  padding-top: var(--space-3);
 }
 .v2-resume-section-label {
   margin: 0 0 var(--space-3);
