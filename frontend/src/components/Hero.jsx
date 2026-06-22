@@ -12,9 +12,9 @@ import "./Hero.css";
 // font-size), since SVG <text> can't reflow on its own.
 const DEFAULTS = {
   name: "Atilano Garcia",
-  eyebrow: "Software Engineer — Austin, TX",
+  eyebrow: "Software Engineer · Austin, TX",
   tagline:
-    "I design and build systems that move data at scale — and the occasional experiment on the side.",
+    "I build data infrastructure for a living, and side projects for the fun of it.",
 };
 
 // Per-letter draw timing. A constant draw duration keeps every letter watchable; the
