@@ -126,6 +126,53 @@ body.v2-home::before {
 .v2-nav-links a:focus-visible {
   color: var(--ink);
 }
+
+/* Tools dropdown: a <details> grouping styled to match the nav links. The summary is
+   the toggle; the menu drops below it. No JS needed (a small outside-click closer is
+   added in the base template for polish). */
+.v2-nav-group {
+  position: relative;
+}
+.v2-nav-group summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none; /* hide default marker */
+  transition: color 0.2s ease;
+}
+.v2-nav-group summary::-webkit-details-marker {
+  display: none;
+}
+.v2-nav-group summary::after {
+  content: "▾";
+  font-size: 0.85em;
+  transition: transform 0.2s ease;
+}
+.v2-nav-group[open] summary::after {
+  transform: rotate(180deg);
+}
+.v2-nav-group summary:hover,
+.v2-nav-group summary:focus-visible,
+.v2-nav-group[open] summary {
+  color: var(--ink);
+}
+.v2-nav-menu {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: max-content;
+  padding: 0.9rem 1.1rem;
+  background: var(--surface);
+  border: var(--rule) solid var(--line);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+}
 .v2-theme {
   display: inline-flex;
 }
