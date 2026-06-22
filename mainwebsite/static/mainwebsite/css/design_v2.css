@@ -1,0 +1,264 @@
+/*
+ * v2 design system — layout, nav, footer, and homepage sections for the "It builds
+ * itself" language. Only loaded by base_design.html, so rules can target body.v2
+ * and the section classes directly. Colors/space/type come from tokens.css.
+ */
+
+body.v2 {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body.v2 *,
+body.v2 *::before,
+body.v2 *::after {
+  box-sizing: border-box;
+}
+body.v2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- Nav ---------------------------------------------------------------- */
+.v2-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) clamp(1rem, 4vw, 2.5rem);
+  border-bottom: var(--rule) solid var(--line);
+  background: var(--paper);
+  position: relative;
+  z-index: 10;
+}
+.v2-brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(0.8rem, 2vw, 1.8rem);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.v2-nav-links a {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-nav-links a:hover,
+.v2-nav-links a:focus-visible {
+  color: var(--ink);
+}
+.v2-theme {
+  display: inline-flex;
+}
+.v2-theme .switch-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.v2-theme .switch-button:hover,
+.v2-theme .switch-button:focus-visible {
+  color: var(--ink);
+}
+
+/* ---- Section scaffolding ------------------------------------------------ */
+.v2-section {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--space-6) clamp(1rem, 4vw, 2.5rem);
+}
+.v2-section + .v2-section {
+  padding-top: 0;
+}
+.v2-eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@media (min-width: 820px) {
+  .v2-cols {
+    grid-template-columns: 12rem 1fr;
+    gap: var(--space-5);
+  }
+}
+
+/* ---- Intro -------------------------------------------------------------- */
+.v2-lead {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-lead);
+  line-height: 1.32;
+  letter-spacing: var(--tracking-tight);
+  max-width: 24ch;
+}
+.v2-body {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-body);
+  color: var(--muted);
+  max-width: 60ch;
+}
+.v2-body a {
+  color: var(--ink);
+  border-bottom: var(--rule) solid var(--line);
+  transition: border-color 0.2s ease;
+}
+.v2-body a:hover {
+  border-color: var(--accent);
+}
+
+/* ---- Selected work ------------------------------------------------------ */
+.v2-section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-section);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-work {
+  border-top: var(--rule) solid var(--line);
+}
+.v2-work-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: var(--rule) solid var(--line);
+  transition: padding-left 0.25s var(--ease-build);
+}
+.v2-work-item:hover {
+  padding-left: var(--space-2);
+}
+.v2-work-name {
+  font-size: clamp(1.3rem, 1rem + 1.6vw, 2rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  transition: color 0.2s ease;
+}
+.v2-work-item:hover .v2-work-name {
+  color: var(--accent);
+}
+.v2-work-meta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.v2-work-meta .arrow {
+  display: inline-block;
+  transition: transform 0.25s var(--ease-build);
+}
+.v2-work-item:hover .v2-work-meta {
+  color: var(--accent);
+}
+.v2-work-item:hover .v2-work-meta .arrow {
+  transform: translate(4px, -4px);
+}
+.v2-work-more {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-work-more:hover {
+  color: var(--ink);
+}
+
+/* ---- Contact ------------------------------------------------------------ */
+.v2-contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+.v2-contact-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.3rem, 1rem + 1.6vw, 2rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  transition: color 0.2s ease;
+}
+.v2-contact-links a i {
+  font-size: 0.8em;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.v2-contact-links a:hover,
+.v2-contact-links a:hover i {
+  color: var(--accent);
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+.v2-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3) clamp(1rem, 4vw, 2.5rem);
+  border-top: var(--rule) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---- Scroll reveal ------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s var(--ease-rise),
+    transform 0.7s var(--ease-rise);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .v2-work-item,
+  .v2-work-meta .arrow {
+    transition: none;
+  }
+}

@@ -1,0 +1,62 @@
+{% extends 'base_design.html' %}
+{% load static %}
+
+{% block content %}
+{# Hero island — the "It builds itself" construction sequence. Uses component defaults. #}
+<div data-react-component="Hero"></div>
+
+<section class="v2-section reveal" aria-labelledby="about-h">
+    <div class="v2-cols">
+        <p class="v2-eyebrow" id="about-h">About</p>
+        <div>
+            <p class="v2-lead">I build systems that move and make sense of data at scale.</p>
+            <p class="v2-body">
+                I'm a software engineer in Austin, working on the infrastructure behind
+                large-scale data — pipelines, reliability, and the unglamorous plumbing
+                that has to just work. Currently a Software Engineer at Indeed.
+            </p>
+            <p class="v2-body">
+                Off the clock I build things for the fun of it; a few are below. You can also
+                read my
+                <a href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" target="_blank" rel="noopener">résumé</a>
+                or find me on
+                <a href="https://www.linkedin.com/in/atilano-garcia/" target="_blank" rel="noopener">LinkedIn</a>.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="v2-section reveal" aria-labelledby="work-h">
+    <div class="v2-cols">
+        <p class="v2-eyebrow">Selected work</p>
+        <div>
+            <h2 class="v2-section-title" id="work-h">Things I've built</h2>
+            <div class="v2-work">
+                {% for project in projects %}
+                <a class="v2-work-item" href="{{ project.url }}" target="_blank" rel="noopener">
+                    <span class="v2-work-name">{{ project.name }}</span>
+                    <span class="v2-work-meta">GitHub <span class="arrow">↗</span></span>
+                </a>
+                {% endfor %}
+            </div>
+            <a class="v2-work-more" href="{{ view_more_url }}" target="_blank" rel="noopener">More on GitHub →</a>
+        </div>
+    </div>
+</section>
+
+<section class="v2-section reveal" aria-labelledby="contact-h">
+    <div class="v2-cols">
+        <p class="v2-eyebrow">Contact</p>
+        <div>
+            <h2 class="v2-section-title" id="contact-h">Let's build something.</h2>
+            <div class="v2-contact-links">
+                {% for social in socials %}
+                <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.platform }}">
+                    <i class="{{ social.icon }}" aria-hidden="true"></i>{{ social.platform }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

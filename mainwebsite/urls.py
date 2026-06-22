@@ -14,6 +14,7 @@ app_name = "mainwebsite"
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
+    path("v2/", views.homepage_v2, name="homepage_v2"),
     path("lab/build/", views.concept_preview, name="concept_preview"),
     path("login/", UnifiedLoginView.as_view(), name="login"),
     path(

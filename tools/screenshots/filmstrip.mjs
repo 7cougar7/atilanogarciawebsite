@@ -25,7 +25,7 @@ const ctx = await browser.newContext({ viewport: { width: W, height: H }, device
 const page = await ctx.newPage();
 await page.goto(url, { waitUntil: "networkidle" });
 // Wait for the island to mount and its animations to exist before grabbing them.
-await page.waitForSelector(".bi-glyph", { state: "attached" });
+await page.waitForSelector(".hero-glyph", { state: "attached" });
 await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 
 // Grab every animation (running + delayed/pending) and pause them so we can scrub.

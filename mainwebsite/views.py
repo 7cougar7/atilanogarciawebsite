@@ -94,8 +94,23 @@ def linkedin(request):
 
 
 def concept_preview(request):
-    """Isolated design-concept prototype (not linked from the site)."""
+    """Isolated hero test (not linked from the site). Production page is /v2/."""
     return render(request, "concept_preview.html")
+
+
+def homepage_v2(request):
+    """New 'It builds itself' homepage. Lives at /v2/ in parallel with the old site;
+    cutover later is just pointing the homepage view here."""
+    context = {
+        "title": "Home",
+        "page_title": "Home",
+        "meta_description": (
+            "Atilano Garcia — software engineer in Austin, TX. I build systems that move "
+            "and make sense of data at scale, plus the occasional experiment."
+        ),
+    }
+    context.update(homepage_content_context())
+    return render(request, "homepage_v2.html", context)
 
 
 def calendar_webpage(request):

@@ -1,0 +1,130 @@
+import { useLayoutEffect, useRef, useState } from "react";
+import "./Hero.css";
+
+// "It builds itself" hero. On first view per session the page constructs — a faint
+// grid wipes in, the name draws letter-by-letter (each glyph's outline traces, then
+// fills), then the eyebrow/rule/tagline/tick settle. Returning within the same
+// session (or with prefers-reduced-motion) shows the finished state immediately.
+//
+// Responsive: the name renders one SVG per word in a flex-wrap row, each measured to
+// its exact text width. Words sit on one line when they fit and wrap to stacked lines
+// when they don't — with identical glyph size everywhere (shared CSS height + internal
+// font-size), since SVG <text> can't reflow on its own.
+const DEFAULTS = {
+  name: "Atilano Garcia",
+  eyebrow: "Software Engineer — Austin, TX",
+  tagline:
+    "I design and build systems that move data at scale — and the occasional experiment on the side.",
+};
+
+// Per-letter draw timing. A constant draw duration keeps every letter watchable; the
+// gap between letters shrinks slightly across the word for a gentle acceleration that
+// never bunches into a "pop" (verified on tools/screenshots/filmstrip.mjs).
+const START = 0.9; // s — after the grid settles
+const DUR = 0.82; // s — each letter's draw
+const GAP_FIRST = 0.21; // s — gap between the first letters
+const GAP_LAST = 0.15; // s — gap between the last letters
+
+function letterTimings(n) {
+  const out = [];
+  let delay = START;
+  for (let i = 0; i < n; i++) {
+    if (i > 0) {
+      const gt = (i - 1) / Math.max(1, n - 2);
+      delay += GAP_FIRST + (GAP_LAST - GAP_FIRST) * gt;
+    }
+    out.push({ delay, dur: DUR });
+  }
+  return out;
+}
+
+const SEEN_KEY = "hero_built"; // session flag so the build animation plays once per visit
+
+export default function Hero(props = {}) {
+  const name = props.name || DEFAULTS.name;
+  const eyebrow = props.eyebrow || DEFAULTS.eyebrow;
+  const tagline = props.tagline || DEFAULTS.tagline;
+
+  const words = name.split(" ");
+  const totalLetters = words.reduce((sum, w) => sum + w.length, 0);
+  const times = letterTimings(totalLetters);
+
+  // Animate only the first view per session; otherwise render the settled state.
+  const [animate] = useState(() => {
+    try {
+      if (sessionStorage.getItem(SEEN_KEY)) return false;
+      sessionStorage.setItem(SEEN_KEY, "1");
+    } catch {
+      /* private mode / unavailable — just animate */
+    }
+    return true;
+  });
+
+  // Measure each word's rendered text so its SVG viewBox hugs the glyphs exactly.
+  // Runs before paint (useLayoutEffect), so the estimate is never visible.
+  const textRefs = useRef([]);
+  const [widths, setWidths] = useState(() => words.map((w) => w.length * 95));
+  useLayoutEffect(() => {
+    setWidths(
+      words.map((w, i) => {
+        const el = textRefs.current[i];
+        return el ? Math.ceil(el.getComputedTextLength()) : w.length * 95;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name]);
+
+  const PAD = 12; // user-unit breathing room on each side of a word
+  let gi = 0; // running global letter index across all words (continuous cascade)
+
+  return (
+    <section className={animate ? "hero" : "hero hero--static"}>
+      <div className="hero-grid" aria-hidden="true" />
+      <div className="hero-stage">
+        <p className="hero-eyebrow">{eyebrow}</p>
+        <h1 className="hero-name" aria-label={name}>
+          {words.map((word, wi) => {
+            const vw = widths[wi] + PAD * 2;
+            const startGi = gi;
+            gi += word.length;
+            return (
+              <svg
+                key={wi}
+                className="hero-word"
+                viewBox={`0 0 ${vw} 210`}
+                role="presentation"
+                aria-hidden="true"
+              >
+                <text
+                  ref={(el) => (textRefs.current[wi] = el)}
+                  x={vw / 2}
+                  y="155"
+                  textAnchor="middle"
+                  className="hero-name-text"
+                >
+                  {word.split("").map((ch, ci) => {
+                    const { delay, dur } = times[startGi + ci];
+                    return (
+                      <tspan
+                        key={ci}
+                        className="hero-glyph"
+                        style={{ "--d": `${delay.toFixed(3)}s`, "--dur": `${dur.toFixed(3)}s` }}
+                      >
+                        {ch}
+                      </tspan>
+                    );
+                  })}
+                </text>
+              </svg>
+            );
+          })}
+        </h1>
+        <div className="hero-rule" aria-hidden="true" />
+        <p className="hero-tag">{tagline}</p>
+        <span className="hero-tick" aria-hidden="true" />
+      </div>
+      <span className="hero-coord hero-coord--tl">grid · 48</span>
+      <span className="hero-coord hero-coord--br">build 001</span>
+    </section>
+  );
+}

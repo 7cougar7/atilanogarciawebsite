@@ -1,0 +1,92 @@
+{% load static %}
+{% load vite %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia — Software Engineer</title>
+    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia — software engineer in Austin, TX. Systems that move data at scale, plus the occasional experiment.{% endif %}">
+    {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}">{% endif %}
+    <meta name="author" content="Atilano Garcia">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+    <meta property="og:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
+    <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}" />{% endif %}
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mainwebsite/img/logo/new/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mainwebsite/img/logo/new/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'mainwebsite/img/logo/new/favicon-16x16.png' %}">
+
+    <!-- Fonts + design system -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'mainwebsite/css/tokens.css' %}">
+    <link rel="stylesheet" href="{% static 'mainwebsite/css/design_v2.css' %}">
+
+    <script>
+        // Apply saved theme before paint to avoid a flash of the wrong colors.
+        // The ThemeToggle island flips data-theme and persists it.
+        if (localStorage.getItem("dark_mode") === "true") {
+            document.documentElement.setAttribute("data-theme", "dark");
+        }
+    </script>
+    {% block js %}{% endblock %}
+</head>
+
+<body class="v2">
+    <header class="v2-nav">
+        <a class="v2-brand" href="{% url 'mainwebsite:concept_preview' %}">Atilano Garcia</a>
+        <nav class="v2-nav-links" aria-label="Primary">
+            <a href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" target="_blank" rel="noopener">Resume</a>
+            <a href="{% url 'mainwebsite:graduation' %}">Graduation</a>
+            <a href="{% url 'mainwebsite:translator' %}">Translator</a>
+            <a href="{% url 'mainwebsite:urlShortener' %}">URL Shortener</a>
+            <a href="https://www.linkedin.com/in/atilano-garcia/" target="_blank" rel="noopener">LinkedIn</a>
+            <span class="v2-theme" data-react-component="ThemeToggle">
+                <button class="btn switch-button" aria-label="Toggle dark mode"><i class="fas fa-sun"></i></button>
+            </span>
+        </nav>
+    </header>
+
+    <main id="content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="v2-footer">
+        <span class="v2-foot-coord">build 001 · Austin, TX</span>
+        <span class="v2-foot-name">© {% now "Y" %} Atilano Garcia</span>
+        <span class="v2-foot-coord">grid · 48</span>
+    </footer>
+
+    <script>
+        // Scroll reveals: fade/rise sections in as they enter the viewport, once.
+        (function () {
+            var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var els = document.querySelectorAll(".reveal");
+            if (reduce || !("IntersectionObserver" in window)) {
+                els.forEach(function (el) { el.classList.add("is-visible"); });
+                return;
+            }
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
+                });
+            }, { threshold: 0.18 });
+            els.forEach(function (el) { io.observe(el); });
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+    {% vite_asset %}
+</body>
+
+</html>
