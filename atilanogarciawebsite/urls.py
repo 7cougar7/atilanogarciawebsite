@@ -61,11 +61,12 @@ def sitemap_xml(request):
     # Define your main pages with their priorities and change frequencies
     urls = [
         {"loc": "/", "priority": "1.0", "changefreq": "weekly"},
+        {"loc": "/resume/", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "/graduation/", "priority": "0.8", "changefreq": "monthly"},
         {"loc": "/translator/", "priority": "0.7", "changefreq": "monthly"},
-        {"loc": "/url-shortener/", "priority": "0.6", "changefreq": "monthly"},
+        {"loc": "/url_shortener/", "priority": "0.6", "changefreq": "monthly"},
         {"loc": "/intro/", "priority": "0.5", "changefreq": "monthly"},
-        {"loc": "/cube-wallpaper/", "priority": "0.5", "changefreq": "monthly"},
+        {"loc": "/cube_wallpaper/", "priority": "0.5", "changefreq": "monthly"},
     ]
 
     xml_content = """<?xml version="1.0" encoding="UTF-8"?>

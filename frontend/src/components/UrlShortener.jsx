@@ -1,15 +1,8 @@
 import { useState } from "react";
+import { csrfToken } from "../csrf";
 
-// Reads the CSRF token from the hidden input {% csrf_token %} renders in new_base.html
-// (the cookie is HttpOnly, so it isn't JS-readable).
-function csrfToken() {
-  const el = document.querySelector("[name=csrfmiddlewaretoken]");
-  return el ? el.value : "";
-}
-
-// React version of the URL shortener tool. Improves on the old jQuery form with a
-// loading state, inline error handling, and copy feedback (instead of a blocking
-// alert). `submitUrl` comes from the mount point's data-submit-url attribute.
+// URL shortener. POSTs to submitUrl (from the mount point's data-submit-url attribute)
+// with loading + error + copy states.
 export default function UrlShortener({ submitUrl }) {
   const [url, setUrl] = useState("");
   const [shortened, setShortened] = useState("");
@@ -54,69 +47,48 @@ export default function UrlShortener({ submitUrl }) {
   }
 
   return (
-    <div
-      className="glass-card"
-      style={{
-        minHeight: "45vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div className="column w-100">
-        <form className="row" onSubmit={submit}>
-          <div className="input-group center-elements p-5">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="URL To Shorten"
-              aria-label="URL To Shorten"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-            />
-            <button type="submit" className="btn light-fill" disabled={loading}>
-              <span className="dark-color">
-                {loading ? "Shortening…" : "Shorten URL"}
-              </span>
-            </button>
-          </div>
-        </form>
+    <div className="v2-tool-panel">
+      <form className="v2-tool-form" onSubmit={submit}>
+        <div className="v2-field">
+          <label className="v2-label" htmlFor="us-url">URL to shorten</label>
+          <input
+            id="us-url"
+            type="url"
+            className="v2-input"
+            placeholder="https://example.com/a-very-long-link"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="v2-btn" disabled={loading}>
+          {loading ? "Shortening…" : "Shorten URL"}
+        </button>
 
-        {error && (
-          <div className="row">
-            <div className="col text-center">
-              <span className="dark-color">{error}</span>
-            </div>
-          </div>
-        )}
+        {error && <p className="v2-tool-msg v2-tool-msg--err">{error}</p>}
 
         {shortened && (
-          <div
-            className="row"
-            style={{ justifyContent: "center", alignItems: "center" }}
-          >
-            <div className="input-group center-elements w-50 px-5">
+          <div className="v2-field">
+            <label className="v2-label" htmlFor="us-result">Shortened URL</label>
+            <div className="v2-tool-result">
               <input
+                id="us-result"
                 type="text"
-                className="form-control"
-                aria-label="Shortened URL"
+                className="v2-input"
                 value={shortened}
                 readOnly
               />
               <button
                 type="button"
-                className="btn light-fill"
+                className="v2-btn v2-btn--ghost"
                 onClick={copy}
                 aria-label="Copy shortened URL"
               >
-                <i
-                  className={`${copied ? "fas fa-check" : "far fa-clipboard"} dark-color`}
-                ></i>
+                {copied ? "Copied" : "Copy"}
               </button>
             </div>
           </div>
         )}
-      </div>
+      </form>
     </div>
   );
 }

@@ -64,25 +64,22 @@ class HomepageIslandsTests(TestCase):
             r'<script type="module" src="[^"]*dist/assets/main-[^"]+\.js"',
         )
 
-    def test_props_json_scripts_present(self):
-        self.assertIn('id="projectlist-props"', self.html)
-        self.assertIn('id="sociallinks-props"', self.html)
+    def test_hero_mount_point_present(self):
+        self.assertIn('data-react-component="Hero"', self.html)
 
-    def test_mount_points_present(self):
-        # Project list is shown in both the desktop and mobile columns.
-        self.assertEqual(self.html.count('data-react-component="ProjectList"'), 2)
-        self.assertEqual(self.html.count('data-react-component="SocialLinks"'), 1)
+    def test_old_homepage_islands_removed(self):
+        # The v2 homepage server-renders work/contact directly; the old ProjectList and
+        # SocialLinks islands (and their json_script props) are gone.
+        self.assertNotIn('data-react-component="ProjectList"', self.html)
+        self.assertNotIn('data-react-component="SocialLinks"', self.html)
+        self.assertNotIn('id="projectlist-props"', self.html)
 
-    def test_server_rendered_fallback_for_seo(self):
-        # Every project label and social platform is in the server HTML (no-JS / SEO).
+    def test_server_rendered_content_for_seo(self):
+        # Project names and social icons are in the server HTML (no-JS / SEO).
         for project in PROJECTS:
-            self.assertIn(project["label"], self.html)
+            self.assertIn(project["name"], self.html)
         for social in SOCIALS:
             self.assertIn(social["icon"], self.html)
-
-    def test_analytics_hooks_preserved(self):
-        self.assertIn("trackProjectView(", self.html)
-        self.assertIn("trackSocialClick(", self.html)
 
 
 class ThemeSystemTests(TestCase):
@@ -100,8 +97,8 @@ class ThemeSystemTests(TestCase):
     def test_theme_toggle_mount_point_present(self):
         self.assertIn('data-react-component="ThemeToggle"', self.html)
 
-    def test_body_has_themed_fill(self):
-        self.assertRegex(self.html, r"<body[^>]*\bclass=\"[^\"]*light-fill")
+    def test_body_has_v2_class(self):
+        self.assertRegex(self.html, r"<body[^>]*\bclass=\"v2")
 
     def test_old_jquery_swap_removed(self):
         # The class-swapping theme engine and its global switch must be gone.
@@ -125,7 +122,7 @@ class UrlShortenerPageTests(TestCase):
 
     def test_server_rendered_fallback_present(self):
         # The form is in the server HTML so the page isn't blank before React mounts.
-        self.assertIn("URL To Shorten", self.html)
+        self.assertIn("URL to shorten", self.html)
         self.assertIn("Shorten URL", self.html)
 
     def test_old_jquery_handlers_removed(self):
@@ -155,19 +152,20 @@ class TranslatorPageTests(TestCase):
         self.assertNotIn("$.ajax", self.html)
 
 
-class ResumeIslandTests(TestCase):
+class ResumePageTests(TestCase):
     def setUp(self):
         self.response = self.client.get(reverse("mainwebsite:resume"))
         self.html = self.response.content.decode()
 
-    def test_mounts_resume_island_with_pdf_url(self):
+    def test_renders_styled_resume_not_pdf_embed(self):
+        # The résumé is now rendered as styled HTML (no PDF iframe / React island).
         self.assertEqual(self.response.status_code, 200)
-        self.assertIn('data-react-component="Resume"', self.html)
-        self.assertIn("data-pdf-url=", self.html)
+        self.assertNotIn("<iframe", self.html)
+        self.assertNotIn('data-react-component="Resume"', self.html)
 
-    def test_server_rendered_fallback_present(self):
-        # Heading + embedded PDF remain in the server HTML for SEO / no-JS.
-        self.assertIn("<iframe", self.html)
+    def test_content_and_pdf_download_present(self):
+        # Section content for SEO / no-JS, plus a PDF download link.
+        self.assertIn("Technical Experience", self.html)
         self.assertIn(".pdf", self.html)
 
 

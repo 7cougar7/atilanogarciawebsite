@@ -1,13 +1,8 @@
 import { useState } from "react";
+import { csrfToken } from "../csrf";
 
-function csrfToken() {
-  const el = document.querySelector("[name=csrfmiddlewaretoken]");
-  return el ? el.value : "";
-}
-
-// React version of the two-way translator-call form. The original jQuery fired the POST
-// and showed no feedback at all; this adds a loading state and a success/error message.
-// `submitUrl` comes from the mount point's data-submit-url attribute.
+// Two-way translator-call form. POSTs caller/callee/access code to submitUrl (from the
+// mount point's data-submit-url attribute) with loading + result states.
 export default function Translator({ submitUrl }) {
   const [caller, setCaller] = useState("");
   const [callee, setCallee] = useState("");
@@ -35,71 +30,54 @@ export default function Translator({ submitUrl }) {
   }
 
   return (
-    <div
-      className="glass-card"
-      style={{
-        minHeight: "45vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div className="column w-100">
-        <form className="row" onSubmit={submit}>
-          <div className="input-group center-elements p-5">
-            <input
-              type="text"
-              className="form-control"
-              aria-label="Caller Phone Number"
-              placeholder="Caller Phone Number"
-              value={caller}
-              onChange={(e) => setCaller(e.target.value)}
-            />
-            <input
-              type="text"
-              className="form-control"
-              aria-label="Callee Phone Number"
-              placeholder="Callee Phone Number"
-              value={callee}
-              onChange={(e) => setCallee(e.target.value)}
-            />
-            <input
-              type="text"
-              className="form-control"
-              aria-label="Access Code"
-              placeholder="Access Code"
-              value={accessCode}
-              onChange={(e) => setAccessCode(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="btn light-fill"
-              disabled={status === "loading"}
-            >
-              <span className="dark-color">
-                {status === "loading" ? "Calling…" : "Initiate Call"}
-              </span>
-            </button>
-          </div>
-        </form>
+    <div className="v2-tool-panel">
+      <form className="v2-tool-form" onSubmit={submit}>
+        <div className="v2-field">
+          <label className="v2-label" htmlFor="tr-caller">Caller phone number</label>
+          <input
+            id="tr-caller"
+            type="tel"
+            className="v2-input"
+            placeholder="+1 555 123 4567"
+            value={caller}
+            onChange={(e) => setCaller(e.target.value)}
+          />
+        </div>
+        <div className="v2-field">
+          <label className="v2-label" htmlFor="tr-callee">Callee phone number</label>
+          <input
+            id="tr-callee"
+            type="tel"
+            className="v2-input"
+            placeholder="+1 555 765 4321"
+            value={callee}
+            onChange={(e) => setCallee(e.target.value)}
+          />
+        </div>
+        <div className="v2-field">
+          <label className="v2-label" htmlFor="tr-code">Access code</label>
+          <input
+            id="tr-code"
+            type="text"
+            className="v2-input"
+            placeholder="Access code"
+            value={accessCode}
+            onChange={(e) => setAccessCode(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="v2-btn" disabled={status === "loading"}>
+          {status === "loading" ? "Calling…" : "Initiate call"}
+        </button>
 
         {status === "ok" && (
-          <div className="row">
-            <div className="col text-center">
-              <span className="dark-color">Call initiated.</span>
-            </div>
-          </div>
+          <p className="v2-tool-msg v2-tool-msg--ok">Call initiated.</p>
         )}
         {status === "error" && (
-          <div className="row">
-            <div className="col text-center">
-              <span className="dark-color">
-                Could not initiate the call. Check the numbers and try again.
-              </span>
-            </div>
-          </div>
+          <p className="v2-tool-msg v2-tool-msg--err">
+            Could not initiate the call. Check the numbers and try again.
+          </p>
         )}
-      </div>
+      </form>
     </div>
   );
 }
