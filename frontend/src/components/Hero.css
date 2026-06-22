@@ -19,6 +19,8 @@
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
+  /* Center each cell on the viewport center (a grid box is centered, not a line). */
+  background-position: center;
   opacity: 0;
   animation: hero-grid-in 1s var(--ease-build) forwards;
 }

@@ -46,6 +46,7 @@
   --maxw: 72rem; /* content max width */
   --grid-size: 48px; /* construction grid pitch */
   --rule: 1px; /* hairline weight */
+  --nav-h: 57px; /* measured nav height — used to vertically center the grid on the nav */
 
   /* Motion */
   --ease-build: cubic-bezier(0.6, 0.05, 0.2, 1);

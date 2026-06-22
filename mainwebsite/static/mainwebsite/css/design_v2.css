@@ -18,7 +18,9 @@ body.v2 *::before,
 body.v2 *::after {
   box-sizing: border-box;
 }
-body.v2 a {
+/* Link reset — kept deliberately low-specificity (.v2 a, not body.v2 a) so component
+   link colors like .v2-nav-links a win by source order instead of being overridden. */
+.v2 a {
   color: inherit;
   text-decoration: none;
 }
@@ -37,6 +39,10 @@ body.v2-home::before {
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
+  /* Horizontally box-centered (a cell straddles the viewport center); vertically
+     shifted so a whole cell is centered on the nav — the nav sits inside a grid box
+     rather than on a line. Offset = (nav height − cell) / 2. */
+  background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
   animation: v2-grid-in 1s var(--ease-build) forwards;
 }
 @keyframes v2-grid-in {
@@ -363,6 +369,8 @@ body.v2-resume-page::before {
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
+  /* Horizontally box-centered; vertically shifted so a cell is centered on the nav. */
+  background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
   pointer-events: none;
 }
 .v2-resume-header {
