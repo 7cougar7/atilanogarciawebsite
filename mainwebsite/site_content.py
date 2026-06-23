@@ -54,11 +54,9 @@ SOCIALS = [
 
 
 def homepage_content_context():
-    """Context fragment for the homepage: server-render data + island prop blobs."""
+    """Context fragment for the homepage's server-rendered work + contact sections."""
     return {
         "projects": PROJECTS,
         "socials": SOCIALS,
         "view_more_url": VIEW_MORE_URL,
-        "projectlist_props": {"projects": PROJECTS, "viewMoreUrl": VIEW_MORE_URL},
-        "sociallinks_props": {"socials": SOCIALS},
     }

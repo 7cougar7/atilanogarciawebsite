@@ -37,7 +37,8 @@
             <h2 class="v2-section-title" id="work-h">Things I've built</h2>
             <div class="v2-work">
                 {% for project in projects %}
-                <a class="v2-work-item" href="{{ project.url }}" target="_blank" rel="noopener">
+                <a class="v2-work-item" href="{{ project.url }}" target="_blank" rel="noopener"
+                   onclick="trackProjectView('{{ project.name|escapejs }}')">
                     <span class="v2-work-name">{{ project.name }}</span>
                     <span class="v2-work-meta">GitHub <span class="arrow">↗</span></span>
                 </a>
@@ -55,7 +56,8 @@
             <h2 class="v2-section-title" id="contact-h">Let's build something.</h2>
             <div class="v2-contact-links">
                 {% for social in socials %}
-                <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.platform }}">
+                <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.platform }}"
+                   onclick="trackSocialClick('{{ social.platform|escapejs }}')">
                     <i class="{{ social.icon }}" aria-hidden="true"></i>{{ social.platform }}
                 </a>
                 {% endfor %}

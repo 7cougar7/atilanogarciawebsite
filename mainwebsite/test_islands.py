@@ -182,11 +182,13 @@ class GraduationIslandTests(TestCase):
 
 
 class UtilityPagesTests(TestCase):
-    def test_404_renders_notfound_island(self):
+    def test_404_renders_v2_error_page(self):
         # Django runs tests with DEBUG=False, so the handler404 template is used.
         response = self.client.get("/definitely-not-a-real-url/")
         self.assertEqual(response.status_code, 404)
-        self.assertIn('data-react-component="NotFound"', response.content.decode())
+        html = response.content.decode()
+        self.assertIn(">404<", html)
+        self.assertIn("Back home", html)
 
     def _render(self, template):
         return render_to_string(template, request=RequestFactory().get("/"))

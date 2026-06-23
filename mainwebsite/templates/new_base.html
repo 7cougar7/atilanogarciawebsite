@@ -12,7 +12,8 @@
     <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia is a skilled software engineer and developer specializing in web development, machine learning, and innovative technology solutions. Explore projects, resume, and professional portfolio.{% endif %}">
     <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}Atilano Garcia, software engineer, web developer, machine learning, Django, Python, JavaScript, portfolio, resume{% endif %}">
     <meta name="author" content="Atilano Garcia">
-    <meta name="robots" content="index, follow">
+    {# Legacy Bootstrap pages: hidden from search after the v2 cutover. #}
+    <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
 
     <!-- Google Search Console Verification -->
