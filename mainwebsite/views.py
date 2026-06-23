@@ -42,16 +42,17 @@ logger = logging.getLogger(__name__)
 
 
 def page_not_found_view(request, exception):
-    return render(request, "404.html", status=404)
+    return render(request, "404.html", {"page_title": "404"}, status=404)
 
 
 def homepage(request):
     context = {
-        "title": "Home Page",
-        "content": "homepage",
+        "title": "Home",
         "page_title": "Home",
-        "meta_description": "Welcome to Atilano Garcia's portfolio. Explore innovative software engineering projects, machine learning experiments, and professional development work. View resume, projects, and contact information.",
-        "meta_keywords": "Atilano Garcia, software engineer, portfolio, projects, machine learning, web development, Django, Python, resume, contact",
+        "meta_description": (
+            "Atilano Garcia, a software engineer in Austin, TX. I build full-stack web "
+            "apps for a living and side projects for the fun of it."
+        ),
     }
     context.update(homepage_content_context())
     return render(request, "homepage.html", context)
@@ -80,69 +81,6 @@ def cube_wallpaper(request):
 
 def resume(request):
     context = {
-        "title": "Resume",
-        "content": "resume",
-        "page_title": "Resume & CV",
-        "meta_description": "Download Atilano Garcia's professional resume and CV. View experience in software engineering, web development, machine learning, and technical skills.",
-        "meta_keywords": "Atilano Garcia resume, CV, software engineer resume, web developer CV, technical skills, professional experience",
-    }
-    return render(request, "resume.html", context)
-
-
-def linkedin(request):
-    return redirect("https://www.linkedin.com/in/atilano-garcia/")
-
-
-def concept_preview(request):
-    """Isolated hero test (not linked from the site). Production page is /v2/."""
-    return render(request, "concept_preview.html")
-
-
-def homepage_v2(request):
-    """New 'It builds itself' homepage. Lives at /v2/ in parallel with the old site;
-    cutover later is just pointing the homepage view here."""
-    context = {
-        "title": "Home",
-        "page_title": "Home",
-        "meta_description": (
-            "Atilano Garcia, a software engineer in Austin, TX. I build full-stack web "
-            "apps for a living and side projects for the fun of it."
-        ),
-    }
-    context.update(homepage_content_context())
-    return render(request, "homepage_v2.html", context)
-
-
-def translator_v2(request):
-    """v2-styled two-way translator tool. Parallel to /translator/; reuses the same
-    start_two_way backend."""
-    context = {
-        "page_title": "Translator",
-        "meta_description": (
-            "Two-way phone translator by Atilano Garcia. Bridge a live, translated call "
-            "between two people who don't share a language."
-        ),
-    }
-    return render(request, "translator_v2.html", context)
-
-
-def url_shortener_v2(request):
-    """v2-styled URL shortener. Parallel to /url_shortener/; reuses the same
-    url_shortener_submit backend."""
-    context = {
-        "page_title": "URL Shortener",
-        "meta_description": (
-            "URL shortener by Atilano Garcia. Turn a long link into a short, shareable "
-            "redirect."
-        ),
-    }
-    return render(request, "url_shortener_v2.html", context)
-
-
-def resume_v2(request):
-    """Résumé rendered in the v2 design language (not a PDF embed). Lives at
-    /v2/resume/; the PDF stays available as a download link."""
-    context = {
         "title": "Résumé",
         "page_title": "Résumé",
         "meta_description": (
@@ -151,7 +89,11 @@ def resume_v2(request):
             "launches."
         ),
     }
-    return render(request, "resume_v2.html", context)
+    return render(request, "resume.html", context)
+
+
+def linkedin(request):
+    return redirect("https://www.linkedin.com/in/atilano-garcia/")
 
 
 def calendar_webpage(request):
@@ -164,9 +106,11 @@ def kky_acceptance_page(request):
 
 def url_shortener(request):
     context = {
-        "page_title": "URL Shortener Tool",
-        "meta_description": "Free URL shortener tool built by Atilano Garcia. Create short, custom links for easy sharing. Fast, reliable, and secure link shortening service.",
-        "meta_keywords": "URL shortener, link shortener, custom links, web tools, link management, short URLs",
+        "page_title": "URL Shortener",
+        "meta_description": (
+            "URL shortener by Atilano Garcia. Turn a long link into a short, shareable "
+            "redirect."
+        ),
     }
     return render(request, "url_shortener.html", context)
 
@@ -202,10 +146,11 @@ def redirect_url(request, shortened_url):
 def translator(request):
     context = {
         "title": "Translator",
-        "content": "translator",
-        "page_title": "Language Translator",
-        "meta_description": "Real-time language translator tool built by Atilano Garcia. Translate text between multiple languages using advanced translation APIs.",
-        "meta_keywords": "language translator, real-time translation, multilingual tool, text translation, language conversion, translation API",
+        "page_title": "Translator",
+        "meta_description": (
+            "Two-way phone translator by Atilano Garcia. Bridge a live, translated call "
+            "between two people who don't share a language."
+        ),
     }
     return render(request, "translator.html", context)
 

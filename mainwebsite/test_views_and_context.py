@@ -43,13 +43,14 @@ class ResumePageTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "resume.html")
-        self.assertTemplateUsed(response, "new_base.html")
+        self.assertTemplateUsed(response, "base_design.html")
 
-    def test_embeds_pdf_and_download_link(self):
+    def test_styled_resume_with_pdf_download(self):
+        # Styled HTML résumé (no PDF embed) with a download link to the PDF.
         response = self.client.get(self.url)
-        self.assertContains(response, "<iframe")
+        self.assertNotContains(response, "<iframe")
+        self.assertContains(response, "Technical Experience")
         self.assertContains(response, ".pdf")
-        self.assertContains(response, "trackResumeDownload()")
 
 
 class KkyPageTests(TestCase):
@@ -70,11 +71,13 @@ class KkyPageTests(TestCase):
 
 
 class AnalyticsStubTests(TestCase):
-    """The tracking stubs must always be defined so onclick handlers never throw,
-    while the real GA snippet appears only when an analytics ID is configured."""
+    """new_base.html analytics: the tracking stubs must always be defined so onclick
+    handlers never throw, while the real GA snippet appears only when an analytics ID is
+    configured. Tested via a page still on new_base (kky); the résumé moved to the v2
+    base, which has its own trackToolUsage stub."""
 
     def setUp(self):
-        self.url = reverse("mainwebsite:resume")
+        self.url = reverse("mainwebsite:kky_acceptance_page")
 
     @override_settings(GOOGLE_ANALYTICS_ID="")
     def test_stub_functions_present_without_analytics_id(self):

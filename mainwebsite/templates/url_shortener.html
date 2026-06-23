@@ -1,20 +1,26 @@
-{% extends 'new_base.html' %}
+{% extends 'base_design.html' %}
 
 {% block content %}
-<div data-react-component="UrlShortener"
-     data-submit-url="{% url 'mainwebsite:urlShortenerSubmit' %}">
-    {# Server-rendered fallback (non-interactive without JS); React replaces it on mount. #}
-    <div class="glass-card"
-         style="min-height: 45vh; display: flex; justify-content: center; align-items: center;">
-        <div class="column w-100">
-            <div class="row">
-                <div class="input-group center-elements p-5">
-                    <input type="text" class="form-control" aria-label="URL To Shorten"
-                           placeholder="URL To Shorten">
-                    <button type="button" class="btn light-fill"><span class="dark-color">Shorten URL</span></button>
+<section class="v2-tool reveal" aria-labelledby="tool-h">
+    {% csrf_token %}
+    <p class="v2-eyebrow">Tools · URL Shortener</p>
+    <h1 class="v2-tool-title" id="tool-h">URL shortener</h1>
+    <p class="v2-tool-desc">
+        Turn a long link into a short, shareable one. Paste a URL and get a tidy redirect
+        you can copy in a click.
+    </p>
+    <div data-react-component="UrlShortener"
+         data-submit-url="{% url 'mainwebsite:urlShortenerSubmit' %}">
+        {# Server-rendered fallback (non-interactive without JS); React replaces it on mount. #}
+        <div class="v2-tool-panel">
+            <form class="v2-tool-form">
+                <div class="v2-field">
+                    <label class="v2-label">URL to shorten</label>
+                    <input type="url" class="v2-input" placeholder="https://example.com/a-very-long-link">
                 </div>
-            </div>
+                <button type="button" class="v2-btn">Shorten URL</button>
+            </form>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

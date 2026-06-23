@@ -1,7 +1,12 @@
-{% extends 'new_base.html' %}
-{% load static %}
+{% extends 'base_design.html' %}
+
+{% block body_class %} v2-error{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'mainwebsite/css/404.css' %}">
-<div data-react-component="NotFound"></div>
+<section class="v2-error">
+    <p class="v2-eyebrow">Error 404</p>
+    <h1 class="v2-error-code">404</h1>
+    <p class="v2-error-msg">This page isn't on the grid. It may have moved, or it never existed.</p>
+    <a class="v2-btn" href="{% url 'mainwebsite:homepage' %}">Back home</a>
+</section>
 {% endblock %}

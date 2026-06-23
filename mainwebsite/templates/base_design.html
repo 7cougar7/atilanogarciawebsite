@@ -20,12 +20,14 @@
     <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:image" content="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    <meta property="og:image" content="{% static 'mainwebsite/img/og/og-image.png' %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="Atilano Garcia">
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% if page_title %}{{ page_title }}{% else %}{{ title }}{% endif %} | Atilano Garcia">
     <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}Software engineer in Austin, TX.{% endif %}">
-    <meta name="twitter:image" content="{% static 'mainwebsite/img/favicon/apple-touch-icon.png' %}">
+    <meta name="twitter:image" content="{% static 'mainwebsite/img/og/og-image.png' %}">
     {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}" />{% endif %}
 
     <!-- Structured data -->
@@ -65,9 +67,12 @@
         if (localStorage.getItem("dark_mode") === "true") {
             document.documentElement.setAttribute("data-theme", "dark");
         }
-        // Tracking stub — always defined so trackToolUsage() never throws; GA below
-        // overrides it when an analytics ID is configured.
-        function trackToolUsage(toolName) {}
+        // Tracking stubs — always defined so the onclick handlers never throw; the GA
+        // block below overrides them when an analytics ID is configured.
+        function trackToolUsage(label) {}
+        function trackProjectView(label) {}
+        function trackSocialClick(label) {}
+        function trackResumeDownload() {}
     </script>
 
     <!-- Google Analytics 4 -->
@@ -78,28 +83,32 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', '{{ google_analytics_id }}');
-      function trackToolUsage(toolName) {
-        gtag('event', 'tool_usage', {
-          'event_category': 'engagement',
-          'event_label': toolName,
-          'value': 1
-        });
+      function gaEvent(name, category, label) {
+        gtag('event', name, { 'event_category': category, 'event_label': label, 'value': 1 });
       }
+      function trackToolUsage(label) { gaEvent('tool_usage', 'engagement', label); }
+      function trackProjectView(label) { gaEvent('project_view', 'engagement', label); }
+      function trackSocialClick(label) { gaEvent('social_click', 'social', label); }
+      function trackResumeDownload() { gaEvent('resume_download', 'engagement', 'Resume PDF'); }
     </script>
     {% endif %}
     {% block js %}{% endblock %}
 </head>
 
 <body class="v2{% block body_class %}{% endblock %}">
+    <a class="v2-skip-link" href="#content">Skip to content</a>
     <header class="v2-nav">
-        <a class="v2-brand" href="{% url 'mainwebsite:homepage_v2' %}">Atilano Garcia</a>
-        <nav class="v2-nav-links" aria-label="Primary">
-            <a href="{% url 'mainwebsite:resume_v2' %}">Resume</a>
+        <a class="v2-brand" href="{% url 'mainwebsite:homepage' %}">Atilano Garcia</a>
+        <button class="v2-nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="v2-nav-links">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="v2-nav-links" id="v2-nav-links" aria-label="Primary">
+            <a href="{% url 'mainwebsite:resume' %}">Resume</a>
             <details class="v2-nav-group">
                 <summary>Tools</summary>
                 <div class="v2-nav-menu">
-                    <a href="{% url 'mainwebsite:translator_v2' %}">Translator</a>
-                    <a href="{% url 'mainwebsite:url_shortener_v2' %}">URL Shortener</a>
+                    <a href="{% url 'mainwebsite:translator' %}">Translator</a>
+                    <a href="{% url 'mainwebsite:urlShortener' %}">URL Shortener</a>
                 </div>
             </details>
             <a href="https://www.linkedin.com/in/atilano-garcia/" target="_blank" rel="noopener">LinkedIn</a>
@@ -148,6 +157,17 @@
             });
             document.addEventListener("keydown", function (e) {
                 if (e.key === "Escape" && group.open) group.open = false;
+            });
+        })();
+
+        // Mobile menu toggle (hamburger). Collapses the nav links on small screens.
+        (function () {
+            var nav = document.querySelector(".v2-nav");
+            var toggle = document.querySelector(".v2-nav-toggle");
+            if (!nav || !toggle) return;
+            toggle.addEventListener("click", function () {
+                var open = nav.classList.toggle("is-open");
+                toggle.setAttribute("aria-expanded", open ? "true" : "false");
             });
         })();
     </script>
