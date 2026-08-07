@@ -826,6 +826,99 @@ body.v2-error::before {
   max-width: 28ch;
 }
 
+/* Vault — menu of private static pages behind the password gate */
+/* Faint construction grid behind the whole page (fixed, matches home/résumé). */
+body.v2-vault::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  /* Horizontally box-centered; vertically shifted so a cell is centered on the nav. */
+  background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
+}
+/* The content sits in one console panel so the construction grid frames it rather
+   than cutting through the text. Widths/padding use the 48px grid module so it reads
+   as on-grid: the panel is 12 cells wide with a 1-cell inset. */
+.vault {
+  max-width: none;
+}
+.vault-console {
+  width: calc(12 * var(--grid-size)); /* 576px — a whole number of grid cells */
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--grid-size); /* one grid cell of breathing room on every side */
+  background: var(--surface);
+  border: var(--rule) solid var(--line);
+  border-radius: 4px;
+}
+@media (max-width: 640px) {
+  .vault-console {
+    padding: var(--space-3);
+  }
+}
+.vault-list {
+  display: grid;
+  gap: 0.6rem;
+}
+/* Paper-backed rows so they read as items inside the surface console. Kept compact
+   (single line of text) so many pages stack without the list getting tall. */
+.vault-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0.7rem 1rem;
+  background: var(--paper);
+  border: var(--rule) solid var(--line);
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.vault-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.vault-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.vault-card-title {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink);
+}
+.vault-card-blurb {
+  font-size: 0.82rem;
+  color: var(--muted);
+  /* One line, ellipsised — keeps every row the same short height. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vault-card-go {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  color: var(--accent);
+  flex: none;
+  transition: transform 0.2s ease;
+}
+.vault-card:hover .vault-card-go {
+  transform: translateX(4px);
+}
+.vault-lock-form {
+  margin-top: var(--space-4);
+}
+
 /* ---- Scroll reveal ------------------------------------------------------ */
 .reveal {
   opacity: 0;

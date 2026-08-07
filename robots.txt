@@ -15,6 +15,7 @@ Disallow: /login/
 Disallow: /magic-link-verify/
 Disallow: /passkey-register/
 Disallow: /personal-ai/
+Disallow: /vault/
 
 # Disallow temporary or development files
 Disallow: *.log$

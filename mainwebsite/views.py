@@ -1,4 +1,5 @@
 import logging
+import os
 
 from django.conf import settings
 from django.contrib import messages
@@ -7,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.http import JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.crypto import constant_time_compare
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
@@ -504,3 +506,119 @@ def intro(request):
         "video_url": "https://content.atilanogarcia.com/Rick%20Roll.mp4",
     }
     return render(request, "intro.html", context)
+
+
+# --- Vault: one static password gates a menu of private static HTML pages ------
+#
+# Add a new page by dropping its self-contained .html into
+# mainwebsite/protected_sites/ and adding one entry here. The "file" is looked up
+# only by an entry in this registry, so the URL <slug> can never traverse the
+# filesystem. Pages are served verbatim (no Django template parsing), so any
+# static HTML — including files full of {{ }} or {% %} — works untouched.
+VAULT_SITES = [
+    {
+        "slug": "acids",
+        "title": "Skincare Acids Dashboard",
+        "blurb": "Closed comedones & texture — a decision plan.",
+        "file": "acid_dashboard.html",
+    },
+]
+VAULT_SITES_BY_SLUG = {s["slug"]: s for s in VAULT_SITES}
+
+VAULT_PROTECTED_DIR = os.path.join(settings.BASE_DIR, "mainwebsite", "protected_sites")
+
+# A small floating "back to the vault" pill injected into every served page. It is
+# fully self-contained (no dependence on the host page's CSS) so it looks the same
+# over any static site's styling.
+_VAULT_BACK_LINK = (
+    '<a href="/vault/" style="position:fixed;bottom:16px;left:16px;'
+    "z-index:2147483647;background:rgba(20,20,25,.72);color:#e5e7eb;"
+    "font:600 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"
+    "padding:9px 13px;border-radius:20px;text-decoration:none;"
+    "border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px);"
+    '-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 14px rgba(0,0,0,.3)">'
+    "← Vault</a>"
+)
+
+
+def _vault_unlocked(request):
+    return request.session.get("vault_unlocked", False)
+
+
+_VAULT_LOCKED_MSG = "Too many attempts. Wait a few minutes and try again."
+
+
+def vault_index(request):
+    """Password gate + menu. Locked: show the v2-styled password form. Unlocked:
+    list the available static sites."""
+    gate_error = None
+    locked = False
+    if not _vault_unlocked(request):
+        # Brute-force protection: throttle per client IP by reusing the site's
+        # account-lockout store, namespaced to the vault so it never collides with
+        # real usernames. Keyed by IP so a single attacker can't lock everyone out.
+        ip = get_client_ip(request)
+        lock_id = f"vault:{ip}"
+        locked = is_account_locked(username=lock_id, request=request)
+
+        if request.method == "POST":
+            if locked:
+                gate_error = _VAULT_LOCKED_MSG
+            else:
+                submitted = request.POST.get("password", "")
+                expected = settings.VAULT_PASSWORD
+                # constant_time_compare avoids leaking the password length/prefix
+                # via response timing; an empty configured password never unlocks.
+                if expected and constant_time_compare(submitted, expected):
+                    clear_login_attempts(username=lock_id, request=request)
+                    request.session["vault_unlocked"] = True
+                    return redirect("mainwebsite:vault_index")
+                record_failed_login(username=lock_id, request=request)
+                locked = is_account_locked(username=lock_id, request=request)
+                gate_error = (
+                    _VAULT_LOCKED_MSG if locked else "Incorrect password. Try again."
+                )
+
+    context = {
+        "page_title": "Vault",
+        "meta_description": "Private, password-protected pages.",
+        "unlocked": _vault_unlocked(request),
+        "locked": locked,
+        "sites": VAULT_SITES,
+        "gate_error": gate_error,
+    }
+    response = render(request, "vault.html", context)
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
+def vault_lock(request):
+    """Clear the unlock flag ('Lock' button on the menu)."""
+    request.session.pop("vault_unlocked", None)
+    return redirect("mainwebsite:vault_index")
+
+
+def vault_site(request, slug):
+    """Serve a registered static page verbatim, only when the session is unlocked."""
+    if not _vault_unlocked(request):
+        return redirect("mainwebsite:vault_index")
+
+    site = VAULT_SITES_BY_SLUG.get(slug)
+    if site is None:
+        raise Http404("No such page")
+
+    path = os.path.join(VAULT_PROTECTED_DIR, site["file"])
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            html = f.read()
+    except FileNotFoundError as exc:
+        raise Http404("Page file missing") from exc
+
+    if "</body>" in html:
+        html = html.replace("</body>", _VAULT_BACK_LINK + "</body>", 1)
+    else:
+        html += _VAULT_BACK_LINK
+
+    response = HttpResponse(html)
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
