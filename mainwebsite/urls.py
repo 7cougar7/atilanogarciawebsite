@@ -14,11 +14,6 @@ app_name = "mainwebsite"
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
-    path("v2/", views.homepage_v2, name="homepage_v2"),
-    path("v2/resume/", views.resume_v2, name="resume_v2"),
-    path("v2/translator/", views.translator_v2, name="translator_v2"),
-    path("v2/url-shortener/", views.url_shortener_v2, name="url_shortener_v2"),
-    path("lab/build/", views.concept_preview, name="concept_preview"),
     # Vault: one static password gates a menu of private static pages.
     # "lock/" is listed before "<slug>/" so it isn't captured as a site slug.
     path("vault/", views.vault_index, name="vault_index"),

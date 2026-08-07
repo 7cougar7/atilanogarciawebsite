@@ -1,68 +1,82 @@
-{% extends 'new_base.html' %}
+{% extends 'base_design.html' %}
 {% load static %}
 
+{% block body_class %} v2-home{% endblock %}
+
 {% block content %}
-{{ projectlist_props|json_script:"projectlist-props" }}
-{{ sociallinks_props|json_script:"sociallinks-props" }}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-5" style="padding-left: 10px !important; padding-right: 10px !important;">
-            <div class="container-fluid h-100 d-flex flex-column g-0">
-                <div class="glass-card mb-0" style="height: auto; opacity: 0;">
-                    <img src="{% static 'mainwebsite/img/homepage/carousel/PepBand.jpg' %}" class="img-thumbnail"
-                        alt="Atilano Garcia performing with the pep band, showcasing musical talents and university involvement" style="border-radius: 20px">
-                </div>
-                <div class="glass-card flex-grow-1 d-none d-lg-block" style="height: auto; opacity: 0;">
-                    {% include 'partials/_projects.html' %}
-                </div>
-            </div>
+{# Hero island — the "It builds itself" construction sequence. Uses component defaults. #}
+<div data-react-component="Hero"></div>
+
+<section class="v2-section reveal" aria-labelledby="about-h">
+    <div class="v2-cols">
+        <p class="v2-eyebrow" id="about-h">About</p>
+        <div>
+            <p class="v2-lead">I build software that works for people, not against them.</p>
+            <p class="v2-body">
+                I'm a software engineer at Indeed in Austin. I like using technology to solve
+                real problems and make people's lives a little easier. I've worked on
+                everything from web apps to large-scale data systems and machine learning
+                models, and I'm always looking for the next thing to build and learn.
+            </p>
+            <p class="v2-body">
+                A few things I've made for fun are below, along with the
+                <a href="{% url 'mainwebsite:translator' %}">language translator</a> and
+                <a href="{% url 'mainwebsite:urlShortener' %}">URL shortener</a> I built.
+                You can also read my
+                <a href="{% url 'mainwebsite:resume' %}">résumé</a> or find me on
+                <a href="https://www.linkedin.com/in/atilano-garcia/" target="_blank" rel="noopener">LinkedIn</a>.
+            </p>
         </div>
-        <div class="col-md-7" style="padding-left: 10px !important; padding-right: 10px !important;">
-            <div class="container-fluid h-100 d-flex flex-column g-0">
-                <div class="glass-card mb-0" style="height: auto; opacity: 0;">
-                    {# <p class="dark-color">Test</p>#}
-                    <div class="card-body p-3">
-                        <div class="row">
-                            <div class="col text-center">
-                                <h1 class="dark-color card-title">Welcome to My Website!</h1>
-                            </div>
-                        </div>
-                        <p class="lead dark-color card-text">
-                            &emsp;Hi, I'm Atilano Garcia, a software developer who is passionate
-                            about using technology to solve real-world problems and make people's lives easier. I have
-                            worked on
-                            a variety of projects, from web applications to machine learning models. I am always looking
-                            for new challenges and opportunities to grow as a developer. Feel free to explore my
-                            <a href="{% url 'mainwebsite:graduation' %}" class="dark-color">graduation journey</a>,
-                            check out my <a href="{% url 'mainwebsite:translator' %}" class="dark-color" onclick="trackToolUsage('Language Translator')">language translator tool</a>,
-                            or try the <a href="{% url 'mainwebsite:urlShortener' %}" class="dark-color" onclick="trackToolUsage('URL Shortener')">URL shortener</a> I built.
-                            You can also view my professional background in my
-                            <a href="{% static 'mainwebsite/files/Atilano (Tilo) Garcia Resume.pdf' %}" target="_blank" class="dark-color" onclick="trackResumeDownload()">resume</a>
-                            or connect with me on <a href="https://www.linkedin.com/in/atilano-garcia/" class="dark-color" onclick="trackSocialClick('LinkedIn')">LinkedIn</a>.
-                        </p>
-                        <p class="lead dark-color card-text">
-                            &emsp;My approach to software development is centered around creating solutions that are
-                            intuitive,
-                            efficient, and user-friendly. I believe that technology should always work for people, not
-                            against
-                            them, and that software should always be designed with the end user in mind. Whether I am
-                            developing
-                            a new software application or optimizing an existing system, I work closely with my clients
-                            to
-                            understand their needs and deliver solutions that meet their unique requirements.
-                        </p>
-                    </div>
-                </div>
-                <div class="glass-card flex-grow-1 d-md-none mb-0" style="height: auto; opacity: 0;">
-                    {% include 'partials/_projects.html' %}
-                </div>
-                <div class="glass-card flex-grow-1" style="height: auto; opacity: 0;">
-                    <div class="h-100 d-flex align-items-center">
-                        {% include 'partials/_socials.html' %}
-                    </div>
-                </div>
+    </div>
+</section>
+
+<section class="v2-section reveal" aria-labelledby="work-h">
+    <div class="v2-cols">
+        <p class="v2-eyebrow">Selected work</p>
+        <div>
+            <h2 class="v2-section-title" id="work-h">Things I've built</h2>
+            <div class="v2-work">
+                {% for project in projects %}
+                <a class="v2-work-item" href="{{ project.url }}" target="_blank" rel="noopener"
+                   onclick="trackProjectView('{{ project.name|escapejs }}')">
+                    <span class="v2-work-name">{{ project.name }}</span>
+                    <span class="v2-work-meta">GitHub <span class="arrow">↗</span></span>
+                </a>
+                {% endfor %}
+            </div>
+            <a class="v2-work-more" href="{{ view_more_url }}" target="_blank" rel="noopener">More on GitHub →</a>
+        </div>
+    </div>
+</section>
+
+<section class="v2-section reveal" aria-labelledby="contact-h">
+    <div class="v2-cols">
+        <p class="v2-eyebrow">Contact</p>
+        <div>
+            <h2 class="v2-section-title" id="contact-h">Let's build something.</h2>
+            <div class="v2-contact-links">
+                {% for social in socials %}
+                <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.platform }}"
+                   onclick="trackSocialClick('{{ social.platform|escapejs }}')">
+                    <i class="{{ social.icon }}" aria-hidden="true"></i>{{ social.platform }}
+                </a>
+                {% endfor %}
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // The nav starts hidden (CSS, .v2-home) and flies in once the hero signals it's
+    // finished building. Listener is registered before the React bundle mounts the hero.
+    (function () {
+        var nav = document.querySelector(".v2-nav");
+        if (!nav) return;
+        document.addEventListener("hero:done", function () {
+            nav.classList.add("v2-nav--in");
+        }, { once: true });
+    })();
+</script>
 {% endblock %}

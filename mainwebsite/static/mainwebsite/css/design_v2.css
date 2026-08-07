@@ -197,6 +197,88 @@ body.v2-home::before {
   color: var(--ink);
 }
 
+/* Skip link — hidden until focused, for keyboard/screen-reader users. */
+.v2-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.v2-skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+/* Hamburger toggle — hidden on desktop, shown on mobile (see media query). */
+.v2-nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.v2-nav-toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--ink);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.v2-nav.is-open .v2-nav-toggle span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.v2-nav.is-open .v2-nav-toggle span:nth-child(2) {
+  opacity: 0;
+}
+.v2-nav.is-open .v2-nav-toggle span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (max-width: 640px) {
+  .v2-nav {
+    flex-wrap: wrap;
+  }
+  .v2-nav-toggle {
+    display: flex;
+  }
+  /* Collapse the links into a stacked panel toggled by the hamburger. */
+  .v2-nav-links {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-2) 0 var(--space-1);
+  }
+  .v2-nav.is-open .v2-nav-links {
+    display: flex;
+  }
+  /* On the homepage the nav is transparent over the hero; back the open panel so the
+     links stay readable against the grid. */
+  .v2-home .v2-nav.is-open {
+    background: var(--paper);
+  }
+  .v2-nav-menu {
+    position: static;
+    border: none;
+    box-shadow: none;
+    background: none;
+    padding: 0.4rem 0 0 var(--space-2);
+  }
+}
+
 /* ---- Section scaffolding ------------------------------------------------ */
 .v2-section {
   max-width: var(--maxw);
@@ -705,6 +787,45 @@ body.v2-resume-page::before {
   flex: none;
 }
 
+/* ---- 404 ---------------------------------------------------------------- */
+/* Faint construction grid behind the error page, centered on the nav like the rest. */
+body.v2-error::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
+}
+.v2-error {
+  min-height: calc(100svh - 8rem);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--space-5) clamp(1rem, 4vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.v2-error-code {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: clamp(5rem, 4rem + 14vw, 13rem);
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: var(--tracking-tight);
+}
+.v2-error-msg {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-lead);
+  color: var(--muted);
+  max-width: 28ch;
+}
+
 /* Vault — menu of private static pages behind the password gate */
 /* Faint construction grid behind the whole page (fixed, matches home/résumé). */
 body.v2-vault::before {
@@ -712,13 +833,13 @@ body.v2-vault::before {
   position: fixed;
   inset: 0;
   z-index: -1;
+  pointer-events: none;
   background-image:
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
   /* Horizontally box-centered; vertically shifted so a cell is centered on the nav. */
   background-position: center calc((var(--nav-h) - var(--grid-size)) / 2);
-  pointer-events: none;
 }
 /* The content sits in one console panel so the construction grid frames it rather
    than cutting through the text. Widths/padding use the 48px grid module so it reads
