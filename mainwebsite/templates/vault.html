@@ -1,0 +1,53 @@
+{% extends 'base_design.html' %}
+
+{% block body_class %} v2-vault{% endblock %}
+
+{% block content %}
+<section class="v2-tool vault reveal" aria-labelledby="vault-h">
+  <div class="vault-console">
+  {% if unlocked %}
+    <p class="v2-eyebrow">Private · Vault</p>
+    <h1 class="v2-tool-title" id="vault-h">Static sites</h1>
+
+    <div class="vault-list">
+      {% for site in sites %}
+      <a class="vault-card" href="{% url 'mainwebsite:vault_site' site.slug %}">
+        <span class="vault-card-body">
+          <span class="vault-card-title">{{ site.title }}</span>
+          <span class="vault-card-blurb">{{ site.blurb }}</span>
+        </span>
+        <span class="vault-card-go" aria-hidden="true">→</span>
+      </a>
+      {% empty %}
+      <p class="v2-tool-msg">No pages yet.</p>
+      {% endfor %}
+    </div>
+
+    <form method="post" action="{% url 'mainwebsite:vault_lock' %}" class="vault-lock-form">
+      {% csrf_token %}
+      <button type="submit" class="v2-btn v2-btn--ghost">Lock</button>
+    </form>
+  {% else %}
+    <p class="v2-eyebrow">Private · Protected</p>
+    <h1 class="v2-tool-title" id="vault-h">Enter password</h1>
+    <p class="v2-tool-desc">
+      This area is protected. Enter the password to unlock the pages inside.
+    </p>
+
+    <form class="v2-tool-form" method="post" action="{% url 'mainwebsite:vault_index' %}">
+      {% csrf_token %}
+      <div class="v2-field">
+        <label class="v2-label" for="vault-pw">Password</label>
+        <input id="vault-pw" name="password" type="password" class="v2-input"
+               autocomplete="off" autofocus placeholder="••••••••" required
+               {% if locked %}disabled{% endif %}>
+      </div>
+      {% if gate_error %}
+      <p class="v2-tool-msg v2-tool-msg--err">{{ gate_error }}</p>
+      {% endif %}
+      <button type="submit" class="v2-btn" {% if locked %}disabled{% endif %}>Unlock</button>
+    </form>
+  {% endif %}
+  </div>
+</section>
+{% endblock %}

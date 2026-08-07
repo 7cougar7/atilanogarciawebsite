@@ -46,6 +46,11 @@ ALLOWED_HOSTS = [
     ".ngrok-free.app",
 ]
 
+# Vault — single static password that gates the /vault/ collection of private
+# static HTML pages. Read from the environment (see .env); if unset the vault stays
+# locked for everyone (no fallback password is baked into the repo).
+VAULT_PASSWORD = os.getenv("VAULT_PASSWORD", "")
+
 # SEO and Analytics Configuration
 GOOGLE_ANALYTICS_ID = os.environ.get("GOOGLE_ANALYTICS_ID", "")
 GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "")

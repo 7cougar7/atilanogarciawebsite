@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skincare Acids Dashboard — Comedones & Texture</title>
+<style>
+:root{
+  --bg:#0e1116; --panel:#161b23; --panel2:#1d232d; --line:#2a323e;
+  --tx:#e6e9ef; --tx2:#9aa5b5; --tx3:#6b7688;
+  --exf:#6ba8ff; --hyd:#4ecdc4; --both:#c084fc; --sup:#f5a623;
+  --ok:#3ecf8e; --warn:#f5a623; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:27px;margin:0 0 6px;letter-spacing:-.4px}
+h2{font-size:19px;margin:34px 0 12px;letter-spacing:-.2px}
+h3{font-size:15px;margin:0 0 8px}
+.sub{color:var(--tx2);margin:0 0 22px;font-size:14px;max-width:760px}
+.disc{background:#1a1410;border:1px solid #4a3a24;color:#e8c89a;padding:10px 14px;border-radius:9px;font-size:12.5px;margin-bottom:22px}
+
+/* tabs */
+.tabs{display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:22px}
+.tab{background:none;border:none;color:var(--tx2);padding:10px 15px;font-size:13.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;transition:.15s}
+.tab:hover{color:var(--tx)}
+.tab.on{color:var(--tx);border-bottom-color:var(--exf)}
+.page{display:none}.page.on{display:block}
+
+/* filter chips */
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.chip{background:var(--panel);border:1px solid var(--line);color:var(--tx2);padding:6px 13px;border-radius:20px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s}
+.chip:hover{border-color:#3d4757;color:var(--tx)}
+.chip.on{background:var(--exf);border-color:var(--exf);color:#07101d;font-weight:600}
+.lbl{color:var(--tx3);font-size:12px;margin-right:4px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(325px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 17px;transition:.15s}
+.card:hover{border-color:#3a4453}
+.chd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px}
+.cname{font-size:16.5px;font-weight:650;letter-spacing:-.2px}
+.calias{color:var(--tx3);font-size:11.5px;margin-top:2px}
+.pill{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase}
+.p-exf{background:rgba(107,168,255,.15);color:var(--exf)}
+.p-hyd{background:rgba(78,205,196,.15);color:var(--hyd)}
+.p-both{background:rgba(192,132,252,.15);color:var(--both)}
+.p-sup{background:rgba(245,166,35,.15);color:var(--sup)}
+.fam{display:inline-block;font-size:11px;color:var(--tx2);background:var(--panel2);border:1px solid var(--line);padding:2px 7px;border-radius:4px;margin:8px 0 10px}
+.card p{margin:0 0 11px;font-size:13.5px;color:var(--tx2)}
+.rows{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px}
+.row{display:flex;gap:10px;font-size:12.5px}
+.rk{color:var(--tx3);min-width:88px;flex-shrink:0}
+.rv{color:var(--tx)}
+.bars{display:flex;gap:3px;align-items:center}
+.b{width:15px;height:5px;border-radius:2px;background:#2b3341}
+.b.f{background:var(--exf)}
+.b.f.s{background:var(--bad)}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--panel);border-radius:10px;overflow:hidden}
+.tbl th{background:var(--panel2);text-align:left;padding:10px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);font-weight:600;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--tx2)}
+.tbl td:first-child{color:var(--tx);font-weight:600}
+.tbl tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto}
+
+/* matrix */
+.mx{border-collapse:separate;border-spacing:3px;font-size:12px}
+.mx th{background:none;padding:6px;color:var(--tx2);font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;border:none}
+.mx th.rowh{text-align:right;padding-right:9px;white-space:nowrap;color:var(--tx)}
+.mx td{padding:0;border:none}
+.cell{width:100%;height:38px;min-width:64px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;border:1px solid transparent;transition:.12s}
+.cell:hover{transform:scale(1.06);border-color:#fff3}
+.c-ok{background:rgba(62,207,142,.16);color:var(--ok)}
+.c-warn{background:rgba(245,166,35,.16);color:var(--warn)}
+.c-bad{background:rgba(255,107,107,.16);color:var(--bad)}
+.c-self{background:#191f28;color:#39424f}
+#mxout{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--exf);border-radius:9px;padding:14px 16px;font-size:13.5px;color:var(--tx2);min-height:52px}
+#mxout b{color:var(--tx)}
+
+/* misc blocks */
+.note{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13.5px;color:var(--tx2);margin:14px 0}
+.note.good{border-left:3px solid var(--ok)}
+.note.warn{border-left:3px solid var(--warn)}
+.note.bad{border-left:3px solid var(--bad)}
+.note b{color:var(--tx)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+ul{margin:8px 0;padding-left:19px}li{margin-bottom:5px;font-size:13.5px;color:var(--tx2)}
+li b{color:var(--tx)}
+
+/* week plan */
+.wk{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 17px;margin-bottom:11px}
+.wkh{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.wknum{background:var(--exf);color:#07101d;font-weight:750;font-size:11.5px;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.wkt{font-weight:600;font-size:14.5px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}
+.day{background:var(--panel2);border-radius:6px;padding:7px 4px;text-align:center;font-size:10.5px;border:1px solid var(--line)}
+.day .dn{color:var(--tx3);font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.day .dv{color:var(--tx);font-weight:600;line-height:1.3}
+.day.act{border-color:#3a5f8f;background:#16283f}
+.day.act .dv{color:#8fc0ff}
+.day.rest .dv{color:var(--tx3);font-weight:500}
+
+/* quiz */
+.q{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 17px;margin-bottom:10px}
+.qt{font-size:14px;font-weight:600;margin-bottom:10px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{background:var(--panel2);border:1px solid var(--line);color:var(--tx2);padding:7px 14px;border-radius:7px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+.opt:hover{border-color:#3d4757;color:var(--tx)}
+.opt.on{background:var(--exf);border-color:var(--exf);color:#07101d;font-weight:600}
+#verdict{margin-top:16px;border-radius:11px;padding:17px 19px;font-size:14px;display:none}
+#verdict.show{display:block}
+#verdict h3{font-size:17px;margin-bottom:7px}
+.v-purge{background:rgba(62,207,142,.09);border:1px solid rgba(62,207,142,.35)}
+.v-purge h3{color:var(--ok)}
+.v-break{background:rgba(255,107,107,.09);border:1px solid rgba(255,107,107,.35)}
+.v-break h3{color:var(--bad)}
+.v-mix{background:rgba(245,166,35,.09);border:1px solid rgba(245,166,35,.35)}
+.v-mix h3{color:var(--warn)}
+
+.stat{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0}
+.st{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;flex:1;min-width:150px}
+.stn{font-size:24px;font-weight:700;letter-spacing:-.6px;color:var(--exf)}
+.stl{font-size:11.5px;color:var(--tx2);margin-top:3px;line-height:1.35}
+.src{font-size:12px;color:var(--tx3);margin-top:6px}
+.src a{color:#7c93b5;text-decoration:none;border-bottom:1px dotted #47536a}
+.src a:hover{color:var(--exf)}
+.srclist{display:grid;gap:9px}
+.srci{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:13px}
+.srci a{color:var(--exf);text-decoration:none}
+.srci a:hover{text-decoration:underline}
+.srci .dom{color:var(--tx3);font-size:11.5px;margin-top:2px}
+.tagline{font-size:11px;color:var(--tx3);margin-top:10px;font-style:italic}
+.forwho{display:inline-block;background:rgba(107,168,255,.12);border:1px solid rgba(107,168,255,.3);color:#a8caff;padding:5px 13px;border-radius:20px;font-size:12.5px;margin-bottom:14px}
+.forwho b{color:#d6e6ff}
+.preg{background:#1a1014;border:1px solid #5c2b38;color:#f0b8c6;padding:12px 15px;border-radius:9px;font-size:13px;margin-bottom:22px;line-height:1.5}
+.preg b{color:#ffd9e2}
+.calib{background:linear-gradient(180deg,#182030,#141a24);border:1px solid #2e4159;border-radius:13px;padding:19px 21px;margin-bottom:22px}
+.calib h3{font-size:17px;margin-bottom:4px;color:#a8caff}
+.calib .ci{font-size:13.5px;color:var(--tx2);margin-bottom:16px}
+#result{margin-top:17px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--exf);border-radius:10px;padding:17px 19px;display:none}
+#result.show{display:block}
+#result h4{margin:0 0 8px;font-size:16px;color:var(--exf)}
+#result p{font-size:13.5px;color:var(--tx2);margin:0 0 10px}
+#result .pickrow{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 6px}
+#result .pick{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:12.5px;flex:1;min-width:150px}
+#result .pick .pn{color:var(--tx);font-weight:650;font-size:13px;display:block;margin-bottom:3px}
+.hide{display:none!important}
+/* tldr */
+.answer{background:linear-gradient(135deg,#12283f,#14202e);border:1px solid #2f5680;border-radius:14px;padding:22px 24px}
+.alab{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#6f9fd8;font-weight:700;margin-bottom:7px}
+.abig{font-size:27px;font-weight:750;letter-spacing:-.7px;color:#fff;line-height:1.2;margin-bottom:11px}
+.answer p{margin:0;font-size:14.5px;color:#b6cbe4;line-height:1.55}
+.answer i{color:#dce9f7;font-style:italic}
+.tl{display:grid;gap:9px}
+.tli{display:flex;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;align-items:flex-start}
+.tn{background:var(--exf);color:#07101d;font-weight:750;font-size:13px;width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.tli b{font-size:15px;color:var(--tx)}
+.tw{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:#8fc0ff;font-size:11.5px;padding:2px 9px;border-radius:20px;margin-left:7px;white-space:nowrap;font-weight:600}
+.td{font-size:13px;color:var(--tx2);margin-top:5px;line-height:1.5}
+.rules{display:grid;gap:8px}
+.rule{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:9px;padding:12px 15px;font-size:13.5px;color:var(--tx2);line-height:1.5}
+.rule b{color:var(--tx)}
+.jump{background:var(--panel2);border:1px solid #3a5f8f;color:#8fc0ff;font-family:inherit;font-size:12.5px;padding:4px 11px;border-radius:6px;cursor:pointer;margin-top:8px;transition:.15s;display:inline-block}
+.jump:hover{background:#1c3350;color:#bcd9ff}
+.jump.lnk{background:none;border:none;border-bottom:1px dotted #47536a;border-radius:0;padding:0 1px;margin:0;font-size:inherit;font-style:normal}
+.jump.lnk:hover{background:none;color:var(--exf);border-bottom-color:var(--exf)}
+@media(max-width:600px){
+  .abig{font-size:22px}
+  .days{grid-template-columns:repeat(4,1fr)}
+  .tw{margin-left:0;margin-top:5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="forwho">Made for <b>Soomin</b> — everything below is addressed to you directly.</div>
+<h1>Skincare Acids &amp; Actives — Decision Dashboard</h1>
+<p class="sub">Built around one goal: clearing <b style="color:var(--tx)">closed comedones on the chin</b> and improving <b style="color:var(--tx)">general texture</b>, without wrecking your skin barrier. Every claim below is cross-checked against at least two independent sources — listed in the Sources tab.</p>
+
+<div class="disc">⚕️ Educational reference, not medical advice. Persistent comedonal acne responds best to a prescription retinoid — a dermatologist visit beats any OTC routine.</div>
+
+<div class="preg">🚫 <b>Read this first if you're pregnant, breastfeeding, or trying to conceive.</b> Retinoids — including OTC adapalene — are off the table entirely, and high-dose salicylic acid isn't recommended either. <b>Azelaic acid is the standard choice in pregnancy</b> and it happens to be one of the best options for comedones anyway. Tap the "Pregnancy-safe" option in the calibrator on the <b>Your Plan</b> tab and the whole routine will rebuild around it.</div>
+
+<div class="tabs">
+  <button class="tab on" data-p="p0">★ TL;DR</button>
+  <button class="tab" data-p="p1">1 · The Ingredients</button>
+  <button class="tab" data-p="p2">2 · Combinations</button>
+  <button class="tab" data-p="p3">3 · How Often</button>
+  <button class="tab" data-p="p4">4 · Your Plan</button>
+  <button class="tab" data-p="p5">5 · Purging or Breaking Out?</button>
+  <button class="tab" data-p="p6">Sources</button>
+</div>
+
+<!-- ============ PAGE 0 — TLDR ============ -->
+<div class="page on" id="p0">
+
+  <div class="answer">
+    <div class="alab">The answer</div>
+    <div class="abig">Salicylic acid 2%, twice a week.</div>
+    <p>Closed comedones are plugs sitting <i>inside</i> the pore. Salicylic acid is the only one on your list that's oil-soluble, so it's the only one that gets down there. Everything else works on the surface. That's the whole reason it wins.</p>
+  </div>
+
+  <h2 style="margin-top:26px">Buy these five</h2>
+  <div class="tl">
+    <div class="tli"><span class="tn">1</span><div><b>Salicylic acid 2%</b> — leave-on liquid, not a face wash. <span class="tw">2 nights a week</span><div class="td">The exfoliant. This is the one doing the work on the comedones.</div></div></div>
+    <div class="tli"><span class="tn">2</span><div><b>Azelaic acid 10%</b> <span class="tw">every morning</span><div class="td">Stops new comedones forming and fades the dark marks old ones leave. Doesn't count toward the exfoliation limit — it's gentle enough for daily use.</div></div></div>
+    <div class="tli"><span class="tn">3</span><div><b>Niacinamide 4–5%</b> <span class="tw">every day</span><div class="td">Not an exfoliant. This is the barrier insurance that makes the other two survivable. Don't buy the 10% version.</div></div></div>
+    <div class="tli"><span class="tn">4</span><div><b>A ceramide moisturiser</b> <span class="tw">morning and night</span><div class="td">Non-optional. Hyaluronic acid is nice but useless without a moisturiser sealing it in.</div></div></div>
+    <div class="tli"><span class="tn">5</span><div><b>SPF 30+</b> <span class="tw">every morning</span><div class="td">Exfoliating without this actively undoes the texture work and darkens acne marks. The highest-impact step in the routine.</div></div></div>
+  </div>
+
+  <h2>A normal week</h2>
+  <div class="days" style="margin-top:0">
+    <div class="day rest"><div class="dn">Mon</div><div class="dv">Azelaic<br>Niac · SPF</div></div>
+    <div class="day act"><div class="dn">Tue</div><div class="dv">+ BHA<br>at night</div></div>
+    <div class="day rest"><div class="dn">Wed</div><div class="dv">Azelaic<br>Niac · SPF</div></div>
+    <div class="day rest"><div class="dn">Thu</div><div class="dv">Azelaic<br>Niac · SPF</div></div>
+    <div class="day act"><div class="dn">Fri</div><div class="dv">+ BHA<br>at night</div></div>
+    <div class="day rest"><div class="dn">Sat</div><div class="dv">Azelaic<br>Niac · SPF</div></div>
+    <div class="day rest"><div class="dn">Sun</div><div class="dv">Azelaic<br>Niac · SPF</div></div>
+  </div>
+  <p class="tagline">Moisturiser every single day, morning and night. Only the two blue nights have the exfoliant on them.</p>
+
+  <h2>Five rules that protect your barrier</h2>
+  <div class="rules">
+    <div class="rule"><b>Start at twice a week.</b> Not daily. You can always go up at week 4 — you can't undo a stripped barrier quickly.</div>
+    <div class="rule"><b>Add one new thing at a time, two weeks apart.</b> If you start everything at once and your skin reacts, you'll have no idea which product did it.</div>
+    <div class="rule"><b>Never an acid and a retinoid on the same night.</b> If you add a retinoid later, it goes on the nights the BHA isn't.</div>
+    <div class="rule"><b>Check what you already own.</b> Cleansers, toners and "brightening" serums often contain acids. Most people are already exfoliating more than they think.</div>
+    <div class="rule"><b>Stinging, tightness or flaking means stop.</b> Not push through. Drop back to cleanser + moisturiser + SPF for two weeks, then restart at half the frequency.</div>
+  </div>
+
+  <div class="two" style="margin-top:22px">
+    <div class="note good" style="margin:0"><b>Breaking out at first?</b> If it's in your usual spots, started within a week, and the spots clear faster than normal — that's purging. Keep going, it settles in 4–6 weeks. If it's in <i>new</i> areas or the spots won't heal, that's a reaction. Stop the product. <button class="jump" data-t="p5">Full check →</button></div>
+    <div class="note warn" style="margin:0"><b>When to judge it.</b> Texture usually shifts at 4–8 weeks. Comedones take longer. Don't change anything before <b>12 weeks</b> — and take a photo now, because memory is unreliable. No change by then means see a dermatologist; chin-only congestion is often hormonal.</div>
+  </div>
+
+  <div class="note" style="border-left:3px solid var(--exf)">
+    <b>Two things could change this answer.</b> If your skin stings easily, or if spots leave dark marks that last weeks, or if you're pregnant — the recommendation shifts. <button class="jump" data-t="p4">Run the 3-question calibrator →</button>
+  </div>
+
+  <p class="tagline" style="margin-top:20px">Everything above is the summary. The other tabs have the reasoning, the evidence, and the sources if you want to check any of it — <button class="jump lnk" data-t="p1">what the acids actually are</button>, <button class="jump lnk" data-t="p2">what's safe to combine</button>, <button class="jump lnk" data-t="p3">how often is too often</button>.</p>
+</div>
+
+<!-- ============ PAGE 1 ============ -->
+<div class="page" id="p1">
+
+  <div class="note">
+    <b>The most common point of confusion, up front:</b> yes — lactic, glycolic and mandelic acids are all AHAs. They're not alternatives to AHA, they're <i>members</i> of it. AHA / BHA / PHA are the three <b>families</b>. Niacinamide and hyaluronic acid aren't acids in the exfoliating sense at all. Azelaic acid is its own thing — a dicarboxylic acid that unclogs pores without being a classic exfoliant.
+  </div>
+
+  <div class="chips">
+    <span class="lbl">Filter:</span>
+    <button class="chip on" data-f="all">All</button>
+    <button class="chip" data-f="Family">Families</button>
+    <button class="chip" data-f="exfoliant">Exfoliants</button>
+    <button class="chip" data-f="hydration">Hydration</button>
+    <button class="chip" data-f="comedone">★ Best for comedones</button>
+    <button class="chip" data-f="gentle">Gentlest</button>
+  </div>
+
+  <div class="grid" id="cards"></div>
+
+  <h2>Side-by-side</h2>
+  <div class="scroll">
+  <table class="tbl">
+    <thead><tr><th>Ingredient</th><th>Family</th><th>Primary job</th><th>Solubility</th><th>Size (Da)</th><th>Strength</th><th>Chin comedones?</th></tr></thead>
+    <tbody id="tblbody"></tbody>
+  </table>
+  </div>
+  <p class="tagline">Molecular size drives everything: smaller = penetrates deeper = works faster = irritates more. Glycolic (76 Da) is the smallest AHA; gluconolactone (PHA, 178 Da) is over twice the size and stays on the surface.</p>
+</div>
+
+<!-- ============ PAGE 2 ============ -->
+<div class="page" id="p2">
+  <h2 style="margin-top:0">Combination matrix</h2>
+  <p class="sub">Click any square. Green = layer freely. Amber = works, but separate them by time of day or alternate days. Red = don't put these together in one routine.</p>
+  <div class="scroll"><table class="mx" id="matrix"></table></div>
+  <div id="mxout">Click a square to see the verdict and why.</div>
+
+  <h2>Combinations that actually get used, and what for</h2>
+  <div class="two">
+    <div class="card"><h3 style="color:var(--exf)">Salicylic acid + Niacinamide</h3><p>The workhorse for oily, congested, comedone-prone skin. BHA clears the pore lining; niacinamide reduces sebum output and rebuilds the barrier the acid just stressed. The "these two cancel out at low pH" claim is an outdated myth from unstable 1990s formulas — modern products are buffered. If you're cautious, leave ~30 min between them or alternate days.</p></div>
+    <div class="card"><h3 style="color:var(--sup)">Azelaic acid + Niacinamide</h3><p>Post-acne marks and redness with active congestion. Azelaic is comedolytic <i>and</i> anti-inflammatory <i>and</i> a tyrosinase inhibitor, so it hits the spot and the mark it leaves behind. Very low irritation risk together — this pairing is often used every single day.</p></div>
+    <div class="card"><h3 style="color:var(--both)">AHA/BHA + Hyaluronic acid</h3><p>Universal safety net. HA is a humectant, pH-neutral, and interacts with nothing. Apply it on damp skin after the acid and seal with moisturiser. There is no version of this routine where HA is a bad idea.</p></div>
+    <div class="card"><h3 style="color:var(--hyd)">Mandelic acid + PHA</h3><p>The sensitive-skin exfoliation stack. Both are large molecules that work at the surface only; PHA additionally acts as a humectant and antioxidant. This is what you fall back to if salicylic acid turns out to be too much.</p></div>
+    <div class="card"><h3 style="color:var(--bad)">Retinoid + AHA/BHA — alternate nights</h3><p>Both are effective, but stacked in one night they're a reliable route to a stripped barrier. Acids also drop pH enough to destabilise the retinoid. Standard fix: acid one night, retinoid the next. Or acid in the AM, retinoid PM.</p></div>
+    <div class="card"><h3 style="color:var(--bad)">Retinoid + Vitamin C — split AM/PM</h3><p>Layered together, vitamin C's acidity interferes with retinoid conversion and the retinoid pushes the vitamin C toward oxidising. Neither is dangerous, both just get less effective. Vitamin C in the morning, retinoid at night.</p></div>
+  </div>
+</div>
+
+<!-- ============ PAGE 3 ============ -->
+<div class="page" id="p3">
+  <h2 style="margin-top:0">Safe frequency</h2>
+  <div class="stat">
+    <div class="st"><div class="stn">1–3×</div><div class="stl">per week — the range dermatologists converge on for chemical exfoliation across most skin types</div></div>
+    <div class="st"><div class="stn">2–3×</div><div class="stl">per week — the commonly cited "sweet spot" for normal to oily skin</div></div>
+    <div class="st"><div class="stn">2×</div><div class="stl">per week maximum for dry or sensitive skin</div></div>
+    <div class="st"><div class="stn">1× / 7–14d</div><div class="stl">for reactive or rosacea-prone skin</div></div>
+  </div>
+
+  <div class="scroll">
+  <table class="tbl">
+    <thead><tr><th>Ingredient</th><th>Starting frequency</th><th>Maintenance ceiling</th><th>Notes</th></tr></thead>
+    <tbody id="freqbody"></tbody>
+  </table>
+  </div>
+
+  <div class="note bad">
+    <b>Signs you've over-exfoliated — stop immediately if you see these.</b> Tightness, stinging from products that never stung before, flaking or a waxy shine, new sensitivity, redness, and — counterintuitively — <i>more</i> breakouts. Mechanistically you've thinned the stratum corneum, raised transepidermal water loss, disturbed the skin microbiome and kicked off low-grade chronic inflammation. Recovery protocol: drop all acids and retinoids, use a bland cleanser, a ceramide/niacinamide moisturiser and daily SPF for 2–4 weeks. Reintroduce at <i>half</i> the previous frequency.
+  </div>
+
+  <div class="note warn">
+    <b>Non-negotiable: daily SPF.</b> Every AHA and PHA increases UV sensitivity by removing surface corneocytes. Exfoliating without sunscreen actively works against the texture and tone improvement you're after — and drives post-inflammatory pigmentation from the very comedones you're treating.
+  </div>
+
+  <div class="note">
+    <b>The single most common mistake.</b> Not the choice of acid — the <i>stacking</i>. A salicylic cleanser + an exfoliating toner + a "brightening" serum with hidden glycolic + a scrub is four exfoliants, and most people counting their routine would call it one. Read the full INCI list of everything you own before adding anything new.
+  </div>
+</div>
+
+<!-- ============ PAGE 4 ============ -->
+<div class="page" id="p4">
+  <h2 style="margin-top:0">Recommendation: chin comedones + texture</h2>
+
+  <div class="calib">
+    <h3>Start here — calibrate to your skin</h3>
+    <div class="ci">Three questions only you can answer. They change which exfoliant you should start with, so answer them before reading the rest of this tab.</div>
+    <div id="cal"></div>
+    <div id="result"></div>
+  </div>
+
+  <div class="note good">
+    <b>Why the default answer is salicylic acid (BHA) 2%.</b> Closed comedones are plugs of sebum and dead cells sitting <i>inside</i> the follicle. AHAs are water-soluble and work on the skin's surface; salicylic acid is oil-soluble, so it travels down into the sebum-filled pore where the actual problem is. This is why comparative peel trials consistently show salicylic acid outperforming AHAs specifically on comedone counts. It's also anti-inflammatory, which the chin — a hormonally driven, easily inflamed zone — benefits from. <i>The calibrator above will override this if your skin is reactive or prone to dark marks.</i>
+  </div>
+
+  <h3 style="margin-top:24px">What the comparative data shows (in-office peels)</h3>
+  <div class="scroll">
+  <table class="tbl">
+    <thead><tr><th>Treatment compared</th><th>Comedone reduction</th><th>Takeaway</th></tr></thead>
+    <tbody>
+      <tr><td>30% salicylic acid, 6 biweekly sessions</td><td>88–90%</td><td>Lipophilic follicular penetration is the stated mechanism for its comedolytic edge</td></tr>
+      <tr><td>30% salicylic vs 45% mandelic, 12 weeks</td><td>73.4% vs 59.7% (p=.044)</td><td>Salicylic wins on comedones; mandelic won on inflamed papules (86.0% vs 76.9%, p=.004) and caused less post-peel redness (2 vs 9 patients)</td></tr>
+      <tr><td>20% salicylic + 10% mandelic vs 35% glycolic</td><td>90.2% vs 35.9%</td><td>Combining BHA with a gentle AHA substantially outperformed glycolic alone</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tagline">Important honesty note: these are professional peels at 20–45% concentration, not the 2% you buy over the counter. They establish the <i>direction</i> — salicylic acid is the right molecule for comedones — not the magnitude you'll get at home. OTC results are slower and require months of consistency.</p>
+
+  <h3 style="margin-top:26px">The stack, in priority order</h3>
+  <div class="grid">
+    <div class="card"><div class="chd"><div><div class="cname">1 · Salicylic acid 2%</div><div class="calias">Leave-on liquid or gel exfoliant</div></div><span class="pill p-exf">Core</span></div><p>Your exfoliant. Start 2× a week at night, on the chin and any other congested areas. Build to 3× only if week 4 arrives with zero irritation. Leave-on beats a cleanser — contact time matters.</p></div>
+    <div class="card"><div class="chd"><div><div class="cname">2 · Azelaic acid 10%</div><div class="calias">OTC; 15–20% by prescription</div></div><span class="pill p-sup">Core</span></div><p>A primary comedolytic — it stops comedones forming rather than only clearing existing ones — plus it fades the brown marks they leave. Gentle enough for daily or twice-daily use and doesn't count against your exfoliation budget. Expect 12–24 weeks for a visible verdict. Note the 15% and 20% strengths are the ones with RCT evidence; 10% is the reasonable OTC entry point.</p></div>
+    <div class="card" data-ret><div class="chd"><div><div class="cname">3 · Adapalene 0.1%</div><div class="calias">OTC retinoid — the strongest option here</div></div><span class="pill p-exf">Consider</span></div><p>If comedones are the main complaint, a retinoid is the most evidence-backed thing you can buy without a prescription. It's also the reason to expect a purge. Do not start this at the same time as the salicylic acid — add it around week 6–8, only on nights you're <i>not</i> using the BHA.</p></div>
+    <div class="card"><div class="chd"><div><div class="cname">4 · Niacinamide 4–5%</div><div class="calias">Every day, AM or PM</div></div><span class="pill p-sup">Support</span></div><p>Not an exfoliant — the barrier insurance that makes the exfoliants survivable. 2% has been shown to reduce sebum excretion rate at 4 weeks; 4% reduced mast-cell inflammatory infiltrate in a split-face study; it also boosts ceramide synthesis and lowers water loss. Stay in the 4–5% range — 10% products buy irritation, not results.</p></div>
+    <div class="card"><div class="chd"><div><div class="cname">5 · Hyaluronic acid + moisturiser</div><div class="calias">Every day, non-negotiable</div></div><span class="pill p-hyd">Support</span></div><p>HA on damp skin, then a ceramide moisturiser to seal it. HA is purely a humectant — without an occlusive layer over it, in dry air it can pull moisture <i>out</i> of your skin. Never skip the moisturiser step.</p></div>
+    <div class="card"><div class="chd"><div><div class="cname">6 · Broad-spectrum SPF 30+</div><div class="calias">Every morning</div></div><span class="pill p-sup">Support</span></div><p>Mandatory once you're exfoliating. Skipping it undoes the texture work and darkens post-acne marks.</p></div>
+  </div>
+
+  <div class="note warn" style="margin-top:18px"><b>If salicylic acid irritates you</b> — switch to <b>mandelic acid 5–10%</b>, not glycolic. Mandelic is the largest AHA, so it penetrates slowest and is gentlest, and it outperformed salicylic on inflamed lesions with markedly less redness. Glycolic is the smallest and harshest of the AHAs and is the wrong first move on already-irritated skin.</div>
+
+  <h2>12-week ramp-up — one change at a time</h2>
+  <p class="sub">The entire point of this schedule is that you only ever add one variable at a time. If something goes wrong, you'll know exactly what caused it.</p>
+  <div id="plan"></div>
+
+  <div class="note"><b>How to read the results.</b> Give it 12 weeks before judging. Texture usually shifts first (4–8 weeks); comedone counts lag behind. Azelaic acid in particular is documented as taking 12–24 weeks for full effect. If there's genuinely no improvement at 12 weeks, or things worsen after weeks 8–10, that's the signal to see a dermatologist — prescription retinoids or hormonal treatment are the next tier and chin-specific congestion is often hormonally driven.</div>
+</div>
+
+<!-- ============ PAGE 5 ============ -->
+<div class="page" id="p5">
+  <h2 style="margin-top:0">Purging or breaking out?</h2>
+  <p class="sub">Purging is real but over-invoked. It happens when an ingredient speeds cell turnover and pushes existing microcomedones to the surface early — so it only applies to actives that accelerate turnover (retinoids, AHA, BHA), and only in areas you already break out. Answer four questions:</p>
+  <div id="quiz"></div>
+  <div id="verdict"></div>
+
+  <h2>The distinction at a glance</h2>
+  <div class="scroll">
+  <table class="tbl">
+    <thead><tr><th></th><th style="color:var(--ok)">Purge — keep going</th><th style="color:var(--bad)">Breakout / reaction — stop</th></tr></thead>
+    <tbody>
+      <tr><td>Onset</td><td>Days to ~1 week after starting</td><td>Any time, often weeks in</td></tr>
+      <tr><td>Location</td><td>Your usual zones only</td><td>New areas you never break out in</td></tr>
+      <tr><td>Healing speed</td><td>Faster than your normal spots</td><td>Same or slower; lingers</td></tr>
+      <tr><td>Trajectory</td><td>Clears within 4–6 weeks</td><td>Stable or worsening past 8 weeks</td></tr>
+      <tr><td>Retinoid timeline</td><td>Peaks weeks 3–6, resolving by week 8, largely settled by week 12</td><td>—</td></tr>
+      <tr><td>Trigger type</td><td>Only from turnover-accelerating actives</td><td>Can come from any product, incl. oils, moisturisers, sunscreens</td></tr>
+      <tr><td>Other symptoms</td><td>Mild dryness, light flaking</td><td>Itching, burning, hives, swelling, stinging</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note bad"><b>A hydrating serum cannot cause a purge.</b> If breakouts follow a moisturiser, oil, sunscreen or hyaluronic acid serum, that's comedogenicity or irritation — there's no turnover mechanism to purge through. Stop the product.</div>
+
+  <h2>Barrier protection rules</h2>
+  <ul>
+    <li><b>One new active at a time, minimum two weeks apart.</b> Simultaneous introductions make problems undiagnosable.</li>
+    <li><b>Start at the lowest frequency, not the highest.</b> Twice a week for a month tells you far more than daily for four days.</li>
+    <li><b>Patch test</b> on the jawline for 3–5 days before applying anything to the full face.</li>
+    <li><b>Never exfoliate on compromised skin.</b> Stinging, tightness or visible redness means wait.</li>
+    <li><b>Buffer if needed</b> — moisturiser first, then the active, blunts the impact while you build tolerance.</li>
+    <li><b>Audit for hidden acids.</b> Cleansers, toners, "brightening" serums and pads routinely contain them.</li>
+    <li><b>Skip acids after any professional treatment</b> — peels, lasers, microneedling — for at least a week.</li>
+    <li><b>SPF daily, without exceptions.</b></li>
+  </ul>
+</div>
+
+<!-- ============ PAGE 6 ============ -->
+<div class="page" id="p6">
+  <h2 style="margin-top:0">Sources</h2>
+  <p class="sub">Every substantive claim in this dashboard was corroborated across at least two independent sources. Clinical trial data (peel comparisons, niacinamide studies, azelaic acid RCTs) is sourced from peer-reviewed literature and dermatology publications; practical guidance is drawn from multiple dermatologist-authored references that agree with one another.</p>
+  <div class="srclist" id="sources"></div>
+  <p class="tagline" style="margin-top:18px">Where sources disagreed — most notably on whether niacinamide and acids can share a routine — the dashboard reports both positions rather than picking one. Where evidence is thin (10% OTC azelaic acid, PHA clinical data), that is stated explicitly in the relevant section.</p>
+</div>
+
+</div>
+
+<script>
+const D=[
+ {n:"AHA",a:"Alpha hydroxy acids — glycolic, lactic, mandelic, citric, malic, tartaric",fam:"Family",role:"exfoliant",sol:"Water-soluble",size:"—",str:3,tags:["Family","exfoliant"],
+  d:"A family, not a single ingredient. Water-soluble, so they work on the skin's surface — loosening the bonds between dead corneocytes. Best suited to dullness, rough texture, fine lines and sun damage. Because they're water-soluble they don't get far into an oil-filled pore, which is why they're the second choice for comedones.",
+  f:{"Best for":"Texture, tone, dullness","Comedones":"Indirect — surface only","Watch":"UV sensitivity; irritation scales with smaller molecules"}},
+
+ {n:"BHA",a:"Beta hydroxy acid — salicylic acid",fam:"Family",role:"exfoliant",sol:"Oil-soluble",size:"138",str:4,tags:["Family","exfoliant","comedone"],
+  d:"Effectively one ingredient: salicylic acid. Oil-soluble and lipophilic, so it penetrates through sebum into the follicle itself and dissolves the plug from inside. Also anti-inflammatory. This is the single most relevant family for closed comedones and blackheads.",
+  f:{"Best for":"Comedones, blackheads, oily skin","Comedones":"★ Direct — the top pick","Watch":"Drying; avoid if aspirin-sensitive or pregnant"}},
+
+ {n:"PHA",a:"Poly hydroxy acids — gluconolactone, lactobionic acid",fam:"Family",role:"both",sol:"Water-soluble",size:"178",str:1,tags:["Family","exfoliant","hydration","gentle"],
+  d:"The gentlest exfoliating family. Much larger molecules than AHAs, so they penetrate slowly and stay near the surface. Uniquely, they double as humectants and antioxidants — so they hydrate while exfoliating. A 2004 comparative study found gluconolactone improved texture comparably to glycolic acid with better tolerability.",
+  f:{"Best for":"Sensitive, reactive, rosacea-prone skin","Comedones":"Weak — too superficial","Watch":"Slower results; evidence base thinner than AHA/BHA"}},
+
+ {n:"Glycolic acid",a:"AHA · from sugarcane",fam:"AHA",role:"exfoliant",sol:"Water-soluble",size:"76",str:5,tags:["exfoliant"],
+  d:"The smallest AHA at 76 Da — penetrates fastest, exfoliates hardest, irritates most. Excellent for texture, tone and photoaging in tolerant skin. For an already-congested, easily-irritated chin it's an aggressive opening move, and one head-to-head peel study had it clearing only 35.9% of comedones versus 90.2% for a salicylic-mandelic combination.",
+  f:{"Best for":"Texture, tone, photoaging","Comedones":"Weakest performer in trials","Watch":"Highest irritation risk of the AHAs"}},
+
+ {n:"Lactic acid",a:"AHA · from milk fermentation",fam:"AHA",role:"both",sol:"Water-soluble",size:"90",str:3,tags:["exfoliant","hydration"],
+  d:"Larger and gentler than glycolic, and it doubles as a humectant — so it brings a measure of hydration along with the exfoliation. The reasonable middle ground and the standard AHA recommendation for dry or sun-damaged skin.",
+  f:{"Best for":"Dry, dull, sun-damaged skin","Comedones":"Mild","Watch":"Still increases UV sensitivity"}},
+
+ {n:"Mandelic acid",a:"AHA · from bitter almonds",fam:"AHA",role:"exfoliant",sol:"Water-soluble",size:"152",str:2,tags:["exfoliant","gentle","comedone"],
+  d:"The largest AHA, so the slowest and gentlest — plus mild antibacterial activity. In a randomised trial against salicylic acid it lost on comedone reduction (59.7% vs 73.4%) but won on inflamed papules (86.0% vs 76.9%) and caused far less post-peel redness. The right fallback if salicylic acid proves too harsh.",
+  f:{"Best for":"Sensitive acne-prone skin, deeper skin tones","Comedones":"Moderate — good tolerability trade","Watch":"Slower; some formulas tint fabrics yellow"}},
+
+ {n:"Salicylic acid",a:"The BHA",fam:"BHA",role:"exfoliant",sol:"Oil-soluble",size:"138",str:4,tags:["exfoliant","comedone"],
+  d:"Lipophilic, so it gets down inside sebum-filled follicles where AHAs can't reach — the reason it consistently leads on comedone reduction. Six biweekly 30% peel sessions produced 88–90% comedone clearance in one review. Also anti-inflammatory, which helps the inflamed chin bumps that sit alongside the closed ones.",
+  f:{"Best for":"Comedones, blackheads, oily/congested skin","Comedones":"★★ Best evidence","Watch":"Drying; skip in pregnancy or aspirin allergy"}},
+
+ {n:"Azelaic acid",a:"Dicarboxylic acid — its own category",fam:"Other",role:"exfoliant",sol:"Both",size:"188",str:2,tags:["exfoliant","comedone","gentle"],
+  d:"Not an exfoliant in the AHA/BHA sense — a primary comedolytic, meaning it prevents comedones forming rather than only clearing existing ones. Simultaneously antibacterial, anti-inflammatory and a tyrosinase inhibitor, so it treats the spot, the redness and the mark left behind. Well tolerated enough for daily or twice-daily use. 15% and 20% are the strengths with RCT evidence; 10% is the OTC starting point.",
+  f:{"Best for":"Comedones + post-acne marks + redness","Comedones":"★★ Prevents formation","Watch":"12–24 weeks to full effect; mild tingling early on"}},
+
+ {n:"Niacinamide",a:"Vitamin B3 — not an acid, not an exfoliant",fam:"Other",role:"support",sol:"Water-soluble",size:"122",str:0,tags:["hydration","gentle"],
+  d:"Does no exfoliating whatsoever — it's the support act that makes exfoliation survivable. 2% has been shown to reduce sebum excretion rate at 4 weeks; 4% reduced mast-cell inflammatory infiltrate in a split-face study; it increases ceramide synthesis and reduces transepidermal water loss. 4–5% is the effective range; higher concentrations mostly add irritation.",
+  f:{"Best for":"Barrier repair, oil control, redness, pore appearance","Comedones":"Indirect via sebum reduction","Watch":"Rarely, flushing above 10%"}},
+
+ {n:"Hyaluronic acid",a:"Humectant — an acid in name only",fam:"Other",role:"hydration",sol:"Water-soluble",size:"varies",str:0,tags:["hydration","gentle"],
+  d:"Pure hydration, zero exfoliation, zero pH effect, zero interactions. Binds water at the skin's surface. Multi-molecular-weight formulas use high MW for surface plumping and low MW to sit deeper. Critical caveat: apply to damp skin and always seal with moisturiser — unsealed in dry air, it can draw water out of the skin rather than into it.",
+  f:{"Best for":"Hydration, plumping, offsetting active-induced dryness","Comedones":"None — but won't cause them","Watch":"Useless, or worse, without an occlusive layer on top"}}
+];
+
+const R={exfoliant:["Exfoliant","p-exf"],hydration:["Hydration","p-hyd"],both:["Exfoliant + Hydration","p-both"],support:["Support","p-sup"]};
+
+function bars(n,s){let h='<div class="bars">';for(let i=1;i<=5;i++)h+=`<div class="b ${i<=n?'f':''} ${i<=n&&n>=4?'s':''}"></div>`;return h+`</div>`}
+
+function renderCards(f){
+  const el=document.getElementById('cards');el.innerHTML='';
+  D.filter(x=>f==='all'||x.tags.includes(f)).forEach(x=>{
+    const[rl,rc]=R[x.role];
+    let rows='';for(const k in x.f)rows+=`<div class="row"><div class="rk">${k}</div><div class="rv">${x.f[k]}</div></div>`;
+    if(x.str>0)rows+=`<div class="row"><div class="rk">Intensity</div><div class="rv">${bars(x.str)}</div></div>`;
+    el.insertAdjacentHTML('beforeend',
+    `<div class="card"><div class="chd"><div><div class="cname">${x.n}</div><div class="calias">${x.a}</div></div><span class="pill ${rc}">${rl}</span></div>
+     <div class="fam">${x.fam==='Family'?'▣ Category':'↳ '+x.fam}</div><p>${x.d}</p><div class="rows">${rows}</div></div>`);
+  });
+}
+renderCards('all');
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(z=>z.classList.remove('on'));c.classList.add('on');renderCards(c.dataset.f)});
+
+// table
+document.getElementById('tblbody').innerHTML=D.map(x=>{
+  const com=x.f["Comedones"]||"—";
+  return `<tr><td>${x.n}</td><td>${x.fam}</td><td>${R[x.role][0]}</td><td>${x.sol}</td><td>${x.size}</td><td>${x.str?bars(x.str):'<span style="color:var(--tx3)">n/a</span>'}</td><td>${com}</td></tr>`
+}).join('');
+
+// frequency
+const FQ=[
+["Salicylic acid (BHA) 2%","2× / week","3–4× / week","Leave-on beats a wash-off cleanser; contact time is what does the work. Oily skin tolerates the upper end."],
+["Glycolic acid (AHA)","1× / week","2× / week","Smallest molecule, harshest. Not the right opening move for irritated or congested skin."],
+["Lactic acid (AHA)","2× / week","2–3× / week","Gentler and mildly hydrating. Good if you want an AHA rather than a BHA."],
+["Mandelic acid (AHA)","2× / week","3× / week","Gentlest AHA. The fallback if salicylic acid is too drying."],
+["PHA / gluconolactone","2–3× / week","Up to daily","Some people tolerate it daily. Surface-level only, hydrating alongside."],
+["Azelaic acid 10%","Once daily","Twice daily","Does not count toward your weekly exfoliation budget. Milder acne often responds to twice-daily 10%."],
+["Niacinamide 4–5%","Once daily","Twice daily","Not an exfoliant. Use continuously."],
+["Hyaluronic acid","Twice daily","Twice daily","No limit. Always seal with moisturiser."],
+["Adapalene 0.1% (retinoid)","2–3 nights / week","Nightly","Never the same night as an acid. Expect a purge weeks 2–6."]
+];
+document.getElementById('freqbody').innerHTML=FQ.map(r=>`<tr><td>${r[0]}</td><td style="color:var(--ok)">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+
+// matrix
+const M=["Salicylic (BHA)","Glycolic (AHA)","Mandelic (AHA)","PHA","Azelaic","Niacinamide","Hyaluronic","Retinoid","Vitamin C"];
+const V={
+"Salicylic (BHA)|Glycolic (AHA)":["bad","Two strong exfoliants in one routine is the classic route to a stripped barrier. If you want both, use them on separate days — and for comedones you don't need glycolic at all."],
+"Salicylic (BHA)|Mandelic (AHA)":["warn","Clinically effective together — a 20% salicylic + 10% mandelic peel cleared 90.2% of comedones vs 35.9% for glycolic alone. But that's a controlled professional peel. At home, alternate days rather than layering."],
+"Salicylic (BHA)|PHA":["warn","Both exfoliants, so they share one weekly budget. PHA is mild enough that alternating days is usually fine — just don't count it as free."],
+"Salicylic (BHA)|Azelaic":["ok","Strong pairing for comedones. Different mechanisms — salicylic clears the existing plug, azelaic prevents new ones and treats the marks. Azelaic AM, salicylic PM works well."],
+"Salicylic (BHA)|Niacinamide":["ok","The classic congestion combo. The old 'they neutralise each other at low pH' claim came from unstable 1990s formulas and doesn't apply to modern buffered products. Cautious approach: 30 min apart or alternate days."],
+"Salicylic (BHA)|Hyaluronic":["ok","Always fine. HA after the acid, on damp skin, then moisturiser."],
+"Salicylic (BHA)|Retinoid":["bad","Not in the same routine — high irritation, and the acid's low pH destabilises the retinoid. Alternate nights, or acid AM / retinoid PM."],
+"Salicylic (BHA)|Vitamin C":["warn","Both low-pH. Tolerable for resilient skin but often too much on a chin you're already treating. Vitamin C AM, salicylic PM."],
+"Glycolic (AHA)|Mandelic (AHA)":["bad","Two AHAs stacked is redundant and irritating. Pick one."],
+"Glycolic (AHA)|PHA":["warn","Redundant — same job, different intensity. Share one weekly budget."],
+"Glycolic (AHA)|Azelaic":["warn","Workable but glycolic's low pH can amplify azelaic's tingle. Separate times of day."],
+"Glycolic (AHA)|Niacinamide":["ok","Fine in modern formulas. Space by ~30 min if you're being careful."],
+"Glycolic (AHA)|Hyaluronic":["ok","Always fine — HA helps offset glycolic's drying effect."],
+"Glycolic (AHA)|Retinoid":["bad","The most irritating pair on this grid. Strictly alternate nights."],
+"Glycolic (AHA)|Vitamin C":["warn","Both acidic and both photosensitising. Split AM/PM at most."],
+"Mandelic (AHA)|PHA":["ok","The sensitive-skin exfoliation stack — both large molecules, both surface-level. Still counts as one exfoliation session."],
+"Mandelic (AHA)|Azelaic":["ok","Gentle and complementary. Mandelic has mild antibacterial action; azelaic covers comedones and pigment."],
+"Mandelic (AHA)|Niacinamide":["ok","Low-irritation pairing, good for sensitive acne-prone skin."],
+"Mandelic (AHA)|Hyaluronic":["ok","Always fine."],
+"Mandelic (AHA)|Retinoid":["warn","Gentler than other AHA + retinoid pairs, but still alternate nights until tolerance is established."],
+"Mandelic (AHA)|Vitamin C":["warn","Manageable, but split AM/PM."],
+"PHA|Azelaic":["ok","Very low irritation. A good option if everything else has been too harsh."],
+"PHA|Niacinamide":["ok","Both barrier-friendly; PHA is itself a humectant and antioxidant."],
+"PHA|Hyaluronic":["ok","Ideal — two humectants plus mild exfoliation."],
+"PHA|Retinoid":["warn","The most forgiving acid to pair with a retinoid, but still start on separate nights."],
+"PHA|Vitamin C":["ok","Generally fine — PHA is mild and antioxidant itself."],
+"Azelaic|Niacinamide":["ok","Excellent daily pairing for comedones plus post-acne marks and redness. Both are well tolerated long term."],
+"Azelaic|Hyaluronic":["ok","Always fine. HA helps with azelaic's early dryness."],
+"Azelaic|Retinoid":["warn","Both effective for comedones and often prescribed together — but introduce them weeks apart, not simultaneously."],
+"Azelaic|Vitamin C":["ok","Complementary for pigmentation — different mechanisms on the same problem."],
+"Niacinamide|Hyaluronic":["ok","Universally safe. Niacinamide also raises the skin's own hyaluronic acid production."],
+"Niacinamide|Retinoid":["ok","One of the best pairings available — niacinamide measurably reduces retinoid irritation."],
+"Niacinamide|Vitamin C":["ok","The 'they cancel out' claim is outdated. Fine in modern formulations."],
+"Hyaluronic|Retinoid":["ok","Recommended — HA buffers retinoid dryness."],
+"Hyaluronic|Vitamin C":["ok","Always fine."],
+"Retinoid|Vitamin C":["bad","Vitamin C's acidity blocks retinoid conversion; the retinoid pushes vitamin C to oxidise. Vitamin C AM, retinoid PM."]
+};
+const IC={ok:"✓",warn:"~",bad:"✕"};
+let h='<tr><th></th>'+M.map(m=>`<th>${m.replace(' (','<br>(')}</th>`).join('')+'</tr>';
+M.forEach(r=>{h+=`<tr><th class="rowh">${r}</th>`;M.forEach(c=>{
+  if(r===c){h+='<td><div class="cell c-self">—</div></td>';return}
+  const k=V[r+"|"+c]?r+"|"+c:c+"|"+r; const v=V[k];
+  h+=v?`<td><div class="cell c-${v[0]}" data-k="${k}">${IC[v[0]]}</div></td>`:'<td><div class="cell c-self">—</div></td>';
+});h+='</tr>'});
+document.getElementById('matrix').innerHTML=h;
+document.querySelectorAll('.cell[data-k]').forEach(c=>c.onclick=()=>{
+  const v=V[c.dataset.k],p=c.dataset.k.split('|');
+  const t={ok:'Safe to combine',warn:'Use with care',bad:'Do not combine'}[v[0]];
+  const col={ok:'var(--ok)',warn:'var(--warn)',bad:'var(--bad)'}[v[0]];
+  document.getElementById('mxout').innerHTML=`<b>${p[0]} + ${p[1]}</b> — <span style="color:${col};font-weight:600">${t}</span><br><span style="display:block;margin-top:6px">${v[1]}</span>`;
+  document.getElementById('mxout').style.borderLeftColor=col;
+});
+
+// plan
+const PL=[
+{w:"Weeks 1–2",t:"Baseline only — establish the barrier first",d:["Cleanse<br>Moist<br>SPF","Same","Same","Same","Same","Same","Same"],act:[],
+ n:"No actives at all. Gentle cleanser, ceramide moisturiser, SPF every morning. This sounds like wasted time and isn't — you need a calm baseline to measure everything else against, and you may find some current irritation was never acne to begin with."},
+{w:"Weeks 3–4",t:"Introduce salicylic acid 2× per week",d:["—","BHA","—","—","BHA","—","—"],act:[1,4],
+ n:"Apply after cleansing, before moisturiser, at night. Chin and any other congested areas. Mild tingling is normal; burning or lasting redness is not. Do not add anything else this fortnight."},
+{w:"Weeks 5–6",t:"Add niacinamide daily + step BHA to 3×",d:["Niac","BHA<br>Niac","Niac","BHA<br>Niac","Niac","BHA<br>Niac","Niac"],act:[1,3,5],
+ n:"Niacinamide 4–5% every morning. Only increase salicylic acid to 3× if weeks 3–4 passed with zero irritation — otherwise hold at 2× and skip ahead."},
+{w:"Weeks 7–8",t:"Add azelaic acid 10%",d:["Azel","BHA<br>Azel","Azel","BHA<br>Azel","Azel","BHA<br>Azel","Azel"],act:[1,3,5],
+ n:"Azelaic in the morning with niacinamide; salicylic acid stays on its nights. Azelaic doesn't count toward your exfoliation limit. This is the point where texture and marks usually start visibly shifting."},
+{w:"Weeks 9–12",t:"Optional: add adapalene on non-BHA nights",d:["Ret","BHA","Ret","BHA","Ret","BHA","Rest"],act:[0,2,4,1,3,5],
+ n:"Only if comedones persist and the barrier has held up. Pea-sized amount, 2–3 nights weekly, strictly never the same night as the BHA. Expect a purge in weeks 2–6 of retinoid use — that's the phase to hold your nerve, not the phase to add anything else."},
+{w:"Week 12+",t:"Assess and adjust",d:["Azel<br>Niac","BHA","Ret","BHA","Ret","BHA","Rest"],act:[1,2,3,4,5],
+ n:"Compare against a photo taken in week 1 under the same lighting — memory is unreliable here. Improving: hold steady, don't escalate. Static or worse: see a dermatologist. Chin-only congestion is frequently hormonal, and that needs a different class of treatment than anything on this page."}
+];
+const DN=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+document.getElementById('plan').innerHTML=PL.map(p=>
+ `<div class="wk"><div class="wkh"><span class="wknum">${p.w}</span><span class="wkt">${p.t}</span></div>
+  <p style="margin:0;font-size:13.5px;color:var(--tx2)">${p.n}</p>
+  <div class="days">${DN.map((d,i)=>`<div class="day ${p.act.includes(i)?'act':'rest'}"><div class="dn">${d}</div><div class="dv">${p.d[i]}</div></div>`).join('')}</div></div>`).join('');
+
+// ===== calibrator =====
+const CQ=[
+{k:"sens",q:"How does your skin usually react to new products?",
+ o:[["Fine, rarely stings","tol"],["Occasional stinging or redness","mid"],["Stings, flushes or reacts often","rx"],["I've never really tested it","new"]]},
+{k:"pih",q:"When a spot heals, does it leave a dark or brown mark behind?",
+ o:[["Yes, marks last weeks or months","yes"],["They fade within a week or two","no"],["Not sure / haven't noticed","idk"]]},
+{k:"preg",q:"Are you pregnant, breastfeeding, or trying to conceive?",
+ o:[["No","no"],["Yes, or possibly","yes"]]}
+];
+const CA={};
+document.getElementById('cal').innerHTML=CQ.map((q,i)=>
+ `<div class="q" style="background:var(--panel2)"><div class="qt">${i+1}. ${q.q}</div><div class="opts">${q.o.map(o=>`<button class="opt cop" data-k="${q.k}" data-v="${o[1]}">${o[0]}</button>`).join('')}</div></div>`).join('');
+
+document.querySelectorAll('.cop').forEach(o=>o.onclick=()=>{
+  document.querySelectorAll(`.cop[data-k="${o.dataset.k}"]`).forEach(z=>z.classList.remove('on'));
+  o.classList.add('on');CA[o.dataset.k]=o.dataset.v;
+  if(Object.keys(CA).length<3)return;
+  const{sens,pih,preg}=CA;
+  let opener,why,freq,extra="",marks="";
+
+  // sensitivity drives the opener
+  if(sens==='rx'){opener="Mandelic acid 5–10%";freq="1× per week, building to 2×";
+    why="Your skin reacts often, so salicylic acid is the wrong opening move — it's effective but drying. Mandelic is the largest AHA, which makes it the slowest and gentlest, and in a randomised trial it caused markedly less post-peel redness than salicylic acid (2 patients vs 9). It still beat placebo on comedones and actually <i>outperformed</i> salicylic acid on inflamed spots (86.0% vs 76.9%).";}
+  else if(sens==='mid'||sens==='new'){opener="Salicylic acid 2% — slow ramp";freq="1× per week for two weeks, then 2×";
+    why=sens==='new'?"Since you haven't tested your tolerance, start salicylic acid at the low end and let your skin tell you. It's still the best-evidenced molecule for comedones — you're just approaching it carefully rather than assuming you'll tolerate 3× weekly.":"Occasional reactivity means salicylic acid is still right, but the standard 2×/week opener is too fast for you. Start at once weekly. If two weeks pass with no stinging or flaking, move to twice.";}
+  else{opener="Salicylic acid 2%";freq="2× per week, building to 3×";
+    why="Tolerant skin plus comedones is the textbook case for salicylic acid. It's oil-soluble so it penetrates into the sebum-filled follicle where the plug actually is — which is why 30% peels achieved 88–90% comedone clearance and beat 45% mandelic acid head-to-head (73.4% vs 59.7%).";}
+
+  // PIH overrides toward azelaic + rules out glycolic
+  if(pih==='yes'){marks=`<p><b style="color:var(--warn)">Dark marks change the priority order.</b> What you're describing is post-inflammatory hyperpigmentation, and it means <b>azelaic acid moves from step 2 to step 1</b> — start it in week 3 alongside (or instead of) the exfoliant. Azelaic is a tyrosinase inhibitor, so it treats the comedone <i>and</i> the mark it leaves, which nothing else on this page does. Two hard rules: <b>glycolic acid is out entirely</b> (irritation drives more pigment), and <b>sunscreen becomes the single highest-impact step in your routine</b> — UV darkens existing marks faster than any active can fade them.</p>`;}
+  else if(pih==='idk'){marks=`<p><b>On the dark-mark question:</b> check a spot that healed 2–3 weeks ago in natural light. If there's still a brown or grey shadow where it was, that's post-inflammatory hyperpigmentation — come back and re-answer, because it moves azelaic acid to first priority and rules glycolic acid out.</p>`;}
+
+  // pregnancy is an absolute gate
+  if(preg==='yes'){
+    opener="Azelaic acid 10%";freq="Once daily, building to twice";
+    why="This overrides everything else. Retinoids are contraindicated in pregnancy and high-dose salicylic acid isn't recommended, so the routine rebuilds around azelaic acid — which is the standard dermatological choice during pregnancy and, conveniently, a primary comedolytic that prevents comedones forming rather than just clearing existing ones.";
+    extra=`<p style="background:rgba(255,107,107,.09);border-left:3px solid var(--bad);padding:11px 14px;border-radius:7px"><b style="color:var(--bad)">Skip these entirely while pregnant or nursing:</b> adapalene and all retinoids (step 3 in the list below — ignore it), and leave-on salicylic acid above roughly 2%. Confirm anything you're unsure about with your OB or midwife before starting — this is one area where the general internet consensus isn't a substitute for your own clinician.</p>`;}
+
+  const el=document.getElementById('result');el.className='show';
+  el.innerHTML=`<h4>Start with: ${opener}</h4><p>${why}</p>${marks}${extra}
+   <div class="pickrow">
+     <div class="pick"><span class="pn">Frequency</span>${freq}</div>
+     <div class="pick"><span class="pn">Always daily</span>Niacinamide 4–5%, moisturiser, SPF</div>
+     <div class="pick"><span class="pn">First check-in</span>Week 4 — irritation? hold. Calm? step up.</div>
+   </div>
+   <p style="margin-top:10px;font-size:12.5px;color:var(--tx3)">The 12-week schedule below assumes the standard salicylic acid path. If your result differs, swap your opener into the same slots and keep the same one-change-at-a-time pacing.</p>`;
+  // hide retinoid card if pregnant
+  document.querySelectorAll('[data-ret]').forEach(c=>c.classList.toggle('hide',preg==='yes'));
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+// quiz
+const Q=[
+{q:"When did the breakouts start relative to the new product?",o:[["Within a week","p"],["2–8 weeks in","n"],["More than 8 weeks in","b"]]},
+{q:"Where are the new spots appearing?",o:[["Only where I normally break out","p"],["Some new areas","n"],["Areas I never break out in","b"]]},
+{q:"What kind of product triggered it?",o:[["A retinoid, AHA or BHA","p"],["Azelaic acid","n"],["Moisturiser, oil, HA or SPF","b"]]},
+{q:"How are individual spots behaving?",o:[["Coming and going faster than usual","p"],["About the same as normal","n"],["Lingering, itching, stinging or burning","b"]]}
+];
+const A={};
+document.getElementById('quiz').innerHTML=Q.map((q,i)=>
+ `<div class="q"><div class="qt">${i+1}. ${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt" data-q="${i}" data-j="${j}" data-v="${o[1]}">${o[0]}</button>`).join('')}</div></div>`).join('');
+document.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{
+  document.querySelectorAll(`.opt[data-q="${o.dataset.q}"]`).forEach(z=>z.classList.remove('on'));
+  o.classList.add('on');A[o.dataset.q]=o.dataset.v;
+  if(Object.keys(A).length<4)return;
+  const v=Object.values(A),p=v.filter(x=>x==='p').length,b=v.filter(x=>x==='b').length;
+  const el=document.getElementById('verdict');el.className='show';
+  if(b>=2){el.classList.add('v-break');el.innerHTML=`<h3>Likely a breakout or irritation reaction — stop the product</h3>This pattern doesn't match purging. Purging requires an ingredient that accelerates cell turnover, and it only surfaces microcomedones that were already forming in your usual zones. New locations, a late onset, a non-exfoliating trigger, or itching and stinging all point to comedogenicity, irritation or sensitisation instead.<br><br><b>What to do:</b> stop the product. Return to cleanser, moisturiser and SPF for two weeks until skin settles. Reintroduce actives one at a time, two weeks apart. If it involved swelling, hives or spreading redness, see a doctor.`}
+  else if(p>=3){el.classList.add('v-purge');el.innerHTML=`<h3>Consistent with purging — hold your course</h3>Early onset, familiar locations, a turnover-accelerating active and faster-than-usual healing are the four textbook markers of a purge.<br><br><b>What to do:</b> keep going but don't escalate. Hold the current frequency, prioritise moisturiser and SPF, and resist the urge to add anything or exfoliate harder. Purging typically resolves in 4–6 weeks; retinoid purges peak around weeks 3–6 and settle by week 8. If it hasn't improved by week 12, that's your cue to see a dermatologist.`}
+  else{el.classList.add('v-mix');el.innerHTML=`<h3>Mixed signals — reduce frequency and observe</h3>Your answers don't land cleanly in either category, which is common and usually means mild over-exfoliation layered on top of a genuine purge.<br><br><b>What to do:</b> halve your exfoliation frequency for two weeks rather than stopping outright. Keep everything else identical so you're only changing one variable. Photograph the area weekly in consistent lighting. Improving on reduced frequency means it was over-exfoliation; unchanged or worse means stop the product entirely.`}
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+// sources
+const S=[
+["AHA vs BHA vs LHA vs PHA: The Difference between Exfoliating Acids","firstderm.com","https://www.firstderm.com/aha-vs-bha-vs-lha-vs-pha/","Acid family classification, solubility, skin-type matching"],
+["Understanding the Differences Between AHAs and BHAs","cerave.com","https://www.cerave.com/skin-smarts/skincare-tips-advice/understanding-the-differences-between-ahas-and-bhas","AHA/BHA mechanism and indications"],
+["AHAs, BHAs & PHAs: Benefits for Skin","dermalogica.com","https://www.dermalogica.com/blogs/living-skin/aha-bha-pha-exfoliating-acids","PHA gentleness and molecular size"],
+["Comparison of 40% mandelic acid with 30% salicylic acid peels in mild-to-moderate acne: a randomized study","researchgate.net","https://www.researchgate.net/publication/371653581_Comparison_of_efficacy_of_40_mandelic_acid_with_30_salicylic_acid_peels_in_mild-to-moderate_acne_vulgaris_A_randomized_study","Head-to-head comedone and papule reduction data"],
+["45% Mandelic Acid Peel as Effective as 30% Salicylic Acid Peel for Mild-Moderate Facial Acne","dermatologyadvisor.com","https://www.dermatologyadvisor.com/news/almond-based-peel-better-than-salicylic-acid-peel-for-acne/","Comedone reduction 73.4% vs 59.7%; erythema comparison"],
+["Systematic Review of Salicylic Acid in Chemical Peeling for Comedonal Acne","internationalmedicaljournal.org","https://internationalmedicaljournal.org/index.php/ijmhsr/article/view/627","88–90% comedone reduction; lipophilic follicular penetration"],
+["Salicylic–mandelic acid versus glycolic acid peels","ovid.com","https://www.ovid.com/jnls/jewds/fulltext/10.1097/01.ewx.0000464740.18592.42~salicylicmandelic-acid-versus-glycolic-acid-peels-in","90.2% vs 35.9% comedonal clearance"],
+["Azelaic Acid in Dermatology: A Review of Its Mechanism of Action","PMC / NCBI","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12517662/","Comedolytic, antibacterial and anti-inflammatory mechanisms"],
+["Efficacy of Topical Treatments in Mild-to-Moderate Acne Vulgaris: A Systematic Review","PMC / NCBI","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11081083/","Comparative efficacy of topical acne actives"],
+["Treating Closed Comedones","Dr. Michele Green M.D.","https://www.michelegreenmd.com/treating-closed-comedones","Azelaic acid as primary comedolytic; chin/forehead distribution"],
+["How to Tackle Closed Comedones + Texture","Dr Sam Bunting","https://drsambunting.com/en-us/blogs/sam-bunting/how-to-tackle-closed-comedones","Dermatologist protocol for comedonal congestion"],
+["What Percentage of Azelaic Acid Actually Works? (10% vs 15% vs 20%)","verifiedbeautydata.com","https://verifiedbeautydata.com/guides/azelaic-acid-percentage-guide/","RCT evidence tiers by concentration"],
+["Azelaic Acid Strengths & Forms — 10%, 15%, 20% Explained","redboxrx.com","https://www.redboxrx.com/blog/azelaic-acid-strengths-forms-everything-you-know","Frequency of use, tolerability, 12–24 week timeline"],
+["Niacinamide Benefits: What 14 Clinical Studies Actually Prove","ocemida.com","https://ocemida.com/blogs/hydrogen-water/niacinamide-clinical-research-benefits","2% sebum excretion reduction; 4% mast-cell infiltrate data"],
+["Niacinamide for Barrier Repair","Rodan + Fields","https://www.rodanandfields.com/en-us/blog/skincare-guides/niacinamide-for-barrier-repair/","Ceramide synthesis and TEWL reduction"],
+["AHAs/BHAs and Niacinamide: The Impact on Skin pH","Skin Pharm","https://skinpharm.com/blogs/blog/bha-and-niacinamide","Dermatologist position on spacing niacinamide and acids"],
+["Can You Use Niacinamide With AHAs and BHAs?","skincare.com (L'Oréal)","https://www.skincare.com/product-picks/all-product-picks/can-you-mix-niacinamide-with-aha-bha","Debunking the nicotinic acid flushing myth"],
+["How Often Should You Exfoliate Your Face?","Riverchase Dermatology","https://www.riverchasedermatology.com/blog/how-often-should-you-exfoliate-your-face-2/","Frequency guidance by skin type"],
+["How Often Is It Recommended to Exfoliate Your Face?","GoodRx Health","https://www.goodrx.com/health-topic/dermatology/how-often-should-you-exfoliate","1–3× weekly consensus; oily vs dry skin limits"],
+["Exfoliation For Skin Health: How Often Is Too Often?","Acibadem Hospitals Group","https://acibademinternational.com/health-library/exfoliation-for-skin-health-how-often-is-too-often/","Over-exfoliation: TEWL, microbiome and inflammation"],
+["Retinoids: Why Skin Purges And How Long It Lasts","Dermatica","https://www.dermatica.co.uk/skinlab/retinoids-why-skin-purges-and-how-long-it-lasts/","Purge duration 2–8 weeks; microcomedone mechanism"],
+["Adapalene Purging Timeline","mymirror.fit","https://mymirror.fit/acne/adapalene-purging-timeline/","Purge peaks weeks 3–6, resolves by week 8, clears by week 12"],
+["Acne purging: full dermatologist guide","MDacne","https://www.mdacne.com/article/acne-purging-full-dermatologist-guide","Purge vs breakout differentiation criteria"],
+["Skincare Ingredients You Should Never Mix: A Dermatologist's Guide","Adare Dermatology","https://adaredermatology.co.uk/blogs/news/skincare-ingredients-you-should-never-mix-a-dermatologists-guide","Retinoid + acid and retinoid + vitamin C incompatibilities"],
+["How to use Retinol with Vitamin C, BHA, Niacinamide & more","Paula's Choice","https://www.paulaschoice-eu.com/retinol-with-vitamin-c-bha-aha-niacinamide","Layering sequence and alternation strategy"],
+["Should You Be Using PHA Gluconolactone Instead of Glycolic Acid?","Chemist Confessions","https://chemistconfessions.com/blogs/should-you-be-using-pha-gluconolactone-instead-of-glycolic-acid","Molecular weight 76 vs 178 Da; 2004 tolerability study"],
+["Gluconolactone (PHA): what it is and what the evidence says","serumtruth.com","https://www.serumtruth.com/ingredients/gluconolactone","PHA humectant and antioxidant actions; evidence limitations"],
+["Mandelic Acid — Should You Choose It Over Salicylic or Glycolic Acid?","Chemist Confessions","https://chemistconfessions.com/blogs/mandelic-acid-should-you-choose-it-over-salicylic-acid-or-glycolic-acid","Mandelic molecular size and tolerability profile"]
+];
+document.getElementById('sources').innerHTML=S.map((s,i)=>
+ `<div class="srci"><a href="${s[2]}" target="_blank" rel="noopener">${i+1}. ${s[0]}</a><div class="dom">${s[1]} — <i>${s[3]}</i></div></div>`).join('');
+
+// tabs
+function goTab(id){
+  document.querySelectorAll('.tab').forEach(z=>z.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(z=>z.classList.remove('on'));
+  const t=document.querySelector(`.tab[data-p="${id}"]`);
+  if(t)t.classList.add('on');
+  const p=document.getElementById(id);
+  if(p)p.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>goTab(t.dataset.p));
+document.querySelectorAll('.jump').forEach(j=>j.onclick=()=>goTab(j.dataset.t));
+</script>
+</body>
+</html>

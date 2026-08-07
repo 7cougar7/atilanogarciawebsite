@@ -19,6 +19,11 @@ urlpatterns = [
     path("v2/translator/", views.translator_v2, name="translator_v2"),
     path("v2/url-shortener/", views.url_shortener_v2, name="url_shortener_v2"),
     path("lab/build/", views.concept_preview, name="concept_preview"),
+    # Vault: one static password gates a menu of private static pages.
+    # "lock/" is listed before "<slug>/" so it isn't captured as a site slug.
+    path("vault/", views.vault_index, name="vault_index"),
+    path("vault/lock/", views.vault_lock, name="vault_lock"),
+    path("vault/<slug:slug>/", views.vault_site, name="vault_site"),
     path("login/", UnifiedLoginView.as_view(), name="login"),
     path(
         "magic-link-verify/<uidb64>/<token>/",
