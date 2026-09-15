@@ -522,6 +522,12 @@ VAULT_SITES = [
         "blurb": "Closed comedones & texture — a decision plan.",
         "file": "acid_dashboard.html",
     },
+    {
+        "slug": "nursing",
+        "title": "Nursing Path Dashboard",
+        "blurb": "Austin, TX — accelerated BSN routes, costs, and timelines.",
+        "file": "nursing_path_dashboard.html",
+    },
 ]
 VAULT_SITES_BY_SLUG = {s["slug"]: s for s in VAULT_SITES}
 
