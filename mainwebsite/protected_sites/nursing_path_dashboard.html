@@ -1,0 +1,1584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nursing Path Dashboard — Austin, TX</title>
+<style>
+:root{
+  color-scheme: light;
+  --plane:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ef;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,0.10);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --ord1:#86b6ef; --ord2:#5598e7; --ord3:#2a78d6; --ord4:#1c5cab; --ord5:#104281;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#232321;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,0.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --ord1:#104281; --ord2:#1c5cab; --ord3:#2a78d6; --ord4:#5598e7; --ord5:#86b6ef;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#232321;
+  --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,0.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --ord1:#104281; --ord2:#1c5cab; --ord3:#2a78d6; --ord4:#5598e7; --ord5:#86b6ef;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--plane);color:var(--ink);font:14px/1.55 var(--font);overflow-wrap:anywhere;
+  padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px}
+h1{font-size:23px;line-height:1.25;margin:0 0 4px}
+h2{font-size:18px;margin:0 0 4px}
+h3{font-size:15px;margin:0 0 6px}
+h4{font-size:13px;margin:0 0 4px;color:var(--ink-2)}
+p{margin:0 0 10px}
+a{color:var(--s1)}
+small,.small{font-size:12px}
+.muted{color:var(--muted)}
+.dim{color:var(--ink-2)}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:16px;margin:0 0 16px}
+.sec{scroll-margin-top:12px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.row.tight{gap:6px}
+.between{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start}
+.grid{display:grid;gap:12px}
+@media(min-width:700px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+button,select,input[type=text],input[type=date],textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:var(--surface-2);border:1px solid var(--ring);border-radius:8px;padding:6px 11px}
+button:hover{border-color:var(--axis)}
+button.primary{background:var(--s1);color:#fff;border-color:transparent}
+button.chip{border-radius:999px;padding:6px 13px;background:var(--surface);}
+button.chip[aria-pressed=true]{background:var(--s1);color:#fff;border-color:transparent}
+input[type=text],input[type=date],textarea,select{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:6px 9px;width:100%}
+textarea{min-height:52px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--s1)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--grid);vertical-align:top}
+th{color:var(--ink-2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid var(--ring);background:var(--surface-2);color:var(--ink-2);max-width:100%;overflow-wrap:anywhere}
+.tag.absn{border-color:var(--s1);color:var(--s1)}
+.tag.demsn{border-color:var(--s2);color:var(--s2)}
+.tag.adn{border-color:var(--s3);color:var(--s3)}
+.badge-confirm{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 7px;border-radius:999px;background:rgba(250,178,25,.16);border:1px solid var(--warn);color:var(--ink)}
+.badge-unv{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 7px;border-radius:999px;background:rgba(208,59,59,.12);border:1px solid var(--critical);color:var(--ink)}
+.badge-derived{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 7px;border-radius:999px;background:var(--surface-2);border:1px dashed var(--axis);color:var(--ink-2)}
+sup.fn{font-size:10px;font-variant-numeric:normal}
+sup.fn a{text-decoration:none;padding:0 1px}
+.item{border:1px solid var(--ring);border-radius:10px;padding:10px 12px;background:var(--surface);margin:0 0 8px}
+.item.st-known{border-left:4px solid var(--warn)}
+.item.st-verified{border-left:4px solid var(--good)}
+.item.st-unknown{border-left:4px solid var(--axis)}
+.item-head{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.item-head>div{min-width:0}
+.between>div,.row>div{min-width:0}
+.kpi .v{overflow-wrap:anywhere}
+.states{display:inline-flex;border:1px solid var(--ring);border-radius:8px;overflow:hidden}
+.states button{border:0;border-radius:0;padding:4px 9px;font-size:11.5px;background:var(--surface-2);color:var(--ink-2)}
+.states button+button{border-left:1px solid var(--ring)}
+.states button[aria-pressed=true]{color:#fff}
+.states button.b-unknown[aria-pressed=true]{background:var(--axis);color:var(--ink)}
+.states button.b-known[aria-pressed=true]{background:var(--warn);color:#0b0b0b}
+.states button.b-verified[aria-pressed=true]{background:var(--good)}
+.item-body{margin-top:8px;padding-top:8px;border-top:1px dashed var(--grid)}
+.stale{font-size:12px;color:var(--ink);background:rgba(250,178,25,.14);border:1px solid var(--warn);border-radius:8px;padding:6px 9px;margin:6px 0}
+.blocked{font-size:12px;color:var(--ink);background:rgba(208,59,59,.10);border:1px solid var(--critical);border-radius:8px;padding:6px 9px;margin:6px 0}
+.fieldline{display:grid;gap:2px;margin:0 0 4px}
+.lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex}
+.bar span{display:block;height:100%}
+.kpi{border:1px solid var(--ring);border-radius:10px;padding:11px 13px;background:var(--surface)}
+.kpi .v{font-size:22px;line-height:1.15;font-weight:650}
+.kpi .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.tl{display:flex;height:24px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.tl span{display:block;position:relative}
+.tl span+span{margin-left:2px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--ink-2);margin:6px 0 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.node{display:grid;grid-template-columns:26px 1fr;gap:10px}
+.node .rail{display:flex;flex-direction:column;align-items:center}
+.node .dot{width:13px;height:13px;border-radius:50%;background:var(--axis);margin-top:5px;flex:0 0 auto}
+.node.st-known .dot{background:var(--warn)}
+.node.st-verified .dot{background:var(--good)}
+.node .line{flex:1;width:2px;background:var(--grid);margin:4px 0}
+.sticky{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--plane);padding-top:10px}
+.foot{font-size:12px;color:var(--ink-2)}
+.fnlist li{margin:0 0 7px}
+.chartbox{position:relative;height:340px}
+.warnbar{background:rgba(250,178,25,.16);border:1px solid var(--warn);border-radius:8px;padding:8px 11px;font-size:12.5px;margin:0 0 12px}
+.nav{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.nav a{font-size:12px;text-decoration:none;color:var(--ink-2);border:1px solid var(--ring);border-radius:999px;padding:4px 10px;background:var(--surface)}
+.sl{display:grid;gap:3px;margin:0 0 12px}
+.sl .top{display:flex;justify-content:space-between;font-size:12.5px}
+.sl .val{font-variant-numeric:tabular-nums;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="card" style="margin-bottom:12px">
+  <div class="between">
+    <div style="max-width:640px">
+      <h1>Nursing Path Dashboard</h1>
+      <p class="dim" style="margin-bottom:6px">Austin, TX · 26 · BS Mathematics, MS Data Science · Associate Data Scientist · not working during prerequisites or program · no transcript reviewed yet, so every prerequisite starts UNKNOWN.</p>
+      <p class="small muted" style="margin:0">Every program fact below is either footnoted to a page retrieved on 14–15 September 2026, marked <span class="badge-derived">derived</span> (arithmetic on two footnoted figures), or marked <span class="badge-unv">not verified</span> with where to get it. Nothing is estimated.</p>
+    </div>
+    <div class="row tight" style="align-items:center">
+      <button id="btnTheme" title="Toggle light/dark">◐ Theme</button>
+      <button id="btnUnresolved" aria-pressed="false">Show only unresolved</button>
+      <button id="btnExport">Export JSON</button>
+      <button id="btnImport">Import JSON</button>
+      <button id="btnReset">Reset…</button>
+      <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="kpi">
+      <div class="k">Prerequisite start (given)</div>
+      <div class="v">Late Oct 2026</div>
+      <div class="small muted">Her stated availability to begin coursework. This is <strong>not</strong> a program start date.</div>
+    </div>
+    <div class="kpi">
+      <div class="k">Earliest realistic cohort start (derived)</div>
+      <div class="v" id="kpiCohort">Aug 2027</div>
+      <div class="small muted" id="kpiCohortWhy"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <div class="between" style="align-items:center">
+      <h3 style="margin:0">Progress</h3>
+      <div class="small dim"><span id="progSummary"></span> · <span id="coverageSummary"></span></div>
+    </div>
+    <div class="bar" style="margin:8px 0 10px"><span id="barV"></span><span id="barK"></span><span id="barU"></span></div>
+    <div class="legend">
+      <span><i style="background:var(--good)"></i>VERIFIED — confirmed against a source or with the institution</span>
+      <span><i style="background:var(--warn)"></i>KNOWN — self-reported from memory</span>
+      <span><i style="background:var(--axis)"></i>UNKNOWN — default</span>
+    </div>
+    <div id="sectionBreakdown" class="grid g3" style="margin-top:12px"></div>
+  </div>
+
+  <div id="storageWarn" class="warnbar" hidden>Browser storage is unavailable in this window, so progress will not persist when you close the file. Use <strong>Export JSON</strong> before you leave, and <strong>Import JSON</strong> when you come back.</div>
+
+  <nav class="nav">
+    <a href="#s1">1 · End state</a><a href="#s2">2 · ER path</a><a href="#s3">3 · Prereq window</a>
+    <a href="#s4">4 · Pathways</a><a href="#s5">5 · Prerequisites</a><a href="#s6">6 · Programs</a>
+    <a href="#s7">7 · Breakeven</a><a href="#s8">8 · Decisions</a><a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<section id="s1" class="card sec"><h2>1 · End-state selector</h2>
+  <p class="small muted">Choosing an end state re-filters every section below. ER is the default because it is her stated goal; the full option set stays visible because she is not locked in.</p>
+  <div class="row tight" id="endStateChips" style="margin:10px 0"></div>
+  <div id="endStatePanel"></div>
+</section>
+
+<section id="s2" class="card sec"><h2>2 · The ER path</h2>
+  <div id="erPath"></div>
+</section>
+
+<section id="s3" class="card sec"><h2>3 · What to do during the prerequisite window</h2>
+  <p class="small muted">She is not working from late October 2026. These are the ways that time can be spent alongside a full-time prerequisite load.</p>
+  <div id="windowOpts"></div>
+</section>
+
+<section id="s4" class="card sec"><h2>4 · Pathway comparison</h2>
+  <div id="pathways"></div>
+</section>
+
+<section id="s5" class="card sec"><h2>5 · Prerequisite tracker</h2>
+  <div id="prereqs"></div>
+</section>
+
+<section id="s6" class="card sec"><h2>6 · Program explorer</h2>
+  <div id="explorer"></div>
+</section>
+
+<section id="s7" class="card sec"><h2>7 · Breakeven calculator</h2>
+  <div id="breakeven"></div>
+</section>
+
+<section id="s8" class="card sec"><h2>8 · Decision points</h2>
+  <div id="decisions"></div>
+</section>
+
+<section id="sources" class="card sec"><h2>Sources</h2>
+  <p class="small muted">Program facts come from the institution's own pages only. Licensure comes from the Texas Board of Nursing. Wages come from BLS or the Texas Workforce Commission. No rankings sites, no salary aggregators.</p>
+  <ol class="fnlist small" id="srcList"></ol>
+</section>
+
+<footer class="foot" style="padding:0 0 32px">
+  <p><strong>Two dates, kept apart on purpose.</strong> Late October 2026 is when prerequisite coursework can begin. <span id="footCohort">The earliest cohort start the verified deadlines allow</span> is a different date, computed from those deadlines and from how many prerequisites are still outstanding. Everything in between is prerequisite time.</p>
+  <p class="muted">Built 15 September 2026. Tuition, fees, deadlines, GPA minimums and exam thresholds change at least annually — re-check every field carrying a “confirm directly” badge before relying on it.</p>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+"use strict";
+/* ============================ SOURCES ============================ */
+var ACC="15 Sep 2026", ACC14="14 Sep 2026";
+var SRC={
+1:{t:"Concordia University Texas — ABSN Tuition and Fees",u:"https://absn.concordia.edu/admissions/tuition/",a:ACC14,upd:"page metadata date 2026-09-09",ch:"annual"},
+2:{t:"Concordia University Texas — ABSN Admissions (start dates)",u:"https://absn.concordia.edu/admissions/",a:ACC14,ch:"per cycle"},
+3:{t:"Concordia University Texas — ABSN Eligibility Requirements",u:"https://absn.concordia.edu/admissions/absn-eligibility-requirements/",a:ACC14,ch:"annual"},
+4:{t:"Concordia University Texas — ABSN Prerequisites",u:"https://absn.concordia.edu/admissions/absn-prerequisites/",a:ACC14,ch:"annual"},
+5:{t:"Concordia University Texas — ABSN program overview",u:"https://absn.concordia.edu/accelerated-nursing/",a:ACC14},
+6:{t:"Concordia University Texas — Student Achievement (NCLEX, completion, employment)",u:"https://www.concordia.edu/about/student-achievement.html",a:ACC14,ch:"annual"},
+7:{t:"St. Edward's University — Nursing Accelerated (BSN)",u:"https://www.stedwards.edu/academics/programs/nursing-accelerated-bsn",a:ACC14,ch:"per cycle"},
+8:{t:"St. Edward's University — Undergraduate Tuition and Fees, 2026–27",u:"https://www.stedwards.edu/cost-aid/undergraduate-tuition-fees",a:ACC14,upd:"stated for Fall 2026 & Spring 2027",ch:"annual"},
+9:{t:"Fairfield University Austin — Admission (ASDNU)",u:"https://austin.fairfield.edu/admission/",a:ACC14,ch:"per cycle"},
+10:{t:"Fairfield University Austin — Tuition and Fees",u:"https://austin.fairfield.edu/tuition-fees",a:ACC14,upd:"stated for the Summer 2026 cohort",ch:"annual"},
+11:{t:"Texas A&M College of Nursing — Second-Degree BSN",u:"https://nursing.tamu.edu/degrees/second-bsn/index.html",a:ACC14,ch:"per cycle"},
+12:{t:"Texas A&M Vital Record — 2025 NCLEX pass rate (college-wide)",u:"https://vitalrecord.tamu.edu/college-of-nursings-licensure-exam-pass-rate-nearly-perfect-in-2025/",a:ACC14,upd:"article dated 15 Jun 2026",ch:"annual"},
+13:{t:"Texas State University catalog — BSN (Second Degree), Online Accelerated Program",u:"https://mycatalog.txstate.edu/undergraduate/health-professions/st-davids-nursing/nursing-second-degree-bsn/",a:ACC14,ch:"annual"},
+14:{t:"Texas State University — Fall 2027 BSN Admission Requirements",u:"https://www.nursing.txst.edu/fall-2027-bsn-program-home/fall-2027-bsn-admission-requirements.html",a:ACC14,ch:"per cycle"},
+15:{t:"UT Austin School of Nursing — Alternate Entry MSN (LeaDs)",u:"https://nursing.utexas.edu/academics/graduate/aemsn",a:ACC,ch:"per cycle"},
+16:{t:"UT Austin School of Nursing — Academics (program list)",u:"https://nursing.utexas.edu/academics",a:ACC14},
+17:{t:"UT Austin School of Nursing — Alternate Entry Prerequisite Course Equivalencies (PDF)",u:"https://nursing.utexas.edu/sites/default/files/ae_prerequisites.pdf",a:ACC,upd:"document states “Revised 01.31.22”",ch:"as revised"},
+18:{t:"UT Austin School of Nursing — DNP (Post-MSN) Tuition & Funding",u:"https://nursing.utexas.edu/academics/graduate/dnp-post-msn/tuition-funding",a:ACC14,ch:"annual"},
+19:{t:"Texas Lutheran University — Master of Science in Nursing (Direct-Entry)",u:"https://www.tlu.edu/programs/master-of-science-in-nursing-direct-entry",a:ACC14,upd:"tuition stated for 2026–2027",ch:"annual"},
+20:{t:"Texas Lutheran University — Nursing Tuition and Financial Aid",u:"https://acceleratednursing.tlu.edu/nursing-tuition-and-financial-aid/",a:ACC14,ch:"annual"},
+21:{t:"Texas Lutheran University — Direct-Entry MSN for career changers",u:"https://acceleratednursing.tlu.edu/direct-entry-msn-career-changers/",a:ACC14},
+22:{t:"Austin Community College — Application Process, ADN Traditional Track",u:"https://sites.austincc.edu/health/rnsg/apply/traditional/",a:ACC14,ch:"per cycle"},
+23:{t:"Austin Community College — Professional Nursing program (ACEN accreditation)",u:"https://programs.austincc.edu/health-sciences/professional-nursing/",a:ACC14},
+24:{t:"Austin Community College — Tuition Rates & Fees, 2026–27 catalog",u:"https://catalog.austincc.edu/college-entry/paying-for-college/tuition-rates-and-fees/",a:ACC14,upd:"2026–27 catalog",ch:"annual"},
+25:{t:"Austin Community College — Nursing program NCLEX first-time pass rate",u:"https://infohub.austincc.edu/blog/2024/03/01/accs-nursing-program-earns-top-nclex-first-time-pass-rate/",a:ACC14,upd:"reports 2023 results",ch:"annual"},
+26:{t:"Austin Community College — Application Process, RN-to-BSN",u:"https://sites.austincc.edu/health/rnsg/apply/rn-to-bsn/",a:ACC14,ch:"per cycle"},
+27:{t:"Austin Community College Continuing Education — Certified Nurse Aide",u:"https://continue.austincc.edu/nurseaide",a:ACC14,ch:"per term"},
+28:{t:"Temple College — Associate Degree Nursing (ADN)",u:"https://www.templecollege.edu/programs/health-professions/nursing/associate-degree-nursing.html",a:ACC14,ch:"per cycle"},
+29:{t:"Galen College of Nursing — Austin: Tuition & Admission",u:"https://galencollege.edu/campuses/austin/tuition-admission",a:ACC14,ch:"annual"},
+30:{t:"Texas Tech University Health Sciences Center — Second Degree BSN (program page)",u:"https://www.ttuhsc.edu/programs/second-degree-bsn",a:ACC14,ch:"per cycle"},
+31:{t:"Texas Tech University Health Sciences Center — Second Degree BSN (School of Nursing)",u:"https://www.ttuhsc.edu/nursing/undergrad/second-degree/default.aspx",a:ACC14,ch:"per cycle"},
+32:{t:"UT Health San Antonio — BSN Accelerated Track, Admissions",u:"https://uthscsa.edu/nursing/programs/bsn-Accelerated/admissions",a:ACC14,ch:"per cycle"},
+33:{t:"UT Health San Antonio — BSN Accelerated Track, Program Overview",u:"https://uthscsa.edu/nursing/programs/undergraduate/bsn-accelerated-track/overview",a:ACC14},
+34:{t:"Baylor University Louise Herrington School of Nursing — FastBacc",u:"https://nursing.baylor.edu/admissions/undergraduate-admissions/second-degree-post-baccalaureate/fastbaccr",a:ACC14,ch:"per cycle"},
+35:{t:"Texas Woman's University — BSN Post-Baccalaureate Pre-Licensure information packet (PDF)",u:"https://twu.edu/media/documents/nursing/BSN-Post-Bacc-Pre-Licensure-Info-Packet.pdf",a:ACC14,upd:"document marked “Updated 2/2025”",ch:"annual"},
+36:{t:"Herzing University — MSN Direct Entry for Texas",u:"https://www.herzing.edu/nursing/msn-direct-entry/texas",a:ACC14,ch:"rolling"},
+37:{t:"Texas State University — Online RN to BSN",u:"https://online.txst.edu/degrees/healthcare/rn-to-bsn/",a:ACC14,ch:"annual"},
+38:{t:"Texas Board of Nursing — Licensure, Examination Information",u:"https://www.bon.texas.gov/licensure_examination.asp.html",a:ACC14,ch:"as amended"},
+39:{t:"Texas Board of Nursing — Nursing Jurisprudence Examination",u:"https://www.bon.texas.gov/licensure_nursing_jurisprudence.asp.html",a:ACC14,ch:"as amended"},
+40:{t:"Texas Health and Human Services — Nurse Aide Training and Competency Evaluation Program (NATCEP)",u:"https://www.hhs.texas.gov/business/licensing-credentialing-regulation/long-term-care-credentialing/nurse-aide-training-competency-evaluation-program-natcep",a:ACC14,ch:"as amended"},
+41:{t:"Board of Certification for Emergency Nursing — CEN Eligibility",u:"https://bcen.org/cen/eligibility/",a:ACC14,ch:"as amended"},
+42:{t:"Emergency Nurses Association — Trauma Nursing Core Course (TNCC)",u:"https://www.ena.org/education/access-all-courses/trauma-nursing-core-course",a:ACC14,ch:"as amended"},
+43:{t:"American Heart Association — ACLS Course Options",u:"https://cpr.heart.org/en/courses/advanced-cardiovascular-life-support-course-options",a:ACC14,ch:"as amended"},
+44:{t:"American Heart Association — PALS Course Options",u:"https://cpr.heart.org/en/courses/pals-course-options",a:ACC14,ch:"as amended"},
+45:{t:"Council on Accreditation of Nurse Anesthesia Educational Programs — FAQs (entrance requirements)",u:"https://www.coacrna.org/faqs/",a:ACC14,ch:"as amended"},
+46:{t:"HCA Healthcare Careers — St. David's HealthCare Nurse Residency",u:"https://careers.hcahealthcare.com/pages/st-davids-healthcare-nurse-residency",a:ACC14,ch:"per cohort"},
+47:{t:"St. David's HealthCare — Student and Nursing Professionals",u:"https://www.stdavids.com/for-medical-professionals/graduate-nurse-education",a:ACC14},
+48:{t:"HCA Healthcare Careers — Registered Nurse Emergency Department, St. David's North Austin Medical Center",u:"https://careers.hcahealthcare.com/jobs/17850686-registered-nurse-emergency-department",a:ACC14,ch:"per posting"},
+49:{t:"Baylor Scott & White Health — Students & Graduates (Graduate Nurse Residency)",u:"https://jobs.bswhealth.com/us/en/students-graduates",a:ACC14,ch:"per cohort"},
+50:{t:"Ascension Careers — Ascension Seton, Austin facilities",u:"https://jobs.ascension.org/us/en/texas/austin/seton",a:ACC14},
+51:{t:"BLS Occupational Outlook Handbook — Registered Nurses",u:"https://www.bls.gov/ooh/healthcare/registered-nurses.htm",a:ACC14,upd:"page last modified 27 Aug 2026; wage is May 2025",ch:"annual"},
+52:{t:"BLS — Occupational Employment and Wages in Austin-Round Rock-San Marcos, May 2025",u:"https://www.bls.gov/regions/southwest/news-release/occupationalemploymentandwages_austin.htm",a:ACC14,upd:"released 13 Aug 2026; reference period May 2025",ch:"annual"},
+53:{t:"Texas Career Check (Texas Workforce Commission) — Registered Nurses, 29-1141",u:"https://texascareercheck.com/OccupationInfo/OccupationSummary/29-1141.00/",a:ACC14,upd:"2025 statewide median",ch:"annual"},
+54:{t:"Texas Career Check (TWC) — Nurse Practitioners, 29-1171",u:"https://texascareercheck.com/OccupationInfo/OccupationSummary/29-1171.00/",a:ACC14,upd:"2025 statewide median",ch:"annual"},
+55:{t:"Texas Career Check (TWC) — Nurse Anesthetists, 29-1151",u:"https://texascareercheck.com/OccupationInfo/OccupationSummary/29-1151.00/",a:ACC14,upd:"2025 statewide median",ch:"annual"},
+56:{t:"Texas Career Check (TWC) — Nurse Midwives, 29-1161",u:"https://texascareercheck.com/OccupationInfo/OccupationSummary/29-1161.00/",a:ACC14,upd:"2025 statewide median",ch:"annual"},
+57:{t:"Texas Career Check (TWC) — Nursing Assistants, 31-1131",u:"https://texascareercheck.com/OccupationInfo/OccupationSummary/31-1131.00/",a:ACC14,upd:"2025 statewide median",ch:"annual"},
+58:{t:"Texas Career Check (TWC) — Data Scientists, 15-2051",u:"https://texascareercheck.com/OccupationInfo/OccupationSummary/15-2051.00/",a:ACC14,upd:"2025 statewide median",ch:"annual"},
+59:{t:"Texas Tech University Health Sciences Center — MSN Nurse-Midwifery",u:"https://www.ttuhsc.edu/nursing/masters/midwifery/default.aspx",a:ACC14,ch:"annual"},
+60:{t:"Texas Tech University Health Sciences Center — MSN Informatics and Intelligent Systems",u:"https://www.ttuhsc.edu/nursing/masters/informatics/default.aspx",a:ACC14,ch:"annual"},
+61:{t:"St. David's North Austin Medical Center — Volunteers",u:"https://www.stdavids.com/locations/st-davids-north-austin-medical-center/about-us/volunteers",a:ACC14,ch:"per cycle"},
+62:{t:"BLS OEWS — Registered Nurses occupation profile, May 2023 (national percentiles)",u:"https://www.bls.gov/oes/2023/may/oes291141.htm",a:ACC14,upd:"reference period May 2023",ch:"annual"}
+};
+
+/* ============================ HELPERS ============================ */
+function V(v,src,extra){var o={v:v,src:src||[],st:"sourced"};if(extra)for(var k in extra)o[k]=extra[k];return o;}
+function D(v,src,how){return {v:v,src:src||[],st:"derived",how:how};}
+function U(where){return {v:null,src:[],st:"unverified",where:where};}
+function fn(src){if(!src||!src.length)return"";return '<sup class="fn">'+src.map(function(n){return '<a href="#src'+n+'" title="'+esc(SRC[n].t)+'">['+n+']</a>';}).join("")+'</sup>';}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function money(n){return "$"+Math.round(n).toLocaleString("en-US");}
+function fieldHTML(f){
+  if(!f) return '<span class="muted">—</span>';
+  if(f.st==="unverified") return '<span class="badge-unv">not verified</span> <span class="small muted">'+esc(f.where)+'</span>';
+  var h=esc(f.v)+fn(f.src);
+  if(f.st==="derived") h+=' <span class="badge-derived">derived</span>';
+  if(f.note) h+=' <span class="small muted">'+esc(f.note)+'</span>';
+  return h;
+}
+var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function addMonths(y,m,n){var t=y*12+m+n;return {y:Math.floor(t/12),m:t%12};}
+function fmtYM(o){return MONTHS[o.m]+" "+o.y;}
+var TODAY={y:2026,m:8};            /* Sep 2026 */
+var PREREQ_START={y:2026,m:9};     /* Oct 2026 */
+var LICENSURE_MONTHS=3;            /* labeled assumption, see ER path step 4 */
+
+/* ============================ STATE ============================ */
+var LSKEY="nursing-path-dashboard-v1";
+var S={items:{},endState:"er",showAll:false,onlyUnresolved:false,theme:null,sliders:{},filters:{type:"",maxCost:"",commutable:false,openDeadline:false,progress:""}};
+var storageOK=true;
+function load(){
+  try{var raw=localStorage.getItem(LSKEY);if(raw){var o=JSON.parse(raw);for(var k in o)S[k]=o[k];}}
+  catch(e){storageOK=false;}
+}
+function save(){ try{localStorage.setItem(LSKEY,JSON.stringify(S));}catch(e){storageOK=false;} }
+function item(id){ if(!S.items[id])S.items[id]={st:"unknown",note:"",how:"",when:""}; return S.items[id]; }
+function setItem(id,patch){var it=item(id);for(var k in patch)it[k]=patch[k];save();}
+
+/* An item is "institutional" when it records a fact the school/agency controls and
+   that changes over time. Those can be KNOWN from memory, but KNOWN carries a staleness
+   warning and cannot become VERIFIED without a recorded source or contact date. */
+var ITEMS={};  /* id -> {label, kind:'self'|'inst', section} */
+function reg(id,label,kind,section){ITEMS[id]={label:label,kind:kind,section:section};return id;}
+
+function itemHTML(id,opts){
+  opts=opts||{};
+  var meta=ITEMS[id]||{label:id,kind:"inst",section:"other"};
+  var it=item(id);
+  if(S.onlyUnresolved && it.st==="verified" && !opts.never_hide) return "";
+  var h='<div class="item st-'+it.st+'" data-item="'+esc(id)+'">';
+  h+='<div class="item-head"><div style="flex:1;min-width:220px">';
+  h+='<div><strong>'+ (opts.labelHTML || esc(meta.label)) +'</strong></div>';
+  if(opts.sub) h+='<div class="small dim" style="margin-top:3px">'+opts.sub+'</div>';
+  h+='</div><div class="states" role="group" aria-label="progress state">'
+    +'<button class="b-unknown" data-set="unknown" aria-pressed="'+(it.st==="unknown")+'">Unknown</button>'
+    +'<button class="b-known" data-set="known" aria-pressed="'+(it.st==="known")+'">Known</button>'
+    +'<button class="b-verified" data-set="verified" aria-pressed="'+(it.st==="verified")+'">Verified</button>'
+    +'</div></div>';
+  h+='<div class="item-body">';
+  if(it.st==="known" && meta.kind==="inst"){
+    h+='<div class="stale"><strong>Remembered figure.</strong> This is an institutional fact that changes — tuition, fees, deadlines, GPA minimums, exam thresholds and prerequisite lists are all revised at least annually. Do not rely on it until it is confirmed. It cannot be marked VERIFIED without a source or a contact date below.</div>';
+  }
+  if(it.st==="verified" && meta.kind==="inst" && !(it.how&&it.when)){
+    h+='<div class="blocked"><strong>VERIFIED is not yet earned.</strong> Record how it was confirmed and the date — a page URL you opened, or who you spoke to at the school — or set this back to KNOWN.</div>';
+  }
+  if(meta.kind==="self"){
+    h+='<div class="small muted" style="margin-bottom:6px">Self-reporting is fine here — this is her own history (a course she took, a grade, an exam she sat). VERIFIED means an official transcript or score report confirms it.</div>';
+  }
+  h+='<div class="grid g2">';
+  h+='<label class="fieldline"><span class="lbl">How confirmed / who she spoke to</span><input type="text" data-f="how" value="'+esc(it.how)+'" placeholder="'+(meta.kind==="self"?"e.g. official transcript, UT registrar":"e.g. called admissions, spoke to J. Ruiz")+'"></label>';
+  h+='<label class="fieldline"><span class="lbl">Date confirmed</span><input type="date" data-f="when" value="'+esc(it.when)+'"></label>';
+  h+='</div>';
+  h+='<label class="fieldline" style="margin-top:6px"><span class="lbl">Notes — what she learned</span><textarea data-f="note" placeholder="Anything worth remembering about this item">'+esc(it.note)+'</textarea></label>';
+  if(opts.footer) h+='<div class="small" style="margin-top:6px">'+opts.footer+'</div>';
+  h+='</div></div>';
+  return h;
+}
+
+function counts(filterFn){
+  var c={unknown:0,known:0,verified:0,total:0};
+  for(var id in ITEMS){
+    if(filterFn && !filterFn(ITEMS[id],id)) continue;
+    c.total++; c[item(id).st]++;
+  }
+  return c;
+}
+
+/* ============================ PROGRAMS ============================ */
+var NOTV_COST="Cost of attendance not published on the program, admissions or tuition pages retrieved; request the current cost sheet from the admissions office (contacts in verification-checklist.md).";
+var NOTV_NCLEX="No NCLEX first-time pass rate disclosed on the program's own pages; ask the program for its most recent annual disclosure, or request the Texas BON annual NCLEX-RN pass-rate report (the BON PDFs were not machine-retrievable this session).";
+var NOTV_REC="No science-recency limit stated on the pages retrieved; ask admissions whether science prerequisites expire and after how many years.";
+var NOTV_PCH="Pages retrieved say nothing about patient-care hours; ask whether they are required, credited in ranking, or neither.";
+
+var PROGRAMS=[
+{id:"ctx",name:"Accelerated BSN (ABSN)",school:"Concordia University Texas",type:"ABSN",city:"Austin",
+ loc:V("9430 Research Blvd, Suite I-300, Austin (Dallas campus also offered)",[5]),
+ commute:V("In Austin — no relocation",[5]),commutable:true,
+ len:V("As few as 16 months",[1,5]),lenMonths:16,
+ credits:V("17–18 credits per semester; four semesters required",[1]),
+ tuition:V("$17,800 per semester (17–18 credits), 2026–27 academic year; prerequisite courses $550 per credit hour",[1],{note:"tuition only"}),
+ totalCost:D("$71,200 tuition only (4 semesters × $17,800)",[1],"4 × $17,800 from the tuition page; the page states four semesters are required"),
+ costNum:71200,costBasis:"derived, tuition only",
+ fees:U("The tuition page names “application, course, testing, general services, and graduation fees” but gives no amounts, and lists nothing for books, uniforms, background check, immunizations, liability insurance or NCLEX/licensure. Ask for the itemised cost sheet."),
+ prereqs:V("Chemistry I w/ lab 4; Microbiology w/ lab 4; A&P I w/ lab 4; A&P II w/ lab 4; Nutrition 3; Intro to Statistics 3; Lifespan Development 3; Intro to Psychology 3 — all “C” or higher",[4]),
+ online:V("Yes — Concordia offers all prerequisite courses online in eight-week sessions",[4]),
+ recency:U(NOTV_REC),
+ gpa:V("3.0 cumulative and 3.0 science; second-degree applicants need 3.0 from the conferred degree",[3]),
+ exam:V("ATI TEAS 67% or higher, taken within three years of enrolment; maximum three attempts in 365 days",[3]),
+ deadline:V("Cohort-based, three starts a year — January, May and August; applications due approximately two months before the class start",[2],{note:"not a single fixed date"}),
+ cohort:V("January, May, August",[2]),
+ nclex:V("97.83% first-time (2025 preliminary); the school's stated goal is 80%",[6]),nclexNum:97.83,
+ accred:U("Neither the ABSN site nor the tuition page carries an accreditation statement; ask for the CCNE or ACEN status and the Texas BON approval status in writing."),
+ pch:U(NOTV_PCH),
+ extra:[V("$10,000 Nursing Workforce Development Scholarship, disbursed in instalments across the 16-month track",[1]),
+        V("Completion rate 87% and employment-within-six-months 86.86% for 2024–25",[6])]},
+
+{id:"stedw",name:"Accelerated BSN",school:"St. Edward's University",type:"ABSN",city:"Austin",
+ loc:V("Austin",[7]),commute:V("In Austin — no relocation",[7]),commutable:true,
+ len:V("3 semesters (13 months) of full-time study",[7]),lenMonths:13,
+ credits:V("51 credits for the major, plus 44 hours of general education and prerequisites",[7]),
+ tuition:V("$1,078 per credit hour for the post-baccalaureate ABSN, 2026–27; NCLEX-RN fee $1,166 per term (ABSN only); comprehensive fee $450 per semester full-time",[8],{note:"per credit hour, not a total"}),
+ totalCost:D("$59,826 (51 major credits × $1,078 = $54,978, plus $1,166 × 3 terms = $3,498, plus $450 × 3 = $1,350)",[7,8],"arithmetic on the per-credit rate and the 3-semester length; confirm which credits bill at the ABSN rate"),
+ costNum:59826,costBasis:"derived from per-credit-hour rate",
+ fees:V("Comprehensive fee $450 per semester covers technology, printing, labs, facilities, tutoring, student activities and other course fees; NCLEX-RN fee $1,166 per term for ABSN students",[8],{note:"books, uniforms, background check, immunisations and liability insurance are not itemised"}),
+ prereqs:U("The program page refers to “nursing prerequisites” and 44 hours of general education and prerequisite requirements but does not list the individual courses. Ask for the prerequisite sheet."),
+ online:U("No statement on whether online coursework or at-home labs are accepted."),
+ recency:U(NOTV_REC),
+ gpa:V("Minimum prerequisite GPA 2.5 and minimum overall GPA 2.5",[7]),
+ exam:U("No entrance-exam requirement stated; ask whether TEAS or HESI A2 is required and the minimum score."),
+ deadline:V("31 May 2026 for Fall 2026 admission — that cycle has closed",[7],{note:"Fall admission only"}),
+ cohort:V("Fall semester only",[7],{note:"specific calendar dates not published"}),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("Baccalaureate degree program accredited by the Commission on Collegiate Nursing Education (CCNE)",[7]),
+ pch:U(NOTV_PCH),
+ extra:[U("The next cycle's deadline (Fall 2027) is not published on the program page; this is the single most important call to make about St. Edward's.")]},
+
+{id:"fairfield",name:"Accelerated Second Degree BSN (ASDNU)",school:"Fairfield University — Austin campus",type:"ABSN",city:"Austin",
+ loc:V("7951 Shoal Creek Boulevard, Austin, TX 78757",[9]),commute:V("In Austin — no relocation",[9]),commutable:true,
+ len:V("15 months",[9]),lenMonths:15,
+ credits:U("Credit total for the nursing major not stated on the pages retrieved."),
+ tuition:V("$14,330 per semester for the Summer 2026 ASDNU cohort, fixed for the 15 months; covers registration, tests, nursing labs and clinicals, and commencement; excludes the clinical participation record fee; $1,000 confirmation deposit applies to first-semester tuition",[10],{note:"per semester, not a total"}),
+ totalCost:U("The number of semesters in the 15-month program is not stated, so a total cannot be derived from the published per-semester figure without inventing the semester count. Ask admissions for the all-in program cost."),
+ costNum:null,costBasis:null,
+ fees:V("Most fees are folded into tuition; the clinical participation record fee is explicitly excluded and its amount is not published",[10]),
+ prereqs:V("Sciences and math: A&P I & II with labs, Microbiology with lab, Chemistry with lab, Developmental Psychology, Statistics — grade B/3.0 or better. Plus four humanities courses (12 credits, grade C or better) and 36 credits of general electives",[9]),
+ online:V("Yes — prerequisites may be completed at any regionally accredited university or community college, or at any accredited online course provider such as Portage Learning",[9]),
+ recency:V("Science and math prerequisites must be within the last 10 years",[9]),
+ gpa:V("Minimum cumulative GPA 3.0; prerequisite sciences and math at B/3.0 or better",[9]),
+ exam:U("No entrance exam mentioned on the admission page; confirm whether TEAS or HESI is required."),
+ deadline:V("Rolling within a window: January cohorts accept applications through 1 November; September cohorts through 1 June",[9]),
+ cohort:V("January and September",[9]),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("The simulation lab is accredited by the Society for Simulation in Healthcare",[9],{note:"this is a simulation-lab accreditation, not programmatic nursing accreditation — ask for CCNE/ACEN status and Texas BON approval separately"}),
+ pch:U(NOTV_PCH),
+ extra:[V("The Austin campus is a branch of Fairfield University (Connecticut); classes, labs and clinicals are in Austin",[9])]},
+
+{id:"tamu",name:"Second-Degree BSN",school:"Texas A&M University College of Nursing",type:"ABSN",city:"Round Rock",
+ loc:V("Round Rock campus only — all classes, simulation labs and clinicals at that location",[11]),
+ commute:V("Round Rock — commutable from Austin, no relocation",[11]),commutable:true,
+ len:V("15-month, four-semester accelerated program",[11]),lenMonths:15,
+ credits:V("61 nursing credit hours, on top of 59 prerequisite credit hours",[11]),
+ tuition:U(NOTV_COST+" Texas A&M publishes a tuition calculator but the program page states no figure."),
+ totalCost:U(NOTV_COST),costNum:null,costBasis:null,
+ fees:U(NOTV_COST),
+ prereqs:V("59 hours: Communications 6; American History 6; Government 6; Creative Arts 3; Language/Philosophy/Culture 3; Nutrition 3; Zoology/Biology/Physics/Chemistry II 4; Math 3; General Psychology 3; Developmental Psychology 3; Statistics 3; A&P I 4; A&P II 4; Chemistry I with lab 4; Microbiology 4",[11]),
+ online:U("No statement on whether online prerequisite coursework or at-home labs are accepted."),
+ recency:U(NOTV_REC),
+ gpa:V("3.0 prerequisite GPA and 3.0 nursing-science GPA on a 4.0 scale",[11]),
+ exam:V("HESI Admission Assessment (HESI A2) — 75% in each section",[11]),
+ deadline:V("Cohort-based: Spring entry opens 1 June and closes 1 August; Fall entry opens 1 November and closes 15 January",[11]),
+ cohort:V("Spring and Fall entry",[11]),
+ nclex:V("99.6% first-time in 2025 across the College of Nursing (250 graduates eligible); the same page gives the Texas statewide first-time rate as 88.63% and the national rate as 86.71% for 2025",[12],{note:"college-wide — the article does not separate the traditional and second-degree tracks"}),nclexNum:99.6,
+ accred:U("No accreditation statement on the program page; ask for CCNE status and Texas BON approval."),
+ pch:U(NOTV_PCH)},
+
+{id:"txst",name:"BSN (Second Degree) — Online Accelerated Program",school:"Texas State University, St. David's School of Nursing",type:"ABSN",city:"Round Rock",
+ loc:V("St. David's School of Nursing, Texas State University",[13]),
+ commute:V("Texas State's nursing school is in Round Rock — commutable from Austin",[13]),commutable:true,
+ len:V("Catalog lays the degree out over 3 years, deliverable through the Accelerated Online Program (AOP)",[13]),lenMonths:null,
+ credits:V("120 semester credit hours minimum for the degree",[13]),
+ tuition:U(NOTV_COST),totalCost:U(NOTV_COST),costNum:null,costBasis:null,
+ fees:U(NOTV_COST),
+ prereqs:V("Nursing prerequisites: MATH 1315/1319/1329/2417/2471 3; HIST 1310 & 1320 6; POSI 2310 & 2320 6; NUTR 2360 3 (C minimum); PSY 3300 or HDFS 1351 3 (C minimum); PSY 1300 3. Sciences: BIO 1330, BIO 2440/2400, BIO 2451, BIO 2452, CHEM 1341 (C minimum)",[13]),
+ online:V("The second-degree track itself is delivered as an Accelerated Online Program",[13],{note:"this describes the nursing coursework, not whether outside online prerequisites transfer in — confirm separately"}),
+ recency:U(NOTV_REC+" The catalog does cap science attempts: a maximum of 8 attempts across the science courses and no more than 2 per course."),
+ gpa:V("3.0 nursing-prerequisite GPA and 3.0 science GPA",[13]),
+ exam:V("For the traditional BSN, official ATI TEAS is required — Advanced 85% minimum for priority admission, Proficient 70% minimum for general admission",[14],{note:"this is the traditional BSN page; the second-degree track's exam requirement is not separately published"}),
+ deadline:U("The published admission calendar (application opens 15 September 2026; priority 15 December 2026, general 15 January 2027, transfer 15 March 2027) is for the traditional Fall 2027 BSN, not the second-degree track. Ask the school for the second-degree cycle dates."),
+ cohort:U("Second-degree cohort start terms not published on the pages retrieved."),
+ nclex:U(NOTV_NCLEX+" The school's own recognitions page cites NCLEX-based rankings but publishes no figures."),nclexNum:null,
+ accred:U("Not stated on the catalog page retrieved."),
+ pch:U(NOTV_PCH),
+ extra:[V("Texas State also runs an online RN-to-BSN completion program — 30 credit hours, as few as 10 months, $407 per credit hour, $12,210 total, minimum 2.5 GPA, CCNE-accredited, with seven start dates published from Fall 2026 through Fall 2027",[37],{note:"relevant only after an ADN"})]},
+
+{id:"ttuhsc",name:"Second Degree BSN",school:"Texas Tech University Health Sciences Center",type:"ABSN",city:"Hybrid — Austin clinical site",
+ loc:V("Hybrid distance program; clinical experiences available in Abilene, Amarillo, Austin, Dallas/Mansfield, Lubbock, Odessa or San Antonio",[30,31]),
+ commute:V("Austin is a listed clinical site, so no relocation — but confirm Austin placement is guaranteed, not merely possible",[30]),commutable:true,
+ len:V("12 months estimated time to completion",[30]),lenMonths:12,
+ credits:U("Nursing credit total not stated; 55 prerequisite credit hours are required."),
+ tuition:U(NOTV_COST+" The program page links to a tuition estimator but states no figure."),
+ totalCost:U(NOTV_COST),costNum:null,costBasis:null,fees:U(NOTV_COST),
+ prereqs:V("55 credit hours including the Texas Core Curriculum plus A&P I & II, Microbiology, Chemistry, Pathophysiology, Statistics, Psychology courses, Nutrition, and History/Government/Humanities electives",[31]),
+ online:V("The program itself is a hybrid of online classes with in-person clinical, simulation and experiential learning",[30,31],{note:"whether outside online prerequisites transfer is not stated — confirm"}),
+ recency:U(NOTV_REC),
+ gpa:V("Minimum overall cumulative GPA 2.5 with preference for 3.0 or higher; minimum science GPA 2.5 with preference for 3.0 or higher",[31]),
+ exam:U("No entrance exam stated on the pages retrieved."),
+ deadline:V("Spring 2028: applications open 1 May and close 15 July; prerequisites must be complete before the first class date",[30,31]),
+ cohort:V("Spring 2028 cohort named on the program page",[30]),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("Programs accredited by the Commission on Collegiate Nursing Education; the School of Nursing is an NLN Center of Excellence in Nursing Education",[31]),
+ pch:U(NOTV_PCH)},
+
+{id:"uthsa",name:"BSN Accelerated Track",school:"UT Health San Antonio School of Nursing",type:"ABSN",city:"San Antonio",
+ loc:V("All BSN courses, clinical rotations and labs are in person, on campus in San Antonio; clinical affiliates in San Antonio and surrounding areas",[33]),
+ commute:V("San Antonio — daily commute from Austin or relocation",[33]),commutable:false,
+ len:V("15 months of continuous full-time study, taken as the 5th–8th semesters",[33]),lenMonths:15,
+ credits:U("Nursing credit total not stated; 60 prerequisite hours are required."),
+ tuition:U(NOTV_COST+" The university posts accelerated-BSN cost-of-attendance sheets for 2026–27 as PDFs; request the current one."),
+ totalCost:U(NOTV_COST),costNum:null,costBasis:null,fees:U(NOTV_COST),
+ prereqs:V("60 hours, minimum 51 before application and the remaining 9 before enrolment, all grade C or higher. Math & science: College Algebra or higher 3; Statistics 3; Chemistry I without lab 3; Human Anatomy or A&P I with lab 4; Human Physiology or A&P II with lab 4; Microbiology with lab 4; Human Nutrition 3. Liberal arts: Intro Psychology, Sociology, Human Growth & Development, English Composition I & II, Intro Philosophy, one elective — 3 each",[32]),
+ online:U("Not addressed on the admissions page."),
+ recency:U(NOTV_REC),
+ gpa:V("Minimum 3.0 based on prerequisite coursework",[32]),
+ exam:V("No entrance exam; instead an interview and writing sample through the Kira Talent platform",[32]),
+ deadline:V("Deadline 11 January 2027 for a 18 May 2027 start",[32],{note:"prerequisites started in late October 2026 will not be finished by that deadline"}),
+ cohort:V("18 May 2027",[32]),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:U("Not stated on the pages retrieved."),
+ pch:U(NOTV_PCH)},
+
+{id:"baylor",name:"FastBacc",school:"Baylor University Louise Herrington School of Nursing",type:"ABSN",city:"Dallas",
+ loc:V("Dallas campus",[34]),commute:V("Dallas — relocation",[34]),commutable:false,
+ len:V("12 months (one-year accelerated track)",[34]),lenMonths:12,
+ credits:U("Nursing credit total not stated; 52 prerequisite hours are required."),
+ tuition:U(NOTV_COST+" The school's tuition and financial aid page carries no figures; Student Financial Services is reachable at 254-710-2611."),
+ totalCost:U(NOTV_COST),costNum:null,costBasis:null,fees:U(NOTV_COST),
+ prereqs:V("52 hours: Microbiology; A&P I & II; Chemistry; English Composition I & II; English Literature; Federal Government; Bible-based Religion; World Religion; History; Nutrition; Statistics; Intro Psychology; Developmental Psychology; Intro Sociology",[34]),
+ online:U("Not stated on the FastBacc page."),
+ recency:U(NOTV_REC),
+ gpa:V("3.0 GPA in prerequisite courses and 2.75 in science courses; at application, 33 of the 52 prerequisite hours complete including 2 of the 4 sciences; bachelor's degree required",[34]),
+ exam:V("HESI A2 — English composite 80 or above and Math 80 or above",[34]),
+ deadline:V("Applications open 15 August; deadline 15 January (10:59 CST); May start",[34]),
+ cohort:V("May",[34]),
+ nclex:V("95.65% in 2025",[34]),nclexNum:95.65,
+ accred:U("Not stated on the FastBacc page."),
+ pch:U(NOTV_PCH)},
+
+{id:"twu",name:"BSN Post-Baccalaureate Pre-Licensure",school:"Texas Woman's University",type:"ABSN",city:"Dallas / Denton / Houston",
+ loc:V("Upper-division nursing courses are offered at the Dallas, Denton and Houston campuses",[35]),
+ commute:V("Dallas, Denton or Houston — relocation",[35]),commutable:false,
+ len:U("Program length not stated in the information packet retrieved."),lenMonths:null,
+ credits:V("37 prerequisite hours",[35]),
+ tuition:U(NOTV_COST),totalCost:U(NOTV_COST),costNum:null,costBasis:null,fees:U(NOTV_COST),
+ prereqs:V("Nursing prerequisites before the deadline: A&P I 4, A&P II 4, Microbiology 4, Chemistry with lab 4, Developmental Psychology (lifespan) 3, Intro to Nutrition 3, Elementary Statistics 3. Before starting the program: US History I & II 3 each, US Government 3, Texas Government 3",[35]),
+ online:U("Not stated in the packet."),
+ recency:U(NOTV_REC),
+ gpa:V("Cumulative GPA 3.0 or higher and nursing-prerequisite GPA 3.0 or higher; all sciences passed with C or higher",[35]),
+ exam:V("TEAS with a minimum of 64 in each section; the packet states the average admitted student has a TEAS composite of 87",[35]),
+ deadline:V("Fall admission 1 February; Spring admission 15 August",[35]),
+ cohort:V("Fall and Spring",[35]),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:U("Not stated in the packet retrieved."),
+ pch:U(NOTV_PCH)},
+
+{id:"utaemsn",name:"Alternate Entry MSN — Leadership in Diverse Settings (LeaDs)",school:"The University of Texas at Austin, School of Nursing",type:"DEMSN",city:"Austin",
+ loc:V("On campus, 1710 Red River St., Austin, TX 78712",[15]),commute:V("In Austin — no relocation",[15]),commutable:true,
+ len:V("3 years full-time: an intensive pre-licensure foundation year, then two years of master's coursework, with the MSN typically awarded in the spring of year 3",[15]),lenMonths:36,
+ credits:U("Total credit hours for the MSN not stated on the program page."),
+ tuition:U("No tuition figure appears on the AE-MSN page. The School of Nursing publishes a rate for a different program — the post-MSN DNP at $6,000 per semester for 5 semesters, same price regardless of residency — which does not govern this one. Ask nugrad@nursing.utexas.edu for the AE-MSN rate."),
+ totalCost:U("Not verified — see tuition."),costNum:null,costBasis:null,
+ fees:U("Not itemised on the program page. The DNP page lists liability insurance at $15 per year, which may or may not apply here."),
+ prereqs:V("Seven courses, 24 credits minimum, C- or higher: Anatomy with lab 4; Physiology with lab 4; Microbiology 3; Pharmacology 3; Human Growth and Development Through the Lifespan 3; Nutrition 3; Statistics 3",[15,17]),
+ online:V("The prerequisite equivalency sheet lists distance-learning formats and names ACC equivalents for every course — BIOL 2401, BIOL 2402, BIOL 2420/2421, HPRS 2300 or RNSG 1301, PSYC 2314, BIOL/HECO 1322 or BIOL 1323, and PSYC 2317 or MATH 1342",[17]),
+ recency:V("Human Anatomy, Physiology and Pharmacology must be completed within the past 6 years",[15,17]),
+ gpa:V("Minimum 3.0 on a 4.0 scale; grade of C or higher in every prerequisite",[15,17]),
+ exam:V("No entrance exam. Three professional recommendations (one from a healthcare professional), statement of purpose, CV and transcripts; no GRE is mentioned",[15]),
+ deadline:V("Application window 1 August – 1 October; decisions in early February; the program starts each summer. At least 5 of the 7 prerequisites must be complete by 31 December of the application year, and all 7 before enrolment",[15,17],{note:"the page names Anatomy, Microbiology and Pharmacology among the five; the 2022 equivalency PDF names Anatomy and Microbiology plus three others — a conflict worth resolving with the school"}),
+ cohort:V("Each summer",[15]),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:U("Not stated on the program page."),
+ pch:V("Encouraged, not required — “applicants to the AE-MSN program are encouraged to have volunteer or work experience in a healthcare related field”",[15]),
+ extra:[V("Licensure constraint: after passing NCLEX-RN, students are eligible to work as an RN in Texas only during years two and three; the licence can be endorsed out of state after the degree",[15]),
+        V("Contact: nugrad@nursing.utexas.edu, 512-471-7913",[15])]},
+
+{id:"tlu",name:"Direct-Entry MSN (DEMSN)",school:"Texas Lutheran University",type:"DEMSN",city:"New Braunfels",
+ loc:V("Houston and New Braunfels; a Dallas site is pending board approval",[19]),
+ commute:V("New Braunfels — roughly an hour from Austin; a long daily commute rather than a relocation",[19]),commutable:true,
+ len:V("As few as 20 months of full-time study",[19,21]),lenMonths:20,
+ credits:V("75 credits",[19]),
+ tuition:V("$860 per credit hour for 2026–27 on the university program page",[19],{note:"the accelerated-nursing site states $825 per credit for the DEMSN — the two institutional pages disagree; confirm which is current"}),
+ totalCost:D("$64,500 at the program page's rate (75 × $860); $61,875 at the accelerated-nursing site's rate (75 × $825)",[19,20],"credits × per-credit rate, both figures institutional"),
+ costNum:64500,costBasis:"derived from per-credit rate (conflicting rates published)",
+ fees:U("Neither page itemises fees or additional costs. Note the financial-aid page states no federal, state or institutional grants are available for these programs — only federal direct loans."),
+ prereqs:V("A&P I & II, Microbiology, General Chemistry, Nutrition, Pathophysiology, Statistics, Developmental Psychology",[19]),
+ online:V("Hybrid model combining online and in-class coursework with in-person training and simulation labs",[19,21],{note:"about the program, not about transferring in outside online prerequisites"}),
+ recency:V("Prerequisite courses must have been completed within the last seven years",[19]),
+ gpa:V("Undergraduate GPA 3.0 or greater, and a cumulative 3.0 or better across prerequisites",[19]),
+ exam:U("No entrance exam stated on the pages retrieved."),
+ deadline:U("No application deadlines or cohort start dates are published on either page. Ask admissions for the cycle calendar."),
+ cohort:U("Not published on the pages retrieved."),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("Accredited by the Commission on Collegiate Nursing Education",[19]),
+ pch:U(NOTV_PCH),
+ extra:[V("Graduates earn both the BSN and MSN and are prepared to sit the NCLEX for RN licensure",[19])]},
+
+{id:"herzing",name:"MSN Direct Entry",school:"Herzing University",type:"DEMSN",city:"Online — Texas clinicals",
+ loc:V("100% online didactic coursework; clinicals arranged at Herzing's partner facilities in Texas; three in-person intensives of 2–4 days at the Brookfield, WI or Nashville, TN campuses",[36]),
+ commute:V("No Texas campus — online, with travel to Wisconsin or Tennessee for intensives",[36]),commutable:false,
+ len:V("20–24 months",[36]),lenMonths:22,
+ credits:V("60–77 credits — 60 for applicants who already meet undergraduate general-education requirements, 77 for those who need prerequisite courses",[36]),
+ tuition:U(NOTV_COST),totalCost:U(NOTV_COST),costNum:null,costBasis:null,fees:U(NOTV_COST),
+ prereqs:V("Statistics 3; A&P I 4 and A&P II 4, each a minimum grade of B; Chemistry 3; Microbiology 3",[36]),
+ online:V("The program is delivered online and its own prerequisite pathway is built in for applicants who need it",[36]),
+ recency:U(NOTV_REC),
+ gpa:V("Non-nursing bachelor's degree and a minimum 3.0 GPA",[36]),
+ exam:V("TEAS with an aggregate score of 66",[36]),
+ deadline:V("Rolling — the page states “Now Enrolling”",[36],{note:"no fixed cycle dates published"}),
+ cohort:U("Specific start dates not published on the page retrieved."),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("CCNE accredited; the university is accredited by the Higher Learning Commission",[36]),
+ pch:U(NOTV_PCH)},
+
+{id:"acc",name:"Professional Nursing, ADN (Traditional Track) → RN-to-BSN",school:"Austin Community College",type:"ADN",city:"Austin",
+ loc:V("Austin Community College District",[23]),commute:V("In Austin — no relocation",[23]),commutable:true,
+ len:V("Traditional two-year track; the RN-to-BSN completion that follows is 3 semesters full-time or 5 part-time",[22,26]),lenMonths:24,
+ credits:U("Total award credit hours are published only in a program-map document that could not be retrieved; ask an advisor for the 2026–27 ADN degree plan."),
+ tuition:V("In-district Texas resident $67 per credit hour, plus mandatory fees of $15 general, $2 student success and $1 sustainability per credit hour, plus a $50 standard course fee per course; a third-or-later attempt at any course adds $60 per credit hour",[24],{note:"per credit hour — award total not published, so a program total cannot be derived"}),
+ totalCost:U("Not derivable: the per-credit rates are published but the ADN award's total credit hours are not. Ask for the degree plan, then multiply."),
+ costNum:null,costBasis:null,
+ fees:V("General $15, student success $2 and sustainability $1 per credit hour; $50 standard course fee per course; student parking free",[24],{note:"books, uniforms, background check, immunisations, testing, liability insurance and NCLEX/licensure are itemised only in program cost PDFs that were not retrievable"}),
+ prereqs:V("BIOL 2401 A&P I; BIOL 2402 A&P II (within 5 years of the deadline); BIOL 2420 Microbiology (within 5 years); HPRS 2300 Pharmacology for Health Professions. Recommended co-requisites that add ranking points: PSYC 2301, ENGL 1301, PHIL 2306",[22]),
+ online:U("Not stated on the application page; ACC teaches these courses itself, so the practical question is whether its own online sections satisfy the lab requirement."),
+ recency:V("A&P II and Microbiology must be within 5 years of the application deadline",[22]),
+ gpa:V("Minimum 2.7 prerequisite GPA",[22]),
+ exam:V("ATI TEAS — passing is 68% or higher total; the score also earns ranking points: 90–100% = 10 points, 78–89% = 7, 68–77% = 4",[22]),
+ deadline:V("Cohort-based windows: Spring 2027 was 5 April – 7 August 2026 (closed); Fall 2027 is 9 November 2026 – 29 January 2027",[22],{note:"the Fall 2027 window opens two weeks after she starts prerequisites, so her prerequisites cannot be finished inside it"}),
+ cohort:V("New classes start each Fall and Spring",[22]),
+ nclex:V("92.41% first-time for RN candidates in 2023 (the LVN program was 98%)",[25]),nclexNum:92.41,
+ accred:V("Continuing Accreditation from the Accreditation Commission for Education in Nursing (ACEN)",[23]),
+ pch:V("No CNA or patient-care requirement appears in the ranking formula, which is nursing GPA × degree-plan courses completed, plus TEAS points, plus review points",[22],{note:"review points do include healthcare licensure — ask whether a CNA certificate earns them"}),
+ extra:[V("ACC's own RN-to-BSN: must be an ACC student and a Texas resident throughout, RN licence required to begin, 54 prerequisite credits, minimum 2.5 GPA; Fall 2027 applications 1 November 2026 – 15 July 2027",[26]),
+        V("Alternative bridge — Texas State's online RN-to-BSN: 30 credits, as few as 10 months, $407 per credit, $12,210 total, CCNE-accredited",[37])]},
+
+{id:"temple",name:"Associate Degree Nursing (ADN)",school:"Temple College",type:"ADN",city:"Temple (with Hutto and Taylor centers)",
+ loc:V("Main campus 2600 South First Street, Temple; the college also operates Hutto and Taylor centers",[28],{note:"the page does not say which programs run at Hutto or Taylor"}),
+ commute:V("Temple is roughly an hour north of Austin — commutable but long; Taylor and Hutto are closer if the program runs there",[28]),commutable:true,
+ len:V("Two-year traditional track; a one-year bridging track exists for LVNs and paramedics",[28]),lenMonths:24,
+ credits:U("Credit total not stated on the program page."),
+ tuition:U(NOTV_COST),totalCost:U(NOTV_COST),costNum:null,costBasis:null,fees:U(NOTV_COST),
+ prereqs:U("Prerequisite courses are not listed on the program page; request the ADN information packet (nursing@templecollege.edu, 254-298-8664)."),
+ online:U("Not stated."),recency:U(NOTV_REC),
+ gpa:U("No minimum GPA stated on the program page."),
+ exam:U("No entrance exam or minimum score stated on the program page."),
+ deadline:V("Traditional ADN application deadline 22 October 2026 for a Spring 2027 start; bridging track deadline 4 February 2027 for Summer 2027",[28],{note:"the Spring 2027 deadline falls days before her prerequisites begin"}),
+ cohort:V("Spring 2027 (traditional); Summer 2027 (bridging)",[28]),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("Accredited by the Accreditation Commission for Education in Nursing (ACEN) and approved by the Texas Board of Nursing",[28]),
+ pch:U(NOTV_PCH)},
+
+{id:"galen",name:"VN program, then LVN/LPN-to-ADN bridge",school:"Galen College of Nursing — Austin",type:"ADN",city:"Austin",
+ loc:V("Austin campus",[29]),commute:V("In Austin — no relocation",[29]),commutable:true,
+ len:V("VN program 12 months; the ADN bridge is a further 18 months",[29]),lenMonths:30,
+ credits:V("ADN bridge: 79 quarter credit hours (38 general education + 41 nursing)",[29]),
+ tuition:V("VN program $24,100 flat rate. ADN bridge: general education $445 and nursing $490 per quarter credit hour",[29]),
+ totalCost:D("$24,100 for the VN program plus $37,000 for the bridge (38 × $445 = $16,910 and 41 × $490 = $20,090) = $61,100 before fees",[29],"flat VN rate plus credits × per-credit rates, all from the campus tuition page"),
+ costNum:61100,costBasis:"derived, tuition only, two programs in sequence",
+ fees:V("ADN bridge: lab courses $50 per course per term (7 courses), clinical courses $125 per course per term (5 courses), online courses $105 per term, resource fee $75 per term, one-time background fee $100 and registration fee $100; books and living expenses about $2,400; uniforms and supplies about $250; physical exam and immunisations vary. VN program: resource fee $75 per term, background and registration $200 total, books about $1,000, uniforms and supplies about $250",[29]),
+ prereqs:V("VN program: high school diploma or GED, English proficiency, and an entrance exam",[29]),
+ online:U("Not stated."),recency:V("Entrance-exam scores must be within 5 years",[29]),
+ gpa:V("ADN bridge requires an LPN/LVN diploma with 2.5 GPA or higher (2.0 if starting within two quarters of PN/VN graduation) and a current, active PN/VN licence",[29]),
+ exam:V("VN entry: ACT 19, SAT 1,025, PAX 81 or TEAS 54.7. ADN bridge: ACT 18, SAT 980, PAX 90 or TEAS 52",[29]),
+ deadline:U("Application deadlines and cohort start dates are not published on the campus page."),
+ cohort:U("Not published."),
+ nclex:U(NOTV_NCLEX),nclexNum:null,
+ accred:V("Accredited by the Southern Association of Colleges and Schools Commission on Colleges (SACSCOC)",[29],{note:"this is institutional accreditation; ask separately about ACEN/CCNE nursing accreditation and Texas BON approval"}),
+ pch:V("Not applicable at entry — the Austin ADN is a bridge that requires an active LVN/LPN licence first",[29]),
+ extra:[V("Important disqualifier: Galen's Austin ADN is an LPN/LVN-to-ADN bridge, not an entry-level ADN. A non-nurse would have to complete the 12-month VN program and become licensed as an LVN before the ADN is open to her — two licensure exams instead of one",[29])]}
+];
+
+/* ============================ PREREQUISITES ============================ */
+var PREREQS=[
+{id:"anat",name:"Anatomy & Physiology I with lab",cr:4,seq:1,likely:false,
+ who:"Required by every program researched. UT Austin lists it as “Anatomy with lab” and accepts ACC BIOL 2401.",whoSrc:[4,9,11,15,17,22,31,32,34,35,36],
+ opts:[{n:"ACC BIOL 2401 (in-district)",c:"$390",cs:"derived",src:[22,24],note:"4 credits × ($67 tuition + $18 fees) + $50 course fee"},
+       {n:"Concordia University Texas, online, 8-week session",c:"$2,200",cs:"derived",src:[1,4],note:"4 credits × $550"},
+       {n:"Any regionally accredited university/CC or an accredited online provider such as Portage Learning",c:null,cs:"unverified",src:[9],note:"Fairfield accepts these explicitly; Portage pricing was not retrievable this session"}]},
+{id:"phys",name:"Anatomy & Physiology II with lab",cr:4,seq:2,likely:false,
+ who:"Required by every program researched. Must follow A&P I. UT Austin lists it as “Physiology with lab” and accepts ACC BIOL 2402.",whoSrc:[4,9,11,15,17,22,31,32,34,35,36],
+ opts:[{n:"ACC BIOL 2402 (in-district)",c:"$390",cs:"derived",src:[22,24]},
+       {n:"Concordia University Texas, online, 8-week session",c:"$2,200",cs:"derived",src:[1,4]}]},
+{id:"micro",name:"Microbiology with lab",cr:4,seq:2,likely:false,
+ who:"Required by every program researched. UT Austin accepts ACC BIOL 2420 or 2421 and requires it among the five courses finished by 31 December of the application year.",whoSrc:[4,9,11,15,17,22,31,32,34,35,36],
+ opts:[{n:"ACC BIOL 2420 (in-district)",c:"$390",cs:"derived",src:[22,24]},
+       {n:"Concordia University Texas, online, 8-week session",c:"$2,200",cs:"derived",src:[1,4]}]},
+{id:"chem",name:"Chemistry with lab",cr:4,seq:1,likely:false,
+ who:"Required by Concordia, Fairfield, Texas A&M, TTUHSC, TWU, Baylor, TLU and Herzing. Not on UT Austin's AE-MSN list. UT Health San Antonio requires Chemistry I without a lab (3 credits).",whoSrc:[4,9,11,19,31,32,34,35,36,15],
+ opts:[{n:"ACC (in-district, 4-credit chemistry with lab)",c:"$390",cs:"derived",src:[24],note:"ACC per-credit rates; confirm the course number the target program accepts"},
+       {n:"Concordia University Texas, online, 8-week session",c:"$2,200",cs:"derived",src:[1,4]}]},
+{id:"nutr",name:"Nutrition",cr:3,seq:1,likely:false,
+ who:"Required by Concordia, Texas A&M, Texas State, TTUHSC, TWU, Baylor, TLU, UT Health San Antonio and UT Austin.",whoSrc:[4,11,13,15,17,19,31,32,34,35],
+ opts:[{n:"ACC BIOL/HECO 1322 or BIOL 1323 (in-district)",c:"$305",cs:"derived",src:[17,24],note:"3 credits × $85 + $50"},
+       {n:"Concordia University Texas, online, 8-week session",c:"$1,650",cs:"derived",src:[1,4]}]},
+{id:"growth",name:"Human Growth & Development / Lifespan Development",cr:3,seq:1,likely:false,
+ who:"Required by Concordia (Lifespan Development), Fairfield (Developmental Psychology), Texas A&M, Texas State, TWU, Baylor, TLU, UT Health San Antonio and UT Austin.",whoSrc:[4,9,11,13,15,17,19,32,34,35],
+ opts:[{n:"ACC PSYC 2314 (in-district)",c:"$305",cs:"derived",src:[17,24]},
+       {n:"Concordia University Texas, online, 8-week session",c:"$1,650",cs:"derived",src:[1,4]}]},
+{id:"stats",name:"Statistics",cr:3,seq:1,likely:true,
+ who:"Required by essentially every program researched. UT Austin accepts ACC PSYC 2317 or MATH 1342 and names M 316 among its own equivalents.",whoSrc:[4,9,11,13,15,17,19,31,32,34,35,36],
+ opts:[{n:"ACC PSYC 2317 or MATH 1342 (in-district)",c:"$305",cs:"derived",src:[17,24]},
+       {n:"Concordia University Texas, online, 8-week session",c:"$1,650",cs:"derived",src:[1,4]}]},
+{id:"pharm",name:"Pharmacology",cr:3,seq:2,likely:false,
+ who:"Required by UT Austin's AE-MSN (ACC HPRS 2300 or RNSG 1301), by ACC's own ADN (HPRS 2300), and by TTUHSC. Not required by most ABSN programs.",whoSrc:[15,17,22,31],
+ opts:[{n:"ACC HPRS 2300 (in-district)",c:"$305",cs:"derived",src:[17,22,24]}]},
+{id:"psych",name:"Introduction to Psychology",cr:3,seq:1,likely:false,
+ who:"Required by Concordia, Texas A&M, Texas State, TTUHSC, UT Health San Antonio and Baylor. Not on UT Austin's AE-MSN list.",whoSrc:[4,11,13,31,32,34],
+ opts:[{n:"ACC PSYC 2301 (in-district) — also earns ACC ADN ranking points as a co-requisite",c:"$305",cs:"derived",src:[22,24]},
+       {n:"Concordia University Texas, online, 8-week session",c:"$1,650",cs:"derived",src:[1,4]}]},
+{id:"patho",name:"Pathophysiology",cr:3,seq:2,likely:false,
+ who:"Required by Texas Lutheran's DEMSN and by TTUHSC's Second Degree BSN. Not required by the Austin ABSN programs.",whoSrc:[19,31],
+ opts:[{n:"Not verified locally",c:null,cs:"unverified",src:[],note:"No Austin-area provider was confirmed this session; ask TLU and TTUHSC which providers they accept."}]}
+];
+
+/* ============================ END STATES ============================ */
+var ENDSTATES=[
+{id:"er",n:"ER nurse",
+ route:"Prerequisites → ABSN or direct-entry MSN → NCLEX-RN → Texas licensure → new-graduate ED residency",
+ months:31,monthsNote:"from Sep 2026: prerequisites to ~Jun 2027, Concordia ABSN Aug 2027–Dec 2028, licensure ~3 months, residency start ~Apr 2029",
+ wageTx:V("$95,971 a year / $46.14 an hour — Texas statewide median for Registered Nurses, 2025",[53]),
+ wageUs:V("$97,550 a year — national median for Registered Nurses, May 2025",[51]),
+ wageAustin:U("BLS did not enumerate Registered Nurses in the Austin-Round Rock-San Marcos release, and the metro OEWS tables were not machine-retrievable this session. Get it from the BLS OEWS One Screen Data Search (data.bls.gov/oes) for area code 12420, occupation 29-1141, or from Texas Wages (texaswages.com/MSAWages)."),
+ grad:null},
+{id:"bedside",n:"Bedside RN — other specialties",
+ route:"Identical up to licensure; the difference is which residency track she applies to",
+ months:31,monthsNote:"same as the ER route — St. David's residency cohorts start every month",
+ wageTx:V("$95,971 a year / $46.14 an hour — Texas statewide median for Registered Nurses, 2025",[53]),
+ wageUs:V("$97,550 a year — national median for Registered Nurses, May 2025",[51]),
+ wageAustin:U("Same gap as the ER row — retrieve from BLS OEWS One Screen for area 12420, occupation 29-1141."),
+ grad:null},
+{id:"np",n:"Nurse practitioner (by specialty)",
+ route:"RN licensure, then a graduate APRN program. UT Austin's APRN DNP offers FNP, PNP-PC, PMHNP and AG-CNS.",
+ months:null,monthsNote:"Not computable: the APRN DNP's required RN experience and program length are not stated on the pages retrieved.",
+ wageTx:V("$131,675 a year / $63.31 an hour — Texas statewide median for Nurse Practitioners, 2025; typical education is a master's degree",[54]),
+ wageUs:U("Not retrieved this session."),
+ wageAustin:U("Not enumerated in the Austin BLS release; retrieve from BLS OEWS One Screen for area 12420, occupation 29-1171."),
+ grad:V("UT Austin's APRN DNP specialisations: Family NP, Pediatric NP (primary care), Psychiatric Mental Health NP, and Adult-Gerontology Clinical Nurse Specialist",[16])},
+{id:"crna",n:"CRNA — nurse anesthetist",
+ route:"RN licensure → at least one year full-time RN experience in a critical care setting → a nurse anesthesia program",
+ months:null,monthsNote:"Not computable: no Texas nurse-anesthesia program's length was verified this session. The one-year ICU floor is verified and sits between licensure and application.",
+ wageTx:V("$244,989 a year / $117.78 an hour — Texas statewide median for Nurse Anesthetists, 2025; typical education is a doctoral degree",[55]),
+ wageUs:U("Not retrieved this session."),
+ wageAustin:U("Not enumerated in the Austin BLS release; retrieve from BLS OEWS One Screen for area 12420, occupation 29-1151."),
+ grad:V("COA requires “a minimum of one year full-time work experience, or its part-time equivalent, as a RN in a critical care setting” — surgical, cardiothoracic, coronary, medical, pediatric or neonatal ICU, or another area demonstrating competence with unstable patients, invasive monitoring, ventilators and critical care pharmacology. Doctoral applicants must hold ACLS and PALS before clinical activities",[45])},
+{id:"cnm",n:"Nurse midwife",
+ route:"BSN → RN licensure → labour-and-delivery experience → an MSN nurse-midwifery program",
+ months:null,monthsNote:"Not computable from verified data: TTUHSC's midwifery MSN runs 6–9 semesters depending on full- or part-time enrolment, and one year of L&D experience is preferred before admission.",
+ wageTx:V("$123,382 a year / $59.32 an hour — Texas statewide median for Nurse Midwives, 2025; typical education is a master's degree",[56]),
+ wageUs:U("Not retrieved this session."),
+ wageAustin:U("Not enumerated in the Austin BLS release; retrieve from BLS OEWS One Screen for area 12420, occupation 29-1161."),
+ grad:V("TTUHSC MSN Nurse-Midwifery: BSN from a CCNE- or ACEN-accredited program required, minimum 3.0 GPA, 51 total semester credit hours (47 for the MSN track), 6–9 semesters, hybrid delivery; “preferred applicants have at least one (1) year labor and delivery experience” within five years before admission; graduates qualify for the American Midwifery Certification Board exam",[59])},
+{id:"informatics",n:"Nursing informatics",
+ route:"RN licensure → clinical experience → an MSN in informatics. This is the end state closest to her current skill set.",
+ months:null,monthsNote:"Not computable: TTUHSC's informatics MSN admits in spring only and requires two years of clinical experience first, so the clock depends on when she starts working as an RN.",
+ wageTx:U("Neither BLS nor TWC publishes a separate wage for nursing informatics; the role is generally counted under Registered Nurses (29-1141). Ask employers directly, or use the RN figures with that caveat."),
+ wageUs:U("Same gap."),
+ wageAustin:U("Same gap."),
+ grad:V("TTUHSC MSN Informatics and Intelligent Systems: 35 semester credit hours, fully online, spring admission only; requires an unencumbered RN licence, a BSN from a CCNE- or ACEN-accredited program, minimum 3.0 GPA, undergraduate research and statistics with C or better, a minimum of two years of clinical experience, and informatics or technology experience at minimum super-user level; prepares graduates for ANCC board certification and HIMSS CPHIMS",[60])}
+];
+
+/* ============================ ER PATH ============================ */
+var ER_STEPS=[
+{id:"er1",t:"Complete the prerequisites",
+ b:'Ten courses are in play across the programs researched; the specific list depends on which programs she applies to. Section 5 tracks them one by one. Nothing here forecloses the ER route — no program researched has an ER-specific prerequisite, and no prerequisite choice locks her out of emergency nursing.'},
+{id:"er2",t:"Complete an ABSN or a direct-entry MSN",
+ b:'Both routes end in NCLEX-RN eligibility. Concordia\'s ABSN runs as few as 16 months'+fn([1])+'; UT Austin\'s AE-MSN takes three years, with RN licensure after the foundation year'+fn([15])+'. One constraint specific to the AE-MSN: after passing NCLEX-RN, students "are eligible to work as an RN in Texas only" during years two and three'+fn([15])+' — fine if she intends to work in Austin, limiting if she may move.'},
+{id:"er3",t:"Pass the NCLEX-RN",
+ b:'Registration with Pearson VUE costs $200 and must be done before an Authorization to Test is issued; the Board recommends registering at least 30 days before graduation'+fn([38])+'.'},
+{id:"er4",t:"Get the Texas RN licence",
+ b:'Steps verified with the Texas Board of Nursing: file the NCLEX-RN Application for U.S. Graduates in the Texas Nurse Portal; submit fingerprints through Texas DPS and the FBI (results must come directly from those agencies); pass the Nursing Jurisprudence Exam, which all NCLEX applicants must complete before receiving an ATT — 50 items, two hours, one sitting, 75% to pass'+fn([38,39])+'. The program director files the Affidavit of Graduation. Board staff review the file within 15 business days and issue the ATT within 5 more; the graduate-nurse permit posts within 5 business days of the ATT, and "your ATT and GN/GVN permit are valid for 75 days and cannot be extended"'+fn([38])+'. <strong>The three months this dashboard allows between graduation and a start date is an assumption built on those published timelines, not a published figure.</strong> The Board\'s fee schedule page could not be retrieved this session, so the application fee, fingerprint fee and jurisprudence fee are <span class="badge-unv">not verified</span> — get them from bon.texas.gov/forms_fees.asp.html.'},
+{id:"er5",t:"Land a new-graduate ED residency",
+ b:'This is the step that decides whether she reaches the ER directly or through med-surg first. See the hospital systems below.'},
+{id:"er6",t:"Build toward ED certification",
+ b:'CEN, TNCC, ACLS and PALS all sit after licensure, and their eligibility rules are looser than nursing folklore suggests. See the certifications table.'}
+];
+
+var ER_SYSTEMS=[
+{id:"sysstd",n:"St. David's HealthCare (HCA)",
+ verdict:"Takes new graduates directly into the Emergency Room",verdictKind:"good",
+ d:'The nurse residency is a paid, 12-month, two-phase program with cohorts starting every month. Its published specialty list names <strong>Emergency Room (ER)</strong> alongside Acute Care, Behavioral Health, Critical Care, Inpatient Rehabilitation, Neuroscience, Oncology, Orthopedics, Pediatrics, Progressive Care, Surgical Services and Women\'s Services. Eligibility: a nursing student eligible to graduate from an accredited program — <strong>ADN or BSN both accepted</strong> — or a graduate nurse with 12 months or less of experience; under one year of acute-care experience at hire; current AHA BLS. Application windows open in September for January–April starts, February for May–August starts, and May for September–November starts.'+fn([46])+' The system also states it accepts applications from students graduating within six months, or graduate nurses with six months or less of experience.'+fn([47]),
+ f:'Austin-area facilities: Heart Hospital of Austin, St. David\'s Georgetown, St. David\'s Medical Center, St. David\'s North Austin, St. David\'s South Austin, St. David\'s Round Rock and St. David\'s Surgical Hospital.'+fn([46]),
+ caution:'Worth knowing: St. David\'s non-residency ED postings are a different door. A current Registered Nurse Emergency Department posting at St. David\'s North Austin requires <strong>1 year of experience</strong>, with BLS within 30 days of hire, ACLS within 90 days, NIH Stroke Scale within 60 days, and ENPC and ATCN or TNCC within 1 year.'+fn([48])+' The residency is the new-graduate route; the open posting is not.'},
+{id:"sysasc",n:"Ascension Seton",
+ verdict:"New-graduate ED residency postings appear in Austin, but the policy is not verified",verdictKind:"warn",
+ d:'Ascension Seton operates six Austin facilities: Ascension Seton Medical Center Austin, Dell Seton Medical Center at The University of Texas, Ascension Seton Northwest, Ascension Seton Women\'s Hospital, Ascension Seton Shoal Creek and Ascension Seton Southwest.'+fn([50])+' Postings titled "RN Residency — New Graduate Nurse, Emergency Department" in Austin surfaced in search, but every one of those posting pages had already expired (HTTP 410) when retrieved, and Ascension\'s students-and-graduates page carries no residency detail.'+fn([50]),
+ f:'',
+ caution:'<span class="badge-unv">not verified</span> Whether Ascension Seton places new graduates directly into the ED, the residency length, and whether prior med-surg time is expected. Call Ascension Texas nurse recruitment and ask for the residency\'s current specialty list and cohort calendar. Do not treat the expired postings as evidence of current policy.'},
+{id:"sysbsw",n:"Baylor Scott & White Health",
+ verdict:"Graduate Nurse Residency exists; ED availability and Austin-area placement not verified",verdictKind:"warn",
+ d:'The Graduate Nurse Residency is accredited with distinction as a Practice Transition Program by the ANCC Commission on Accreditation in Practice Transition Programs. The published cycle: applications 7–27 September 2026, interviews October 2026, cohort starts 25 January 2027.'+fn([49]),
+ f:'',
+ caution:'<span class="badge-unv">not verified</span> The page names no specialty tracks — Emergency Services is neither offered nor excluded in writing — states no degree or licence requirements, and names no Central Texas or Austin-area location. Ask whether the residency places into emergency departments and at which Central Texas hospitals.'}
+];
+
+var ER_CERTS=[
+{id:"certcen",n:"CEN — Certified Emergency Nurse",body:"Board of Certification for Emergency Nursing",
+ req:'A current, unencumbered RN licence in the US, a US territory, Canada or Australia. <strong>No ED hours are required.</strong> BCEN "recommends candidates have at least two years of experience in their specialty area before scheduling a certification exam; however, this is not required." Nurses no longer working clinically may still sit the exam with an active licence.',src:[41],
+ fee:U("The CEN exam fee is not stated on the eligibility page; get it from BCEN's exam-fees page or by calling BCEN."),
+ when:"Eligible the day her RN licence is active; the two-year recommendation is guidance, not a gate."},
+{id:"certtncc",n:"TNCC — Trauma Nursing Core Course",body:"Emergency Nurses Association",
+ req:'"Both RNs and non-RNs are eligible to obtain four-year provider verification." No prior experience requirement is stated. The course runs a day and a half with pre-course online modules, classroom presentation, skill stations and an online exam, and carries 19.50 CNE hours.',src:[42],
+ fee:U("No pricing on the ENA course page; ENA directs participants to search for a course and contact the registration coordinator."),
+ when:"Can be taken before or immediately after licensure. St. David's gives ED hires one year from hire to obtain TNCC or ATCN."+fn([48])},
+{id:"certacls",n:"ACLS — Advanced Cardiovascular Life Support",body:"American Heart Association",
+ req:'"Designed for healthcare professionals who either direct or participate in the management of cardiac arrest, stroke, or other cardiopulmonary emergencies" — physicians, nurses, paramedics and emergency response personnel. The AHA page states no BLS prerequisite and no clinical-experience requirement. Classroom 13.25–16.50 hours depending on format; blended hands-on session about 6.75–7.75 hours. The completion card is valid two years.',src:[43],
+ fee:U("AHA does not publish a price; courses are sold by training centers."),
+ when:"St. David's gives ED hires 90 days from hire for ACLS."+fn([48])},
+{id:"certpals",n:"PALS — Pediatric Advanced Life Support",body:"American Heart Association",
+ req:'"Intended for healthcare professionals who respond to emergencies in infants and children and for personnel in emergency response, emergency medicine, intensive care and critical care units that encounter pediatric patients on a regular basis." The page lists no prerequisites and no clinical-experience requirement. Classroom full course 12.5 hours with breaks; blended hands-on about 5.5 hours.',src:[44],
+ fee:U("AHA does not publish a price; courses are sold by training centers."),
+ when:'St. David\'s ED postings name ENPC (Emergency Nursing Pediatric Course) rather than PALS, within one year of hire.'+fn([48])+' COA requires both ACLS and PALS before clinical activities in a doctoral nurse-anesthesia program.'+fn([45])}
+];
+
+/* ============================ PREREQ-WINDOW OPTIONS ============================ */
+var WINDOW_OPTS=[
+{id:"winCNA",n:"Certified Nurse Aide (CNA)",
+ fit:"Fits alongside a full-time prerequisite load only with care — ACC's course is 126 hours across 8 weeks, including 48 clinical hours on a fixed schedule.",
+ d:'Texas requires a NATCEP program of <strong>100 clock hours minimum — 60 classroom hours not involving direct resident care and 40 clock hours of hands-on resident care in a nursing facility</strong>, with at least 16 introductory hours before any direct client contact. The curriculum is set by Texas HHS and programs must comply with 42 CFR §484.151 and 26 TAC §556. Renewal requires 24 hours of in-service education every two years.'+fn([40])+' ACC\'s Continuing Education program runs <strong>8 weeks / 126 course hours</strong> — 78 classroom and 48 clinical — at <strong>$1,108</strong>, with a 50% discount on the Fast Track option and fees charged separately. Prerequisites are English proficiency and a clean criminal record. Terms run Spring 2 Jan–31 May 2026, Summer 1 Jun–23 Aug 2026 and Fall 24 Aug–31 Dec 2026.'+fn([27]),
+ ver:'Verification: certification is recorded on the Texas Health and Human Services nurse aide registry'+fn([40])+'. <span class="badge-unv">not verified</span> ACC\'s page does not say how students take the state competency evaluation or what the exam costs — ask ACC Continuing Education, and confirm the registry listing at hhs.texas.gov after passing.',
+ pay:'Texas statewide median for Nursing Assistants is $18.03 an hour, $37,496 a year, 2025.'+fn([57])},
+{id:"winEDtech",n:"ED technician / patient care technician",
+ fit:"A paid role in the department she wants to work in, but shift work against a full-time prerequisite load is the hard part.",
+ d:'Austin systems post ED technician, patient care technician and EMT roles, and Ascension has posted EMT roles in Austin emergency services. Every specific posting retrieved this session had already expired, so the entry requirements could not be verified from an employer page.',
+ ver:'<span class="badge-unv">not verified</span> The certification required for ED tech roles at St. David\'s and Ascension (CNA vs EMT-B vs neither), and whether either system\'s tech roles feed its own new-graduate residency pipeline. Ask both recruiters directly — this is a high-value question, because an internal candidate applying to a residency is a different conversation from an external one. ACC runs an EMT Basic program through Health Sciences, but its length, prerequisites and cost were not published on the pages retrieved'+fn([22])+'.',
+ pay:'<span class="badge-unv">not verified</span> No employer wage was retrievable; BLS did not enumerate EMTs in the Austin release.'},
+{id:"winPCH",n:"Patient-care hours as an admissions factor",
+ fit:"Only one program researched says anything about it — which itself is the finding.",
+ d:'<strong>UT Austin AE-MSN:</strong> "Applicants to the AE-MSN program are encouraged to have volunteer or work experience in a healthcare related field" — encouraged, not required.'+fn([15])+'<br><strong>Austin Community College ADN:</strong> patient-care hours do not appear in the ranking formula, which is nursing GPA × degree-plan courses completed, plus TEAS points, plus review points. Review points do include healthcare licensure, military service, medical terminology coursework and re-application attempts.'+fn([22]),
+ ver:'<span class="badge-unv">not verified</span> Every other program researched — Concordia, St. Edward\'s, Fairfield, Texas A&M, Texas State, TTUHSC, UT Health San Antonio, Baylor, TWU, TLU, Herzing, Temple — says nothing about patient-care hours on the pages retrieved. This is question 5 on the verification checklist for exactly that reason. Also worth asking ACC specifically whether a CNA certificate earns review points.',
+ pay:''},
+{id:"winVol",n:"Volunteering and shadowing",
+ fit:"The lowest-commitment option and the one that coexists most easily with full-time coursework.",
+ d:'St. David\'s North Austin Medical Center runs a structured volunteer program. Adults apply through Volgistics, interview, complete a background investigation, pass a health screening including a TB test if needed, provide immunisation records, attend facility orientation and train in their assigned area. College students commit to "a minimum of two consecutive semesters of service, or 40 volunteer service hours per semester," applying 1 October–30 November for spring and 1 May–30 June for fall. Roles include clinical and non-clinical placements. Contact: namc.volunteers@hcahealthcare.com, 512-901-1223.'+fn([61]),
+ ver:'<span class="badge-unv">not verified</span> Whether volunteers can be placed in the emergency department specifically, and whether the two-semester commitment applies to a non-enrolled adult applicant. Ask the volunteer office. Shadowing an ED nurse is a separate request from volunteering and was not documented on any page retrieved.',
+ pay:'Unpaid.'}
+];
+
+/* ============================ DECISION POINTS ============================ */
+var DECISIONS=[
+{id:"dec1",t:"Before spending a dollar: is this actually the work?",when:"Now — September to October 2026",
+ decide:"Whether to commit the prerequisite window at all.",
+ evidence:"Shadow or volunteer in a hospital; talk to two ED nurses about the job as it actually is, not as it looks. Apply to the St. David's volunteer program (windows: 1 Oct–30 Nov for spring).<sup class=\"fn\"><a href=\"#src61\">[61]</a></sup>",
+ cost:"Reversal cost: nearly zero. Nothing has been paid and no application filed.",kind:"good"},
+{id:"dec2",t:"Order the transcript and settle what is already done",when:"October 2026, before enrolling in anything",
+ decide:"Which of the ten prerequisites her mathematics BS and data science MS already cover.",
+ evidence:"An official transcript, plus one call per shortlisted program asking whether her statistics course satisfies their requirement. Statistics is the only course plausibly already done; nothing else in a mathematics degree maps onto A&P, microbiology or chemistry.",
+ cost:"Reversal cost: nearly zero, and skipping it risks paying for a course she does not need — or worse, assuming one is covered when it is not.",kind:"good"},
+{id:"dec3",t:"CNA or not, before the prerequisite term begins",when:"October 2026",
+ decide:"Whether to add ACC's 126-hour CNA course to a full-time prerequisite load.",
+ evidence:"Answers to two questions: does any shortlisted program credit patient-care hours, and do Austin ED tech roles require a CNA? Both are unverified today. If both answers are no, the CNA is optional rather than strategic.",
+ cost:"Reversal cost: $1,108 plus 8 weeks<sup class=\"fn\"><a href=\"#src27\">[27]</a></sup>, and the clinical hours are on a fixed schedule that may collide with lab sections.",kind:"warn"},
+{id:"dec4",t:"Commit to the prerequisite sequence",when:"Late October 2026",
+ decide:"Which provider, and whether to run the aggressive three-session plan or the paced four-session plan.",
+ evidence:"Confirmed prerequisite lists from at least three target programs — they differ materially. UT Austin needs Pharmacology and no Chemistry; the ABSN programs need Chemistry and no Pharmacology; TLU and TTUHSC need Pathophysiology.",
+ cost:"Reversal cost: a term of tuition. At ACC in-district rates that is a few hundred dollars per course; at Concordia's $550 per credit hour it is $1,650–$2,200 per course.<sup class=\"fn\"><a href=\"#src1\">[1]</a><a href=\"#src24\">[24]</a></sup> Choose the cheap provider unless a target program refuses it.",kind:"warn"},
+{id:"dec5",t:"Apply — and apply to more than one route",when:"Spring to summer 2027",
+ decide:"Which programs receive applications. The verified deadlines make this concrete: Fairfield by 1 June 2027 for a September 2027 start; Concordia roughly two months before an August 2027 start; TTUHSC 1 May–15 July 2027 for Spring 2028; Texas A&M 1 June–1 August 2027 for Spring 2028; UT Austin 1 August–1 October 2027 for Summer 2028.",
+ evidence:"TEAS or HESI scores where required, a confirmed prerequisite GPA, and a decision on whether the three-year AE-MSN is worth the extra time for the master's degree.",
+ cost:"Reversal cost: application fees and the TEAS or HESI fee. Small. This is the last cheap step.",kind:"warn"},
+{id:"dec6",t:"Accept a seat",when:"When an offer arrives",
+ decide:"Whether to put down a deposit — the first irreversible step.",
+ evidence:"A written cost of attendance beyond tuition, written confirmation of the clinical site city, and the program's most recent NCLEX first-time pass rate in writing. Fairfield requires a $1,000 confirmation deposit within two weeks of admission, applied to first-semester tuition.<sup class=\"fn\"><a href=\"#src10\">[10]</a></sup>",
+ cost:"Reversal cost: the deposit, plus a cycle. Declining after accepting usually means waiting for the next cohort — for a Fall-only program like St. Edward's, that is a full year.",kind:"serious"},
+{id:"dec7",t:"Choose the first RN job",when:"Late in the program, roughly Q3 2028",
+ decide:"ED residency directly, or a med-surg year first.",
+ evidence:"St. David's residency accepts new graduates straight into the ER and takes ADN or BSN alike.<sup class=\"fn\"><a href=\"#src46\">[46]</a></sup> Ascension's and Baylor Scott & White's ED policies for new graduates are unverified — resolve both before this point, not at it.",
+ cost:"Reversal cost: moderate. Changing specialty after a year is normal in nursing, but a residency is a 12-month commitment and leaving early can carry a repayment clause — ask about that in writing before signing.",kind:"serious"}
+];
+
+/* ============================ VERIFICATION QUESTIONS ============================ */
+var VQ=[
+{k:"q1",t:"Confirm the prerequisite list, and whether online coursework and at-home labs are accepted"},
+{k:"q2",t:"Confirm science-recency limits, and whether a statistics course from a mathematics BS satisfies the requirement"},
+{k:"q3",t:"Confirm total cost of attendance beyond tuition"},
+{k:"q4",t:"Confirm the next cycle's deadline and the cohort start date"},
+{k:"q5",t:"Ask whether patient-care hours are required or credited"},
+{k:"q6",t:"Ask what fraction of the admitted class came from non-science backgrounds"}
+];
+
+/* ============================ REGISTER ITEMS ============================ */
+PREREQS.forEach(function(p){reg("pre:"+p.id,p.name,"self","Prerequisites");});
+ER_STEPS.forEach(function(s){reg("er:"+s.id,s.t,"self","ER path");});
+ER_SYSTEMS.forEach(function(s){reg("er:"+s.id,s.n+" — new-grad ED policy","inst","ER path");});
+ER_CERTS.forEach(function(c){reg("er:"+c.id,c.n+" — eligibility","inst","ER path");});
+WINDOW_OPTS.forEach(function(w){reg("win:"+w.id,w.n,"inst","Prereq window");});
+DECISIONS.forEach(function(d){reg("dec:"+d.id,d.t,"self","Decision points");});
+var PFIELDS=[["type","Pathway type"],["loc","Location"],["commute","Commute vs relocation"],["len","Program length"],
+ ["credits","Credit hours"],["tuition","Tuition"],["totalCost","Total cost"],["fees","Itemised fees"],
+ ["prereqs","Prerequisite list"],["online","Online coursework / at-home labs"],["recency","Science-recency limit"],
+ ["gpa","GPA minimum"],["exam","Entrance exam threshold"],["deadline","Application deadline"],["cohort","Cohort start"],
+ ["nclex","NCLEX first-time pass rate"],["accred","Accreditation"],["pch","Patient-care hours"]];
+PROGRAMS.forEach(function(p){
+  PFIELDS.forEach(function(f){reg("pf:"+p.id+":"+f[0],p.school+" — "+f[1],"inst","Program fields");});
+  VQ.forEach(function(q){reg("vq:"+p.id+":"+q.k,p.school+" — "+q.t,"inst","Verification checklist");});
+});
+
+/* ============================ COVERAGE ============================ */
+function coverage(){
+  var tot=0,unv=0,byProg={};
+  PROGRAMS.forEach(function(p){
+    var u=0,t=0;
+    PFIELDS.forEach(function(f){
+      var key=f[0], val = (key==="type") ? V(p.type,[]) : p[key];
+      t++; if(!val || val.st==="unverified") u++;
+    });
+    byProg[p.id]={t:t,u:u}; tot+=t; unv+=u;
+  });
+  return {total:tot,unverified:unv,byProg:byProg};
+}
+
+/* ============================ PREREQ MATH ============================ */
+/* A prerequisite counts as "still to do" unless she has marked it KNOWN or VERIFIED.
+   KNOWN counts toward the plan but is flagged; VERIFIED is confirmed by transcript. */
+function prereqStatus(){
+  var todo=[],done=[],credits=0,doneCredits=0,seq2=0,seq1=0;
+  PREREQS.forEach(function(p){
+    var st=item("pre:"+p.id).st;
+    if(st==="unknown"){todo.push(p);credits+=p.cr;if(p.seq===2)seq2++;else seq1++;}
+    else {done.push(p);doneCredits+=p.cr;}
+  });
+  return {todo:todo,done:done,credits:credits,doneCredits:doneCredits,seq1:seq1,seq2:seq2};
+}
+/* Schedule model: eight-week online sessions (verified: Concordia teaches every prerequisite
+   online in eight-week sessions [4]). Three courses per session is the aggressive plan,
+   two-to-three the paced plan. A&P II and the other tier-2 courses cannot share a session
+   with their tier-1 predecessor. */
+function prereqPlan(){
+  var s=prereqStatus(), n=s.todo.length;
+  if(n===0) return {sessions:0,months:0,aggressive:0,paced:0,finish:PREREQ_START};
+  var agg=Math.max(Math.ceil(n/3), s.seq2>0?2:1);
+  var paced=Math.max(Math.ceil(n/2), s.seq2>0?2:1);
+  return {sessions:agg,pacedSessions:paced,months:Math.round(agg*2),pacedMonths:Math.round(paced*2),
+    finish:addMonths(PREREQ_START.y,PREREQ_START.m,Math.round(agg*2)),
+    pacedFinish:addMonths(PREREQ_START.y,PREREQ_START.m,Math.round(paced*2)),n:n};
+}
+function prereqCostACC(){
+  var s=prereqStatus(),c=0,unpriced=0;
+  s.todo.forEach(function(p){
+    var o=p.opts[0];
+    if(o && o.c) c += Number(o.c.replace(/[^0-9]/g,""));
+    else unpriced++;
+  });
+  return {cost:c,unpriced:unpriced};
+}
+function prereqCostCTX(){
+  var s=prereqStatus(),c=0,unpriced=0;
+  s.todo.forEach(function(p){
+    var o=p.opts.filter(function(x){return /Concordia/.test(x.n);})[0];
+    if(o&&o.c) c+=Number(o.c.replace(/[^0-9]/g,"")); else unpriced++;
+  });
+  return {cost:c,unpriced:unpriced};
+}
+/* Earliest reachable cohort start given verified deadlines and the live prereq finish date. */
+function earliestCohort(){
+  var pf=prereqPlan().pacedFinish||prereqPlan().finish;
+  var pfIdx=pf.y*12+pf.m;
+  var cands=[
+    {p:"ctx",label:"Concordia Texas ABSN",months:[0,4,7],lead:2,note:"applications due about two months before a January, May or August start"},
+    {p:"fairfield",label:"Fairfield Austin ASDNU",months:[0,8],lead:3,note:"September cohort accepts applications through 1 June; January cohort through 1 November"},
+    {p:"tamu",label:"Texas A&M Second-Degree BSN",months:[0,7],lead:5,note:"Spring window 1 June–1 August; Fall window 1 November–15 January"},
+    {p:"ttuhsc",label:"TTUHSC Second Degree BSN",months:[0],lead:6,note:"Spring 2028 window 1 May–15 July 2027"},
+    {p:"utaemsn",label:"UT Austin AE-MSN",months:[5],lead:8,note:"application window 1 August–1 October, summer start, five prerequisites complete by 31 December of the application year"}
+  ];
+  var best=null;
+  cands.forEach(function(c){
+    for(var y=2027;y<=2030;y++){
+      for(var i=0;i<c.months.length;i++){
+        var startIdx=y*12+c.months[i];
+        if(startIdx-c.lead >= pfIdx){          /* application must fall after prereqs finish */
+          if(!best||startIdx<best.idx) best={idx:startIdx,y:y,m:c.months[i],label:c.label,note:c.note,p:c.p};
+          break;
+        }
+      }
+      if(best&&best.idx<=y*12+11) break;
+    }
+  });
+  return best;
+}
+function monthsToFirstEDRole(){
+  var e=earliestCohort(); if(!e) return null;
+  var prog=PROGRAMS.filter(function(p){return p.id===e.p;})[0];
+  var pl=prog&&prog.lenMonths?prog.lenMonths:16;
+  var end=e.idx+pl+LICENSURE_MONTHS+1;   /* +1 month to a residency cohort start */
+  return {months:end-(TODAY.y*12+TODAY.m), gradIdx:e.idx+pl, licIdx:e.idx+pl+LICENSURE_MONTHS, startIdx:end, program:prog, cohort:e};
+}
+
+/* ============================ RENDER: HEADER ============================ */
+function renderHeader(){
+  var c=counts();
+  var pv=c.total?c.verified/c.total*100:0, pk=c.total?c.known/c.total*100:0, pu=100-pv-pk;
+  document.getElementById("barV").style.cssText="width:"+pv+"%;background:var(--good)";
+  document.getElementById("barK").style.cssText="width:"+pk+"%;background:var(--warn);margin-left:2px";
+  document.getElementById("barU").style.cssText="width:"+Math.max(0,pu-0.4)+"%;background:var(--axis);margin-left:2px";
+  document.getElementById("progSummary").textContent=c.verified+" verified · "+c.known+" known · "+c.unknown+" unknown of "+c.total+" items";
+  var cov=coverage();
+  document.getElementById("coverageSummary").innerHTML="<strong>"+cov.unverified+" of "+cov.total+"</strong> program fields ended this research session unverified";
+  var secs={};
+  for(var id in ITEMS){var s=ITEMS[id].section;if(!secs[s])secs[s]={t:0,v:0,k:0};secs[s].t++;var st=item(id).st;if(st==="verified")secs[s].v++;if(st==="known")secs[s].k++;}
+  var h="";
+  Object.keys(secs).forEach(function(s){
+    var d=secs[s],p=d.t?d.v/d.t*100:0,q=d.t?d.k/d.t*100:0;
+    h+='<div><div class="small dim" style="display:flex;justify-content:space-between"><span>'+esc(s)+'</span><span class="muted">'+d.v+'/'+d.t+' verified</span></div>'
+      +'<div class="bar" style="margin-top:4px"><span style="width:'+p+'%;background:var(--good)"></span><span style="width:'+q+'%;background:var(--warn);margin-left:2px"></span></div></div>';
+  });
+  document.getElementById("sectionBreakdown").innerHTML=h;
+  var e=earliestCohort();
+  var fc=document.getElementById("footCohort");
+  if(fc&&e) fc.innerHTML="<strong>"+fmtYM({y:e.y,m:e.m})+"</strong> ("+esc(e.label)+")";
+  var el=document.getElementById("kpiCohort"), why=document.getElementById("kpiCohortWhy");
+  if(e){ el.textContent=fmtYM({y:e.y,m:e.m});
+    var pl=prereqPlan();
+    why.innerHTML=esc(e.label)+" — "+esc(e.note)+". Computed from the paced prerequisite plan finishing "+fmtYM(pl.pacedFinish||PREREQ_START)+"; the aggressive plan finishes "+fmtYM(pl.finish||PREREQ_START)+" and may open an earlier cohort. Recomputes as prerequisites are marked.";
+  } else { el.textContent="—"; why.textContent="No cohort reachable from the verified deadlines."; }
+  document.getElementById("storageWarn").hidden=storageOK;
+}
+
+/* ============================ RENDER: 1 END STATE ============================ */
+function renderEndState(){
+  var chips=ENDSTATES.map(function(e){
+    return '<button class="chip" data-end="'+e.id+'" aria-pressed="'+(S.endState===e.id)+'">'+esc(e.n)+'</button>';
+  }).join("")+'<button class="chip" data-end="all" aria-pressed="'+(S.endState==="all")+'">Compare all</button>';
+  document.getElementById("endStateChips").innerHTML=chips;
+  var host=document.getElementById("endStatePanel");
+  if(S.endState==="all"){
+    var rows=ENDSTATES.map(function(e){
+      return '<tr><td><strong>'+esc(e.n)+'</strong><div class="small muted">'+esc(e.route)+'</div></td>'
+        +'<td>'+(e.months?('<strong>'+e.months+' months</strong><div class="small muted">'+esc(e.monthsNote)+'</div>'):'<span class="badge-unv">not computable</span><div class="small muted">'+esc(e.monthsNote)+'</div>')+'</td>'
+        +'<td>'+fieldHTML(e.wageTx)+'</td>'
+        +'<td>'+fieldHTML(e.wageAustin)+'</td></tr>';
+    }).join("");
+    host.innerHTML='<div class="scrollx"><table><thead><tr><th>End state</th><th>Time from today</th><th>Texas median wage (verified)</th><th>Austin median wage</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      +'<p class="small muted" style="margin-top:10px">Total cost is shown per program in section 6, because it is a property of the program rather than of the end state — and for most programs researched it is <span class="badge-unv">not verified</span>.</p>';
+    return;
+  }
+  var e=ENDSTATES.filter(function(x){return x.id===S.endState;})[0]||ENDSTATES[0];
+  var m=monthsToFirstEDRole();
+  var timeHTML = e.months ? ('<div class="v">'+(e.id==="er"||e.id==="bedside" ? (m?m.months:e.months) : e.months)+' months</div><div class="small muted">'+esc(e.monthsNote)+'</div>')
+                          : '<div class="v" style="font-size:16px"><span class="badge-unv">not computable</span></div><div class="small muted">'+esc(e.monthsNote)+'</div>';
+  var costHTML;
+  if(e.id==="er"||e.id==="bedside"){
+    var pc=prereqCostACC(), prog=m&&m.program?m.program:null;
+    var progCost = prog && prog.costNum ? prog.costNum : null;
+    costHTML='<div class="v">'+(progCost?money(progCost+pc.cost+200):'—')+'</div>'
+      +'<div class="small muted">'+(progCost?'prerequisites at ACC in-district rates ('+money(pc.cost)+', '+(pc.unpriced?pc.unpriced+(pc.unpriced===1?' course':' courses')+' unpriced':'all priced')+') + '+esc(prog.school)+' '+money(progCost)+' ('+esc(prog.costBasis)+') + $200 NCLEX registration. Texas BON application, fingerprint and jurisprudence fees are not verified and are <strong>not</strong> included.':'Program cost for the reachable cohort is not verified.')+'</div>';
+  } else {
+    costHTML='<div class="v" style="font-size:16px"><span class="badge-unv">not verified</span></div><div class="small muted">Graduate tuition for this end state was not published on any page retrieved. See section 6 for what is known per program.</div>';
+  }
+  var h='<div class="grid g3" style="margin-bottom:12px">'
+    +'<div class="kpi"><div class="k">Time from today</div>'+timeHTML+'</div>'
+    +'<div class="kpi"><div class="k">Total cost</div>'+costHTML+'</div>'
+    +'<div class="kpi"><div class="k">Austin median salary</div><div class="v" style="font-size:16px">'+(e.wageAustin.st==="unverified"?'<span class="badge-unv">not verified</span>':fieldHTML(e.wageAustin))+'</div>'
+      +(e.wageAustin.st==="unverified"?'<div class="small muted" style="margin-top:4px;font-weight:400">'+esc(e.wageAustin.where)+'</div>':'')
+      +'<div class="small dim" style="margin-top:8px;font-weight:400">Texas: '+fieldHTML(e.wageTx)+'</div>'
+      +'<div class="small dim" style="font-weight:400">National: '+fieldHTML(e.wageUs)+'</div></div>'
+    +'</div>';
+  h+='<p><strong>Route:</strong> '+esc(e.route)+'</p>';
+  if(e.grad) h+='<p class="small">'+fieldHTML(e.grad)+'</p>';
+  if(e.id==="er") h+='<p class="small muted">ER is the default view because it is her stated goal. She is not locked in, so every other end state stays one click away — and three of them — NP, CRNA and midwifery — run through exactly the same first stretch: prerequisites, program, NCLEX, Texas licensure.</p>';
+  host.innerHTML=h;
+}
+
+/* ============================ RENDER: 2 ER PATH ============================ */
+function renderER(){
+  var m=monthsToFirstEDRole();
+  var h='';
+  if(m){
+    h+='<div class="grid g3" style="margin-bottom:14px">'
+      +'<div class="kpi"><div class="k">Prereqs done (model)</div><div class="v">'+fmtYM(prereqPlan().pacedFinish||PREREQ_START)+'</div><div class="small muted">paced plan, recomputed live</div></div>'
+      +'<div class="kpi"><div class="k">Graduation</div><div class="v">'+fmtYM({y:Math.floor(m.gradIdx/12),m:m.gradIdx%12})+'</div><div class="small muted">'+esc(m.cohort.label)+', starting '+fmtYM({y:m.cohort.y,m:m.cohort.m})+'</div></div>'
+      +'<div class="kpi"><div class="k">First ED role</div><div class="v">'+fmtYM({y:Math.floor(m.startIdx/12),m:m.startIdx%12})+'</div><div class="small muted">licensure allowance of '+LICENSURE_MONTHS+' months is an assumption built on published BON timelines, not a published figure</div></div>'
+      +'</div>';
+  }
+  h+='<h3>The steps</h3>';
+  ER_STEPS.forEach(function(s,i){
+    var it=item("er:"+s.id);
+    var row=itemHTML("er:"+s.id,{labelHTML:'<span class="muted">'+(i+1)+'.</span> '+esc(s.t),sub:s.b});
+    if(row) h+='<div class="node st-'+it.st+'"><div class="rail"><div class="dot"></div>'+(i<ER_STEPS.length-1?'<div class="line"></div>':'')+'</div><div>'+row+'</div></div>';
+  });
+  h+='<h3 style="margin-top:18px">Austin-area hospital systems: do they take new graduates straight into the ED?</h3>';
+  ER_SYSTEMS.forEach(function(s){
+    var sub='<div class="row tight" style="margin-bottom:6px"><span class="'+(s.verdictKind==="good"?"badge-confirm":"badge-unv")+'" style="'+(s.verdictKind==="good"?"background:rgba(12,163,12,.14);border-color:var(--good)":"")+'">'+esc(s.verdict)+'</span></div>'
+      +'<div>'+s.d+'</div>'+(s.f?'<div style="margin-top:6px">'+s.f+'</div>':'')+(s.caution?'<div style="margin-top:6px">'+s.caution+'</div>':'');
+    h+=itemHTML("er:"+s.id,{labelHTML:esc(s.n),sub:sub});
+  });
+  h+='<h3 style="margin-top:18px">CEN, TNCC, ACLS, PALS — what each actually requires</h3>'
+    +'<p class="small muted">The recurring belief that these need years of ED practice does not survive contact with the issuing bodies\' own pages. Only CEN mentions two years, and mentions it as a recommendation it explicitly says is not required.</p>';
+  ER_CERTS.forEach(function(c){
+    var sub='<div class="small muted" style="margin-bottom:4px">'+esc(c.body)+'</div><div>'+c.req+fn(c.src)+'</div>'
+      +'<div style="margin-top:6px"><span class="lbl">Fee</span> '+fieldHTML(c.fee)+'</div>'
+      +'<div style="margin-top:4px"><span class="lbl">When it applies</span> '+c.when+'</div>';
+    h+=itemHTML("er:"+c.id,{labelHTML:esc(c.n),sub:sub});
+  });
+  h+='<h3 style="margin-top:18px">Does anything foreclose the ER route?</h3>'
+    +'<div class="card" style="background:var(--surface-2);margin-bottom:0"><ul style="margin:0;padding-left:20px">'
+    +'<li><strong>No prerequisite forecloses it.</strong> Nothing in any prerequisite list researched is ER-specific, and no program conditions ED placement on prerequisite choices.</li>'
+    +'<li><strong>The ADN route does not foreclose it.</strong> St. David\'s residency accepts ADN and BSN alike and lists Emergency Room among its placements'+fn([46])+'. The cost is time: an ADN plus an RN-to-BSN bridge is longer than an ABSN, and many employers prefer a BSN — which the bridge supplies afterwards'+fn([26,37])+'.</li>'
+    +'<li><strong>Galen\'s Austin ADN does foreclose it as a first step.</strong> It is an LPN/LVN-to-ADN bridge requiring an active LVN licence, so a non-nurse must first complete the 12-month VN program — two licensure exams and about 30 months before an RN licence'+fn([29])+'.</li>'
+    +'<li><strong>UT Austin\'s AE-MSN narrows geography, not specialty.</strong> RN work is restricted to Texas during years two and three'+fn([15])+'. Irrelevant if she stays in Austin; decisive if a move is possible.</li>'
+    +'<li><strong>CRNA is the one end state the ER does not feed.</strong> COA requires critical-care experience — ICU settings, not the emergency department'+fn([45])+'. If CRNA is live at all, an ICU residency placement rather than an ED one is the branch point, and it comes at step 5.</li>'
+    +'</ul></div>';
+  document.getElementById("erPath").innerHTML=h;
+}
+
+/* ============================ RENDER: 3 PREREQ WINDOW ============================ */
+function renderWindow(){
+  var h='';
+  WINDOW_OPTS.forEach(function(w){
+    var sub='<div class="small" style="margin-bottom:6px"><strong>Fit against a full-time prerequisite load:</strong> '+esc(w.fit)+'</div>'
+      +'<div>'+w.d+'</div>'+(w.ver?'<div style="margin-top:6px">'+w.ver+'</div>':'')+(w.pay?'<div class="small dim" style="margin-top:6px"><span class="lbl">Pay</span> '+w.pay+'</div>':'');
+    h+=itemHTML("win:"+w.id,{labelHTML:esc(w.n),sub:sub});
+  });
+  document.getElementById("windowOpts").innerHTML=h;
+}
+
+/* ============================ RENDER: 4 PATHWAYS ============================ */
+var SEGCOL=["var(--ord1)","var(--ord2)","var(--ord3)","var(--ord4)","var(--ord5)"];
+var SEGNAME=["Prerequisites","Program","Licensure","Required RN experience","Graduate study"];
+function pathwayRows(){
+  var pl=prereqPlan(), pm=pl.pacedMonths||0;
+  var rows=[
+   {n:"ABSN — Concordia Texas (16 months)",segs:[pm,16,LICENSURE_MONTHS,0,0],
+    note:"The fastest verified route to an RN licence in Austin. Full-time availability is what makes it viable at all — Concordia's own page calls it 16 months of accelerated study"+fn([1,5])+"."},
+   {n:"ABSN — TTUHSC (12 months, hybrid, Austin clinicals)",segs:[pm,12,LICENSURE_MONTHS,0,0],
+    note:"Shortest program length verified, at 12 months"+fn([30])+", with Austin named as a clinical site. Confirm Austin placement is guaranteed before treating this as an Austin option."},
+   {n:"Direct-entry MSN — UT Austin AE-MSN (3 years)",segs:[pm,12,LICENSURE_MONTHS,0,24],
+    note:"RN licensure comes after the foundation year, then two years of master's coursework"+fn([15])+". The extra two years buy a master's degree she would otherwise have to return for — and the RN licence is usable in Texas throughout."},
+   {n:"Direct-entry MSN — Texas Lutheran (20 months)",segs:[pm,20,LICENSURE_MONTHS,0,0],
+    note:"Both BSN and MSN in 20 months"+fn([19])+", in New Braunfels. Deadlines are unpublished, which is the blocker."},
+   {n:"ADN + RN-to-BSN bridge — ACC then ACC or Texas State",segs:[pm,24,LICENSURE_MONTHS,0,10],
+    note:"ADN two years"+fn([22])+", then a bridge of 3 semesters full-time at ACC"+fn([26])+" or as few as 10 months at Texas State"+fn([37])+". Cheapest per credit by a wide margin, longest in calendar time, and the RN licence arrives before the bridge — so she can work as an RN while completing the BSN."},
+   {n:"CRNA — any route, then ICU, then anesthesia school",segs:[pm,16,LICENSURE_MONTHS,12,0],
+    note:"The 12-month block after licensure is the COA's floor: \"a minimum of one year full-time work experience, or its part-time equivalent, as a RN in a critical care setting\""+fn([45])+". The nurse-anesthesia program itself is <span class=\"badge-unv\">not verified</span> — no Texas program's length was confirmed this session, so the bar stops where the evidence stops."}
+  ];
+  return rows;
+}
+function renderPathways(){
+  var rows=pathwayRows();
+  var max=0; rows.forEach(function(r){var s=r.segs.reduce(function(a,b){return a+b;},0); if(s>max)max=s;});
+  var h='<p class="small muted">Bars start today and are measured in months. The prerequisite segment recomputes as she marks courses in section 5. Segments with no verified length are omitted rather than guessed, and the note says so.</p>';
+  h+='<div class="legend" style="margin:0 0 12px">'+SEGNAME.map(function(n,i){return '<span><i style="background:'+SEGCOL[i]+'"></i>'+n+'</span>';}).join("")+'</div>';
+  rows.forEach(function(r){
+    var tot=r.segs.reduce(function(a,b){return a+b;},0);
+    h+='<div style="margin:0 0 14px"><div class="between" style="align-items:baseline"><strong>'+r.n+'</strong><span class="small muted">'+tot+' months total</span></div>';
+    h+='<div class="tl" style="margin:5px 0">';
+    r.segs.forEach(function(v,i){ if(v>0) h+='<span title="'+SEGNAME[i]+': '+v+' months" style="width:'+(v/max*100)+'%;background:'+SEGCOL[i]+'"></span>'; });
+    h+='</div><div class="small dim">'+r.note+'</div></div>';
+  });
+  h+='<div class="card" style="background:var(--surface-2);margin:0"><h4>Where full-time availability changes the answer</h4>'
+    +'<p class="small" style="margin:0">Every accelerated program above is full-time and in-person or hybrid with fixed clinical blocks — Texas A&M states outright that students "must attend all classes, simulation labs and clinical experiences" at Round Rock for the duration'+fn([11])+', and UT Health San Antonio requires on-campus attendance in San Antonio'+fn([33])+'. None of these is compatible with a full-time job. Because her household income is covered, the fast routes are open in a way they are not for most career changers, and the ADN route\'s main advantage — being survivable while working — matters much less here. The prerequisite phase changes too: a working student takes one or two courses a term, which would push a ten-course load past two years; the three-session plan in section 5 only exists because she is not working.</p></div>';
+  document.getElementById("pathways").innerHTML=h;
+}
+
+/* ============================ RENDER: 5 PREREQUISITES ============================ */
+function renderPrereqs(){
+  var s=prereqStatus(), pl=prereqPlan(), acc=prereqCostACC(), ctx=prereqCostCTX();
+  var h='<div class="grid g3" style="margin-bottom:14px">'
+    +'<div class="kpi"><div class="k">Courses still unknown</div><div class="v">'+s.todo.length+' of '+PREREQS.length+'</div><div class="small muted">'+s.credits+' credit hours</div></div>'
+    +'<div class="kpi"><div class="k">Cost at ACC in-district</div><div class="v">'+money(acc.cost)+'</div><div class="small muted">derived from $67 tuition + $18 fees per credit hour + $50 per course'+fn([24])+(acc.unpriced?'; '+acc.unpriced+(acc.unpriced===1?' course has':' courses have')+' no verified local option':'')+'</div></div>'
+    +'<div class="kpi"><div class="k">Same load at Concordia online</div><div class="v">'+money(ctx.cost)+'</div><div class="small muted">derived from $550 per credit hour'+fn([1])+(ctx.unpriced?'; '+ctx.unpriced+(ctx.unpriced===1?' course is':' courses are')+' not offered there':'')+'</div></div>'
+    +'</div>';
+
+  h+='<div class="card" style="background:var(--surface-2)"><h4>Modelling a full-time load from late October 2026</h4>';
+  if(s.todo.length===0){
+    h+='<p class="small" style="margin:0">Every prerequisite is marked done. The schedule model has nothing left to place.</p>';
+  } else {
+    h+='<p class="small">A late-October start does not line up with a 16-week semester — it lands mid-term. The verified fact that makes the timing work is Concordia\'s: it "offers all prerequisite courses online" in <strong>eight-week sessions</strong>'+fn([4])+'. Fairfield independently accepts prerequisites from "any accredited online course provider, such as Portage Learning"'+fn([9])+', so the eight-week or self-paced route is not a single-school trick.</p>'
+     +'<p class="small"><strong>Sequencing.</strong> A&P II follows A&P I, and Pathophysiology and Pharmacology sit behind the anatomy sequence at most schools, so they cannot share a session with it. Of the '+s.todo.length+' courses still unknown, '+s.seq2+' fall in that second tier.</p>'
+     +'<ul class="small" style="margin:0 0 8px;padding-left:20px">'
+     +'<li><strong>Aggressive plan:</strong> '+pl.sessions+' consecutive eight-week sessions, about '+pl.months+' months, finishing around <strong>'+fmtYM(pl.finish)+'</strong> — roughly three courses at a time.</li>'
+     +'<li><strong>Paced plan:</strong> '+pl.pacedSessions+' sessions, about '+pl.pacedMonths+' months, finishing around <strong>'+fmtYM(pl.pacedFinish)+'</strong> — two at a time, which is what most people actually sustain with labs.</li>'
+     +'<li><strong>Waiting for spring instead:</strong> a January 2027 semester start pushes the same load out by roughly a further term, and the application deadlines in section 6 are what absorb the difference.</li>'
+     +'</ul>'
+     +'<p class="small" style="margin:0"><span class="badge-confirm">confirm directly</span> The schedule above is a model built on one verified fact — that eight-week online sessions exist — not a published academic calendar. Confirm actual session start dates with whichever provider she chooses before treating any finish date as real.</p>';
+  }
+  h+='</div>';
+
+  h+='<div class="card" style="background:rgba(250,178,25,.10);border-color:var(--warn)"><h4 style="color:var(--ink)">Science-recency limits — the constraint most likely to bite</h4>'
+    +'<ul class="small" style="margin:0;padding-left:20px">'
+    +'<li><strong>Fairfield Austin:</strong> sciences and math within the last 10 years'+fn([9])+'</li>'
+    +'<li><strong>Texas Lutheran:</strong> prerequisites within the last 7 years'+fn([19])+'</li>'
+    +'<li><strong>UT Austin AE-MSN:</strong> Anatomy, Physiology and Pharmacology within the past 6 years'+fn([15,17])+'</li>'
+    +'<li><strong>Austin Community College:</strong> A&P II and Microbiology within 5 years of the application deadline'+fn([22])+'</li>'
+    +'<li><strong>Everyone else researched:</strong> <span class="badge-unv">not verified</span> — Concordia, St. Edward\'s, Texas A&M, Texas State, TTUHSC, UT Health San Antonio, Baylor, TWU, Herzing and Temple publish no recency rule on the pages retrieved. Ask.</li>'
+    +'</ul>'
+    +'<p class="small" style="margin:8px 0 0">Practical effect: courses taken now are safe everywhere. Any science already on her transcript from the mathematics BS is the thing to date-check first — if it is older than five years, ACC will not count it even if another school would.</p></div>';
+
+  h+='<h3 style="margin-top:16px">The courses</h3>'
+    +'<p class="small muted">All ten default to UNKNOWN. No transcript has been reviewed, so nothing is assumed complete.</p>';
+  PREREQS.forEach(function(p){
+    var opts='<div class="scrollx" style="margin-top:8px"><table><thead><tr><th>Where she can take it</th><th>Cost</th><th>Term length</th></tr></thead><tbody>'
+      +p.opts.map(function(o){
+        var cost = o.c ? esc(o.c)+(o.cs==="derived"?' <span class="badge-derived">derived</span>':'')+fn(o.src) : '<span class="badge-unv">not verified</span>';
+        var term = /Concordia/.test(o.n) ? '8-week session'+fn([4]) : (/ACC/.test(o.n)? 'ACC term'+fn([24]) : (/Portage/.test(o.n)?'self-paced':'—'));
+        return '<tr><td>'+esc(o.n)+(o.note?'<div class="small muted">'+esc(o.note)+'</div>':'')+'</td><td>'+cost+'</td><td class="small">'+term+'</td></tr>';
+      }).join("")
+      +'</tbody></table></div>';
+    var lab=esc(p.name)+' <span class="muted small">('+p.cr+' cr)</span>';
+    if(p.likely) lab+=' <span class="tag" style="opacity:.75;font-style:italic">likely covered by a mathematics BS — assumption, not a check</span>';
+    var sub='<div class="small'+(p.likely?' muted':'')+'">'+esc(p.who)+fn(p.whoSrc)+'</div>'
+      +(p.likely?'<div class="small muted" style="font-style:italic;margin-top:4px">Deliberately left unchecked. A statistics course inside a mathematics degree very often satisfies the requirement — but whether <em>her</em> course does is a question for each admissions office, and it is question 2 on the verification checklist.</div>':'')
+      +opts;
+    h+=itemHTML("pre:"+p.id,{labelHTML:lab,sub:sub});
+  });
+  document.getElementById("prereqs").innerHTML=h;
+}
+
+/* ============================ RENDER: 6 PROGRAM EXPLORER ============================ */
+/* Default five, chosen by the stated rules applied in order:
+   (1) span pathway types  (2) prefer a next-cycle deadline reachable from a late-Oct-2026
+   prereq start  (3) prefer commutable over relocation  (4) break ties on NCLEX first-time rate.
+   Where the tie-break datum is unverified on both sides, criterion 3 is applied at finer grain:
+   a campus physically in Austin beats a hybrid program headquartered elsewhere. */
+var DEFAULT5=[
+ {id:"tamu",why:"ABSN · deadline reachable (Spring 2028 window opens 1 June 2027) · Round Rock, commutable · highest verified NCLEX first-time rate of any program researched, 99.6% college-wide."},
+ {id:"ctx",why:"ABSN · deadline reachable — three starts a year, applications due about two months ahead · in Austin · second-highest verified NCLEX rate, 97.83%."},
+ {id:"fairfield",why:"ABSN · deadline reachable (1 June 2027 for the September 2027 cohort) · campus in Austin. Tie with TTUHSC on criterion 4 — both NCLEX rates are unverified — broken by criterion 3 at finer grain: Fairfield's campus is in Austin, TTUHSC is a hybrid program headquartered in Lubbock that lists Austin among seven possible clinical sites."},
+ {id:"utaemsn",why:"Direct-entry MSN · deadline reachable (1 August–1 October 2027 for a Summer 2028 start) · in Austin · the only commutable direct-entry MSN with published cycle dates. Included to satisfy criterion 1."},
+ {id:"acc",why:"ADN + RN-to-BSN · in Austin · verified NCLEX 92.41%. Included to satisfy criterion 1 — <strong>criterion 2 could not be met by any ADN route.</strong> ACC's Fall 2027 window (9 November 2026–29 January 2027) opens two weeks after she starts prerequisites, so they cannot be finished inside it, and no later ACC window is published; Temple's traditional deadline of 22 October 2026 falls before her start; Galen's Austin ADN requires an LVN licence first. Rather than substitute a different pathway type, the rule is reported as unmet."}
+];
+function currentSet(){
+  var f=S.filters, anyFilter = f.type||f.maxCost||f.commutable||f.openDeadline||f.progress;
+  if(anyFilter){
+    return PROGRAMS.filter(function(p){
+      if(f.type && p.type!==f.type) return false;
+      if(f.commutable && !p.commutable) return false;
+      if(f.maxCost){ if(p.costNum==null) return false; if(p.costNum>Number(f.maxCost)) return false; }
+      if(f.openDeadline && !(p.deadline && p.deadline.st!=="unverified")) return false;
+      if(f.progress){
+        var sts=PFIELDS.map(function(x){return item("pf:"+p.id+":"+x[0]).st;});
+        if(f.progress==="unresolved" && sts.every(function(x){return x==="verified";})) return false;
+        if(f.progress==="verified" && !sts.every(function(x){return x==="verified";})) return false;
+        if(f.progress==="touched" && sts.every(function(x){return x==="unknown";})) return false;
+      }
+      return true;
+    });
+  }
+  if(S.showAll) return PROGRAMS.slice();
+  var ids=DEFAULT5.map(function(d){return d.id;});
+  return PROGRAMS.filter(function(p){return ids.indexOf(p.id)>=0;})
+                 .sort(function(a,b){return ids.indexOf(a.id)-ids.indexOf(b.id);});
+}
+function progFieldRow(p,key,label){
+  var val = (key==="type") ? V(p.type,[]) : p[key];
+  var needsConfirm = ["tuition","totalCost","fees","prereqs","deadline","cohort","gpa","exam","recency"].indexOf(key)>=0;
+  var sub='<div>'+fieldHTML(val)+'</div>';
+  if(needsConfirm && val && val.st!=="unverified"){
+    var s=(val.src&&val.src[0])?SRC[val.src[0]]:null;
+    sub+='<div class="row tight" style="margin-top:5px;align-items:center"><span class="badge-confirm">confirm directly</span>'
+      +'<span class="small muted">'+(s&&s.upd?'source states: '+esc(s.upd)+' · ':'')+'accessed '+(s?esc(s.a):'')+'</span></div>';
+  }
+  return itemHTML("pf:"+p.id+":"+key,{labelHTML:esc(label),sub:sub});
+}
+function programCard(p,whyLine){
+  var cov=coverage().byProg[p.id];
+  var h='<div class="card" style="margin-bottom:12px"><div class="between">'
+    +'<div style="min-width:240px;flex:1"><h3 style="margin-bottom:2px">'+esc(p.school)+'</h3>'
+    +'<div class="dim">'+esc(p.name)+'</div>'
+    +'<div class="row tight" style="margin-top:6px"><span class="tag '+p.type.toLowerCase()+'">'+esc(p.type)+'</span>'
+      +'<span class="tag">'+esc(p.city)+'</span>'
+      +'<span class="tag">'+(p.commutable?'commutable':'relocation')+'</span>'
+      +'<span class="tag">'+cov.u+' of '+cov.t+' fields unverified</span></div></div>'
+    +'<div><button data-toggleprog="'+p.id+'">Details</button></div></div>';
+  if(whyLine) h+='<p class="small" style="margin:10px 0 0;padding:8px 10px;background:var(--surface-2);border-radius:8px"><strong>Why it is in the default five:</strong> '+whyLine+'</p>';
+  var open=S.openProg===p.id;
+  h+='<div '+(open?'':'hidden')+' data-progbody="'+p.id+'" style="margin-top:12px">';
+  PFIELDS.forEach(function(f){ h+=progFieldRow(p,f[0],f[1]); });
+  if(p.extra&&p.extra.length){
+    h+='<div class="card" style="background:var(--surface-2);margin:8px 0 0"><h4>Also worth knowing</h4><ul class="small" style="margin:0;padding-left:20px">'
+      +p.extra.map(function(e){return '<li>'+fieldHTML(e)+'</li>';}).join("")+'</ul></div>';
+  }
+  h+='<h4 style="margin-top:14px">Verification checklist — mirrored from verification-checklist.md</h4>';
+  VQ.forEach(function(q){ h+=itemHTML("vq:"+p.id+":"+q.k,{labelHTML:esc(q.t),sub:'<div class="small muted">Record the answer and who gave it in the fields below; the same six questions appear for this program in verification-checklist.md.</div>'}); });
+  h+='</div></div>';
+  return h;
+}
+function renderExplorer(){
+  var set=currentSet(), f=S.filters;
+  var anyFilter = f.type||f.maxCost||f.commutable||f.openDeadline||f.progress;
+  var h='<div class="card" style="background:var(--surface-2);margin-bottom:14px"><div class="row" style="align-items:flex-end">'
+    +'<label class="fieldline" style="min-width:150px"><span class="lbl">Program type</span><select data-flt="type">'
+      +['','ABSN','DEMSN','ADN'].map(function(t){return '<option value="'+t+'"'+(f.type===t?' selected':'')+'>'+(t||'Any')+'</option>';}).join("")+'</select></label>'
+    +'<label class="fieldline" style="min-width:170px"><span class="lbl">Max total cost (verified or derived)</span><select data-flt="maxCost">'
+      +[['','Any'],['40000','under $40k'],['62000','under $62k'],['72000','under $72k']].map(function(o){return '<option value="'+o[0]+'"'+(f.maxCost===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select></label>'
+    +'<label class="fieldline" style="min-width:170px"><span class="lbl">Progress state</span><select data-flt="progress">'
+      +[['','Any'],['unresolved','Has unresolved fields'],['touched','Any field touched'],['verified','All fields verified']].map(function(o){return '<option value="'+o[0]+'"'+(f.progress===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select></label>'
+    +'<label class="row tight" style="align-items:center;gap:6px"><input type="checkbox" data-flt="commutable" '+(f.commutable?'checked':'')+' style="width:auto"> Commutable only</label>'
+    +'<label class="row tight" style="align-items:center;gap:6px"><input type="checkbox" data-flt="openDeadline" '+(f.openDeadline?'checked':'')+' style="width:auto"> Deadline published</label>'
+    +'<button id="btnClearFilters">Clear filters</button>'
+    +'</div></div>';
+  h+='<div class="between" style="margin-bottom:10px"><div class="small dim">'
+    +(anyFilter ? '<strong>Her filters are active</strong> — they override the default five entirely. Showing '+set.length+' of '+PROGRAMS.length+' programs.'
+                : (S.showAll ? 'Showing all '+PROGRAMS.length+' researched programs.' : 'Showing the default five, chosen by the rules below. '+(PROGRAMS.length-5)+' more are one click away.'))
+    +'</div><div>'+(anyFilter?'':'<button id="btnShowAll">'+(S.showAll?'Show the default five':'Show all '+PROGRAMS.length+' programs')+'</button>')+'</div></div>';
+  if(!anyFilter && !S.showAll){
+    h+='<div class="card" style="background:var(--surface-2);margin-bottom:14px"><h4>How the five were chosen</h4>'
+      +'<ol class="small" style="margin:0;padding-left:20px"><li>Span the pathway types — at least one ABSN, one direct-entry MSN, and one ADN plus RN-to-BSN route.</li>'
+      +'<li>Prefer programs whose next-cycle deadline is still reachable from a late-October 2026 prerequisite start.</li>'
+      +'<li>Prefer commutable from Austin over relocation.</li>'
+      +'<li>Break remaining ties on NCLEX first-time pass rate.</li></ol>'
+      +'<p class="small" style="margin:8px 0 0"><strong>One criterion could not be met.</strong> No ADN route has a reachable next-cycle deadline. ACC is included anyway to satisfy criterion 1, and the gap is stated on its card rather than papered over by substituting a fourth ABSN.</p></div>';
+  }
+  h+='<div class="card" id="scatterCard" style="margin-bottom:14px"><div class="between"><h3 style="margin:0">Total cost against months to licensure</h3>'
+    +'<button id="btnTable" aria-pressed="'+(S.showTable?"true":"false")+'">'+(S.showTable?'Hide table':'Table view')+'</button></div>'
+    +'<p class="small muted" style="margin:6px 0 0">Point size is the NCLEX first-time pass rate; programs with no verified rate are drawn at a fixed small size and labelled. Programs currently hidden by the filter are drawn faintly for context. Months to licensure recompute as prerequisites are marked.</p>'
+    +'<div class="chartbox"><canvas id="scatter"></canvas></div>'
+    +'<div id="scatterFallback" class="small" style="margin-top:6px"></div>'
+    +'<div id="scatterTable" '+(S.showTable?'':'hidden')+' style="margin-top:10px"></div></div>';
+  set.forEach(function(p){
+    var d=DEFAULT5.filter(function(x){return x.id===p.id;})[0];
+    h+=programCard(p, (!anyFilter && !S.showAll && d) ? d.why : null);
+  });
+  if(!set.length) h+='<p class="dim">No program matches those filters. Clear one and try again.</p>';
+  document.getElementById("explorer").innerHTML=h;
+  drawScatter(set);
+  renderScatterTable(set);
+}
+function progMonths(p){
+  if(p.lenMonths==null) return null;
+  var pl=prereqPlan();
+  return (pl.pacedMonths||0)+p.lenMonths+LICENSURE_MONTHS;
+}
+function renderScatterTable(set){
+  var host=document.getElementById("scatterTable"); if(!host) return;
+  var ids=set.map(function(p){return p.id;});
+  var rows=PROGRAMS.map(function(p){
+    var m=progMonths(p);
+    return '<tr'+(ids.indexOf(p.id)<0?' style="opacity:.55"':'')+'><td>'+esc(p.school)+'<div class="small muted">'+esc(p.name)+'</div></td>'
+      +'<td><span class="tag '+p.type.toLowerCase()+'">'+p.type+'</span></td>'
+      +'<td class="num">'+(p.costNum?money(p.costNum):'<span class="badge-unv">not verified</span>')+'</td>'
+      +'<td class="small">'+(p.costBasis?esc(p.costBasis):'—')+'</td>'
+      +'<td class="num">'+(m!=null?m:'<span class="badge-unv">n/v</span>')+'</td>'
+      +'<td class="num">'+(p.nclexNum?p.nclexNum+'%':'<span class="badge-unv">not verified</span>')+'</td>'
+      +'<td class="small">'+(ids.indexOf(p.id)<0?'hidden by current view':'shown')+'</td></tr>';
+  }).join("");
+  host.innerHTML='<div class="scrollx"><table><thead><tr><th>Program</th><th>Type</th><th class="num">Total cost</th><th>Cost basis</th><th class="num">Months to licensure</th><th class="num">NCLEX first-time</th><th>In view</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+var chartScatter=null;
+function drawScatter(set){
+  var el=document.getElementById("scatter"); if(!el) return;
+  var fb=document.getElementById("scatterFallback");
+  var plottable=PROGRAMS.filter(function(p){return p.costNum!=null && progMonths(p)!=null;});
+  var excluded=PROGRAMS.filter(function(p){return p.costNum==null || progMonths(p)==null;});
+  fb.innerHTML=(excluded.length? '<strong>'+excluded.length+' of '+PROGRAMS.length+' programs cannot be plotted</strong> because total cost, program length, or both are not verified: '+excluded.map(function(p){return esc(p.school);}).join("; ")+'. They are listed in the table view with the field that is missing.' : '');
+  if(typeof Chart==="undefined"){ fb.innerHTML='<div class="warnbar">The charting library did not load (it is fetched from a CDN, so this file needs an internet connection for the two charts). Everything else works offline — the table below carries the same numbers.</div>'+fb.innerHTML; S.showTable=true; var st=document.getElementById("scatterTable"); if(st) st.hidden=false; var cb=el.closest(".chartbox"); if(cb) cb.hidden=true; return; }
+  var ids=set.map(function(p){return p.id;});
+  var COLORS={ABSN:cssv("--s1"),DEMSN:cssv("--s2"),ADN:cssv("--s3")};
+  var SHAPES={ABSN:"circle",DEMSN:"triangle",ADN:"rect"};
+  var groups={};
+  plottable.forEach(function(p){
+    var shown=ids.indexOf(p.id)>=0, key=p.type+(shown?"":" (hidden)");
+    if(!groups[key])groups[key]={label:key,data:[],pointStyle:SHAPES[p.type],
+      backgroundColor:shown?COLORS[p.type]:"transparent",borderColor:COLORS[p.type],
+      borderWidth:2,pointBorderWidth:2};
+    groups[key].data.push({x:progMonths(p),y:p.costNum,r:p.nclexNum?Math.min(18,Math.max(9,(p.nclexNum-88)*1.1+9)):7,
+      label:p.school,nclex:p.nclexNum,basis:p.costBasis,shown:shown});
+  });
+  var ds=Object.keys(groups).map(function(k){var g=groups[k];
+    return {label:g.label,data:g.data,pointStyle:g.pointStyle,backgroundColor:g.backgroundColor,
+      borderColor:g.borderColor,borderWidth:2,
+      pointRadius:function(c){return c.raw.r;},pointHoverRadius:function(c){return c.raw.r+3;},
+      pointBorderWidth:2};
+  });
+  if(chartScatter) chartScatter.destroy();
+  chartScatter=new Chart(el.getContext("2d"),{type:"scatter",data:{datasets:ds},options:{
+    responsive:true,maintainAspectRatio:false,
+    scales:{x:{title:{display:true,text:"Months from today to RN licensure",color:cssv("--muted")},
+             grid:{color:cssv("--grid")},ticks:{color:cssv("--muted")},border:{color:cssv("--axis")}},
+            y:{title:{display:true,text:"Total cost (verified or derived)",color:cssv("--muted")},
+             grid:{color:cssv("--grid")},ticks:{color:cssv("--muted"),callback:function(v){return "$"+(v/1000)+"k";}},border:{color:cssv("--axis")}}},
+    plugins:{legend:{labels:{color:cssv("--ink-2"),usePointStyle:true,boxWidth:10}},
+      tooltip:{callbacks:{label:function(c){var d=c.raw;
+        return [d.label, "Cost: "+money(d.y)+" ("+(d.basis||"")+")", "Months to licensure: "+d.x,
+                "NCLEX first-time: "+(d.nclex?d.nclex+"%":"not verified")];}}}}
+  }});
+}
+function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+/* ============================ RENDER: 7 BREAKEVEN ============================ */
+var SLIDERS=[
+{k:"progCost",n:"Program cost",min:20000,max:120000,step:500,def:71200,fmt:money,
+ why:'Default is Concordia Texas at <strong>$71,200</strong> — four semesters at the published $17,800, tuition only'+fn([1])+'. <span class="badge-derived">derived</span> Most other programs researched publish no total at all.'},
+{k:"monthsOut",n:"Months out of work",min:0,max:60,step:1,def:31,fmt:function(v){return v+" months";},
+ why:'Default is the live figure from section 2 — prerequisites, program, licensure and the wait for a residency cohort. It recomputes when prerequisites are marked.'},
+{k:"incomeDuring",n:"Income during school",min:0,max:60000,step:500,def:0,fmt:money,
+ why:'Default <strong>zero</strong>, as stated. For reference, the Texas statewide median for Nursing Assistants is $37,496 a year'+fn([57])+' — full-time CNA work, which is not realistic alongside an accelerated program, so treat anything above about half that as optimistic.'},
+{k:"rnSalary",n:"Starting RN salary",min:55000,max:130000,step:1000,def:95971,fmt:money,
+ why:'Default is the Texas statewide <strong>median</strong> for Registered Nurses, $95,971 a year'+fn([53])+'. <span class="badge-confirm">confirm directly</span> A median across all RNs is not a new-graduate starting wage, and no verified Austin new-grad figure exists — this default almost certainly runs high for year one. The national median is $97,550'+fn([51])+'; national percentiles for May 2023 put the 25th at $75,990 and the 10th at $63,720'+fn([62])+'.'},
+{k:"dsSalary",n:"Data science salary if she stays",min:80000,max:220000,step:1000,def:130000,fmt:money,
+ why:'Default <strong>$130,000</strong>, her stated current salary — an input, not a source. For context, BLS puts the Austin-Round Rock-San Marcos annual mean for Data Scientists at <strong>$126,830</strong> across 3,730 jobs, May 2025'+fn([52])+', and TWC puts the Texas statewide median at $122,090'+fn([58])+'.'},
+{k:"raise",n:"Annual raise, both paths",min:0,max:8,step:0.5,def:0,fmt:function(v){return v+"% a year";},
+ why:'Default <strong>0%</strong>. Any raise assumption is invented, so it starts at zero and she can move it. Applying the same rate to both paths is itself an assumption — nursing and data science pay do not have to move together.'}
+];
+function sv(k){var d=SLIDERS.filter(function(s){return s.k===k;})[0];return S.sliders[k]!=null?Number(S.sliders[k]):d.def;}
+function breakevenSeries(){
+  var years=20, pc=sv("progCost"), mo=sv("monthsOut"), inc=sv("incomeDuring"),
+      rn=sv("rnSalary"), ds=sv("dsSalary"), g=sv("raise")/100;
+  var nurse=[],data=[],cn=0,cd=0,cross=null;
+  for(var m=1;m<=years*12;m++){
+    var yr=Math.floor((m-1)/12);
+    var dsm=ds*Math.pow(1+g,yr)/12;
+    cd+=dsm;
+    if(m<=mo){ cn+=inc/12; cn-= pc/Math.max(1,mo); }
+    else { var k=Math.floor((m-mo-1)/12); cn+=rn*Math.pow(1+g,k)/12; }
+    nurse.push(cn); data.push(cd);
+    if(cross===null && cn>=cd) cross=m;
+  }
+  return {nurse:nurse,data:data,cross:cross,years:years};
+}
+var chartBE=null;
+function renderBreakeven(){
+  var m=monthsToFirstEDRole();
+  if(S.sliders.monthsOut==null && m) S.sliders.monthsOut=m.months;
+  var h='<p class="small muted">Every default below is an assumption, labelled as one. Wage figures are cited; her current salary and the raise rate are inputs, not sources.</p><div class="grid g2">';
+  h+='<div>';
+  SLIDERS.forEach(function(s){
+    var v=sv(s.k);
+    h+='<div class="sl"><div class="top"><span>'+esc(s.n)+'</span><span class="val">'+s.fmt(v)+'</span></div>'
+      +'<input type="range" data-sl="'+s.k+'" min="'+s.min+'" max="'+s.max+'" step="'+s.step+'" value="'+v+'">'
+      +'<div class="small muted">'+s.why+'</div></div>';
+  });
+  h+='<button id="btnSliderReset">Reset assumptions to defaults</button></div>';
+  h+='<div><div class="chartbox"><canvas id="beChart"></canvas></div><div id="beMsg" style="margin-top:8px"></div></div>';
+  h+='</div>';
+  document.getElementById("breakeven").innerHTML=h;
+  drawBE();
+}
+function drawBE(){
+  var r=breakevenSeries(), el=document.getElementById("beChart"), msg=document.getElementById("beMsg");
+  if(r.cross){
+    var y=Math.floor((r.cross-1)/12)+1, mm=((r.cross-1)%12)+1;
+    msg.innerHTML='<div class="card" style="margin:0;background:var(--surface-2)"><div class="k lbl">Crossing point</div>'
+      +'<div style="font-size:20px;font-weight:650">Year '+y+', month '+mm+'</div>'
+      +'<div class="small muted">Cumulative net earnings on the nursing path overtake staying in data science at month '+r.cross+' — '+money(r.nurse[r.cross-1])+' against '+money(r.data[r.cross-1])+'. Move any slider and this recomputes.</div></div>';
+  } else {
+    var gap=r.data[r.data.length-1]-r.nurse[r.nurse.length-1];
+    msg.innerHTML='<div class="card" style="margin:0;background:rgba(208,59,59,.10);border-color:var(--critical)"><div class="k lbl">Crossing point</div>'
+      +'<div style="font-size:20px;font-weight:650">It does not cross within 20 years</div>'
+      +'<div class="small">At these assumptions the data science path is still ahead by '+money(gap)+' at year 20. That is not an argument against nursing — it is the price of the switch, stated plainly so it can be weighed against everything that is not money.</div></div>';
+  }
+  if(typeof Chart==="undefined"){ var cb2=el.closest(".chartbox"); if(cb2) cb2.hidden=true; msg.innerHTML=msg.innerHTML+'<div class="warnbar" style="margin-top:10px">The line chart needs an internet connection (the charting library is fetched from a CDN). The crossing-point figure above is computed inside this page and is correct either way.</div>'; return; }
+  var labels=[];for(var i=1;i<=r.years*12;i++)labels.push(i);
+  if(chartBE) chartBE.destroy();
+  chartBE=new Chart(el.getContext("2d"),{type:"line",data:{labels:labels,datasets:[
+    {label:"Nursing path",data:r.nurse,borderColor:cssv("--s1"),backgroundColor:"transparent",borderWidth:2,pointRadius:0,tension:.05},
+    {label:"Staying in data science",data:r.data,borderColor:cssv("--s2"),backgroundColor:"transparent",borderWidth:2,pointRadius:0,tension:.05}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+    scales:{x:{title:{display:true,text:"Months from today",color:cssv("--muted")},grid:{color:cssv("--grid")},
+             ticks:{color:cssv("--muted"),maxTicksLimit:10},border:{color:cssv("--axis")}},
+            y:{title:{display:true,text:"Cumulative net earnings",color:cssv("--muted")},grid:{color:cssv("--grid")},
+             ticks:{color:cssv("--muted"),callback:function(v){return "$"+Math.round(v/1000)+"k";}},border:{color:cssv("--axis")}}},
+    plugins:{legend:{labels:{color:cssv("--ink-2"),usePointStyle:true,boxWidth:10}},
+      tooltip:{callbacks:{label:function(c){return c.dataset.label+": "+money(c.parsed.y);}}}}}});
+}
+
+/* ============================ RENDER: 8 DECISIONS ============================ */
+function renderDecisions(){
+  var h='<p class="small muted">Gates in order, from today forward. Each one is cheaper to reverse than the one after it.</p>';
+  DECISIONS.forEach(function(d,i){
+    var it=item("dec:"+d.id);
+    var sub='<div class="small muted" style="margin-bottom:6px">'+esc(d.when)+'</div>'
+      +'<div class="fieldline"><span class="lbl">What to decide</span><span>'+esc(d.decide)+'</span></div>'
+      +'<div class="fieldline"><span class="lbl">Evidence to gather first</span><span>'+d.evidence+'</span></div>'
+      +'<div class="fieldline"><span class="lbl">Cost of reversing at this stage</span><span>'+d.cost+'</span></div>';
+    var row=itemHTML("dec:"+d.id,{labelHTML:esc(d.t),sub:sub});
+    if(row) h+='<div class="node st-'+it.st+'"><div class="rail"><div class="dot"></div>'+(i<DECISIONS.length-1?'<div class="line"></div>':'')+'</div><div>'+row+'</div></div>';
+  });
+  document.getElementById("decisions").innerHTML=h;
+}
+
+/* ============================ RENDER: SOURCES ============================ */
+function renderSources(){
+  var h="";
+  Object.keys(SRC).sort(function(a,b){return a-b;}).forEach(function(n){
+    var s=SRC[n];
+    h+='<li id="src'+n+'"><a href="'+esc(s.u)+'" target="_blank" rel="noopener">'+esc(s.t)+'</a>'
+      +'<div class="muted">Accessed '+esc(s.a)+(s.upd?' · '+esc(s.upd):'')+(s.ch?' · changes: '+esc(s.ch):'')+'</div></li>';
+  });
+  document.getElementById("srcList").innerHTML=h;
+}
+
+/* ============================ RENDER ALL + EVENTS ============================ */
+function renderAll(){
+  renderHeader(); renderEndState(); renderER(); renderWindow();
+  renderPathways(); renderPrereqs(); renderExplorer(); renderBreakeven(); renderDecisions();
+}
+document.addEventListener("click",function(ev){
+  var t=ev.target;
+  var setBtn=t.closest&&t.closest("[data-set]");
+  if(setBtn){
+    var box=setBtn.closest("[data-item]"); if(!box) return;
+    setItem(box.getAttribute("data-item"),{st:setBtn.getAttribute("data-set")});
+    renderAll(); return;
+  }
+  var end=t.closest&&t.closest("[data-end]");
+  if(end){ S.endState=end.getAttribute("data-end"); save(); renderAll(); return; }
+  var tog=t.closest&&t.closest("[data-toggleprog]");
+  if(tog){ var id=tog.getAttribute("data-toggleprog"); S.openProg = (S.openProg===id)?null:id; save(); renderExplorer(); return; }
+  if(t.id==="btnShowAll"){ S.showAll=!S.showAll; save(); renderExplorer(); return; }
+  if(t.id==="btnTable"){ S.showTable=!S.showTable; save(); renderExplorer(); return; }
+  if(t.id==="btnClearFilters"){ S.filters={type:"",maxCost:"",commutable:false,openDeadline:false,progress:""}; save(); renderExplorer(); return; }
+  if(t.id==="btnSliderReset"){ S.sliders={}; save(); renderBreakeven(); return; }
+  if(t.id==="btnUnresolved"){ S.onlyUnresolved=!S.onlyUnresolved; t.setAttribute("aria-pressed",String(S.onlyUnresolved));
+    t.textContent=S.onlyUnresolved?"Showing only unresolved":"Show only unresolved"; save(); renderAll(); return; }
+  if(t.id==="btnTheme"){ var cur=document.documentElement.getAttribute("data-theme");
+    var next = cur==="dark" ? "light" : (cur==="light" ? null : "dark");
+    if(next) document.documentElement.setAttribute("data-theme",next); else document.documentElement.removeAttribute("data-theme");
+    S.theme=next; save(); renderAll(); return; }
+  if(t.id==="btnExport"){ doExport(); return; }
+  if(t.id==="btnImport"){ document.getElementById("fileImport").click(); return; }
+  if(t.id==="btnReset"){ doReset(); return; }
+});
+document.addEventListener("input",function(ev){
+  var t=ev.target;
+  if(t.hasAttribute&&t.hasAttribute("data-f")){
+    var box=t.closest("[data-item]"); if(!box) return;
+    var patch={}; patch[t.getAttribute("data-f")]=t.value;
+    setItem(box.getAttribute("data-item"),patch);
+    var it=item(box.getAttribute("data-item"));
+    if(it.st==="verified"&&(ITEMS[box.getAttribute("data-item")]||{}).kind==="inst"&&it.how&&it.when){
+      var blocked=box.querySelector(".blocked"); if(blocked) blocked.remove();
+    }
+    renderHeader(); return;
+  }
+  if(t.hasAttribute&&t.hasAttribute("data-sl")){
+    S.sliders[t.getAttribute("data-sl")]=t.value; save();
+    var s=SLIDERS.filter(function(x){return x.k===t.getAttribute("data-sl");})[0];
+    var lbl=t.parentNode.querySelector(".val"); if(lbl) lbl.textContent=s.fmt(Number(t.value));
+    drawBE(); return;
+  }
+});
+document.addEventListener("change",function(ev){
+  var t=ev.target;
+  if(t.hasAttribute&&t.hasAttribute("data-flt")){
+    var k=t.getAttribute("data-flt");
+    S.filters[k] = (t.type==="checkbox") ? t.checked : t.value;
+    save(); renderExplorer(); return;
+  }
+  if(t.id==="fileImport"&&t.files&&t.files[0]){
+    var fr=new FileReader();
+    fr.onload=function(){ try{
+      var o=JSON.parse(fr.result);
+      if(!o||typeof o!=="object") throw new Error("not an object");
+      S.items=o.items||{}; S.sliders=o.sliders||{}; S.filters=o.filters||S.filters;
+      S.endState=o.endState||"er"; S.showAll=!!o.showAll; S.onlyUnresolved=!!o.onlyUnresolved;
+      save(); renderAll();
+      alert("Imported "+Object.keys(S.items).length+" tracked items.");
+    }catch(e){ alert("That file could not be read as dashboard state: "+e.message); } };
+    fr.readAsText(t.files[0]); t.value="";
+  }
+});
+function doExport(){
+  var payload={_format:"nursing-path-dashboard",_version:1,_exported:new Date().toISOString(),
+    items:S.items,sliders:S.sliders,filters:S.filters,endState:S.endState,showAll:S.showAll,onlyUnresolved:S.onlyUnresolved};
+  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="nursing-path-progress-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);
+}
+function doReset(){
+  var n=Object.keys(S.items).length;
+  if(!confirm("Reset every item to UNKNOWN and clear all notes?\n\n"+n+" tracked item(s) and all slider assumptions will be erased. This cannot be undone — export first if there is anything worth keeping.")) return;
+  if(!confirm("Last check: really erase "+n+" tracked item(s)?")) return;
+  S.items={}; S.sliders={}; S.openProg=null;
+  S.filters={type:"",maxCost:"",commutable:false,openDeadline:false,progress:""};
+  save(); renderAll();
+}
+/* ============================ INIT ============================ */
+load();
+if(S.theme) document.documentElement.setAttribute("data-theme",S.theme);
+renderSources();
+renderAll();
+(function(){var b=document.getElementById("btnUnresolved");
+  b.setAttribute("aria-pressed",String(S.onlyUnresolved));
+  b.textContent=S.onlyUnresolved?"Showing only unresolved":"Show only unresolved";})();
+</script>
+</body>
+</html>
