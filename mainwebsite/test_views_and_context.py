@@ -101,3 +101,32 @@ class AnalyticsStubTests(TestCase):
     def test_site_verification_meta_absent_when_unset(self):
         response = self.client.get(self.url)
         self.assertNotContains(response, 'name="google-site-verification"')
+
+
+class CadencePageTests(TestCase):
+    """Unlisted page that hosts the GetSongBPM API backlink."""
+
+    def setUp(self):
+        self.url = reverse("mainwebsite:cadence")
+
+    def test_renders_on_v2_base(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "cadence.html")
+        self.assertTemplateUsed(response, "base_design.html")
+
+    def test_contains_getsongbpm_backlink(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, '<a href="https://getsongbpm.com">')
+
+    def test_is_noindex(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, '<meta name="robots" content="noindex">')
+
+    def test_not_linked_from_homepage_or_sitemap(self):
+        self.assertNotContains(self.client.get("/"), self.url)
+        self.assertNotContains(self.client.get("/sitemap.xml"), self.url)
+
+    def test_other_pages_stay_indexable(self):
+        response = self.client.get(reverse("mainwebsite:resume"))
+        self.assertContains(response, '<meta name="robots" content="index, follow">')

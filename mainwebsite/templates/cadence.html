@@ -1,0 +1,19 @@
+{% extends 'base_design.html' %}
+
+{# Unlisted page: not linked from the nav or sitemap, and kept out of search results. #}
+{% block robots %}noindex{% endblock %}
+
+{% block content %}
+<section class="v2-tool reveal" aria-labelledby="cadence-h">
+    <p class="v2-eyebrow">Projects · Cadence</p>
+    <h1 class="v2-tool-title" id="cadence-h">Cadence</h1>
+    <p class="v2-tool-desc">
+        A personal running-app prototype for iPhone and Apple Watch. The watch measures
+        your running cadence, and the phone keeps your Apple Music queue filled with
+        songs whose tempo matches your steps per minute.
+    </p>
+    <p class="v2-tool-desc">
+        BPM data provided by <a href="https://getsongbpm.com">GetSongBPM.com</a>.
+    </p>
+</section>
+{% endblock %}

@@ -508,6 +508,20 @@ def intro(request):
     return render(request, "intro.html", context)
 
 
+def cadence(request):
+    """Unlisted project page for Cadence. It exists to host the backlink that the
+    GetSongBPM API requires; it is not linked from the nav or the sitemap."""
+    context = {
+        "title": "Cadence",
+        "page_title": "Cadence",
+        "meta_description": (
+            "Cadence, a personal running-app prototype that queues Apple Music songs "
+            "whose tempo matches your running cadence."
+        ),
+    }
+    return render(request, "cadence.html", context)
+
+
 # --- Vault: one static password gates a menu of private static HTML pages ------
 #
 # Add a new page by dropping its self-contained .html into
