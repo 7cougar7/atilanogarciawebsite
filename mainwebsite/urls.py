@@ -64,6 +64,8 @@ urlpatterns = [
     ),
     path("personal-ai/", views.personal_ai, name="personal_ai"),
     path("intro/", views.intro, name="intro"),
+    # Unlisted (not in nav or sitemap): hosts the GetSongBPM API backlink.
+    path("cadence/", views.cadence, name="cadence"),
     path("passkeys-register/", views.passkey_register, name="passkey_register"),
     # Custom Passkey URLs
     path(

@@ -12,7 +12,7 @@
     <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Atilano Garcia, a software engineer in Austin, TX. I build full-stack web apps for a living and side projects for the fun of it.{% endif %}">
     {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}">{% endif %}
     <meta name="author" content="Atilano Garcia">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
     <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
 
     <!-- Open Graph / Twitter -->
